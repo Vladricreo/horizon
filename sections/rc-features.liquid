@@ -1,7 +1,16 @@
 {%- comment -%}
   Ricreo · Punti di forza / Come funziona.
   Tre stili: barra compatta, schede con icona, passaggi numerati.
+  Su mobile la barra può scorrere da sola in un nastro continuo (la lista è ripetuta, nascosta agli screen
+  reader); si ferma al tocco e resta una riga da scorrere a mano con "riduci movimento".
 {%- endcomment -%}
+
+{%- liquid
+  assign marquee = false
+  if section.settings.style == 'bar' and section.settings.auto_scroll
+    assign marquee = true
+  endif
+-%}
 
 <div class="section section--full-width rc-feat-section">
   <div
@@ -18,7 +27,7 @@
         </header>
       {%- endif -%}
 
-      <ol class="rc-feat__list" role="list">
+      {%- capture items -%}
         {%- for block in section.blocks -%}
           <li class="rc-feat__item" {{ block.shopify_attributes }}>
             <span class="rc-feat__icon">
@@ -35,7 +44,20 @@
             </span>
           </li>
         {%- endfor -%}
-      </ol>
+      {%- endcapture -%}
+
+      {%- if marquee -%}
+        <div class="rc-feat__marquee" style="--rc-marquee-duration: {{ section.blocks.size | times: 5 | at_least: 15 }}s;">
+          <div class="rc-feat__track">
+            <ol class="rc-feat__list" role="list">{{ items }}</ol>
+            <ol class="rc-feat__list rc-feat__list--clone" role="list" aria-hidden="true">
+              {{- items | replace: 'rc-feat__item"', 'rc-feat__item" inert' -}}
+            </ol>
+          </div>
+        </div>
+      {%- else -%}
+        <ol class="rc-feat__list" role="list">{{ items }}</ol>
+      {%- endif -%}
     </div>
   </div>
 </div>
@@ -231,6 +253,47 @@
     }
   }
 
+  /* Auto-scrolling strip: the cloned list only exists for the seamless loop on phones. */
+  .rc-feat__list--clone {
+    display: none;
+  }
+
+  @media screen and (max-width: 749px) and (prefers-reduced-motion: no-preference) {
+    .rc-feat__marquee {
+      overflow: hidden;
+      mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+    }
+
+    .rc-feat__track {
+      display: flex;
+      width: max-content;
+      animation: rc-feat-marquee var(--rc-marquee-duration, 20s) linear infinite;
+    }
+
+    /* Hold still while the customer touches or reads it. */
+    .rc-feat__marquee:hover .rc-feat__track,
+    .rc-feat__marquee:active .rc-feat__track,
+    .rc-feat__marquee:focus-within .rc-feat__track {
+      animation-play-state: paused;
+    }
+
+    .rc-feat--bar .rc-feat__marquee .rc-feat__list {
+      overflow: visible;
+      padding-inline: 0 8px;
+      scroll-snap-type: none;
+    }
+
+    .rc-feat--bar .rc-feat__list--clone {
+      display: grid;
+    }
+  }
+
+  @keyframes rc-feat-marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
   /* Cards */
   .rc-feat--cards .rc-feat__item {
     flex-direction: column;
@@ -337,6 +400,13 @@
         { "value": "steps", "label": "Passaggi numerati" }
       ],
       "default": "bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_scroll",
+      "label": "Scorrimento automatico su mobile",
+      "info": "Solo stile Barra compatta. Si ferma al tocco; disattivato per chi ha scelto di ridurre il movimento.",
+      "default": true
     },
     {
       "type": "select",

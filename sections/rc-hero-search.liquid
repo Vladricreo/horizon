@@ -8,6 +8,7 @@
 {%- liquid
   assign uid = section.id | handleize
   assign popular = section.settings.popular_searches | split: ','
+  assign rotating = section.settings.rotating_terms | split: ','
   assign photo_collection = section.settings.photo_collection | default: collections.all
   assign photos = 0
   if section.settings.show_photos
@@ -48,10 +49,31 @@
             id="{{ uid }}-q"
             type="search"
             name="q"
-            placeholder="{{ section.settings.placeholder | escape }}"
+            {% if rotating.size > 0 %}
+              placeholder=" "
+              aria-label="{{ section.settings.placeholder | escape }}"
+            {% else %}
+              placeholder="{{ section.settings.placeholder | escape }}"
+            {% endif %}
             autocomplete="off"
             enterkeyhint="search"
           >
+          {%- if rotating.size > 0 -%}
+            {%- comment -%} Short examples that take turns, so the hint fits even a narrow phone field. {%- endcomment -%}
+            <rc-rotator class="rc-hs__rotator" aria-hidden="true">
+              {%- if section.settings.rotating_prefix != blank -%}
+                <span class="rc-hs__rotator-prefix">{{ section.settings.rotating_prefix }}</span>
+              {%- endif -%}
+              <span class="rc-hs__rotator-words">
+                {%- for term in rotating -%}
+                  {%- assign term = term | strip -%}
+                  {%- if term != blank -%}
+                    <span class="rc-hs__rotator-word">{{ term }}</span>
+                  {%- endif -%}
+                {%- endfor -%}
+              </span>
+            </rc-rotator>
+          {%- endif -%}
           <button class="rc-hs__submit" type="submit">
             <span>{{ section.settings.button_label }}</span>
             {% render 'rc-icon', name: 'arrow-right', size: 18 %}
@@ -112,6 +134,36 @@
     </div>
   </div>
 </div>
+
+{%- if rotating.size > 0 -%}
+  <script type="module">
+    if (!customElements.get('rc-rotator')) {
+      customElements.define(
+        'rc-rotator',
+        class extends HTMLElement {
+          connectedCallback() {
+            const words = [...this.querySelectorAll('.rc-hs__rotator-word')];
+            if (!words.length) return;
+            let index = 0;
+            words[0].classList.add('is-active');
+            if (words.length < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            this.timer = setInterval(() => {
+              words[index].classList.replace('is-active', 'is-leaving');
+              const leaving = words[index];
+              setTimeout(() => leaving.classList.remove('is-leaving'), 400);
+              index = (index + 1) % words.length;
+              words[index].classList.add('is-active');
+            }, 2600);
+          }
+
+          disconnectedCallback() {
+            clearInterval(this.timer);
+          }
+        }
+      );
+    }
+  </script>
+{%- endif -%}
 
 {% stylesheet %}
   .rc-hs {
@@ -247,6 +299,55 @@
 
   .rc-hs__input::-webkit-search-cancel-button {
     display: none;
+  }
+
+  /* Rotating hint over the empty field; gone as soon as the customer focuses or types. */
+  .rc-hs__rotator {
+    position: absolute;
+    inset-inline: 44px 120px;
+    inset-block: 6px;
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+    overflow: hidden;
+    color: var(--rc-hs-muted);
+    font-size: 1rem;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .rc-hs__input:focus ~ .rc-hs__rotator,
+  .rc-hs__input:not(:placeholder-shown) ~ .rc-hs__rotator {
+    visibility: hidden;
+  }
+
+  .rc-hs__rotator-words {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    height: 1.5em;
+  }
+
+  .rc-hs__rotator-word {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    color: var(--rc-hs-text);
+    font-weight: 600;
+    text-overflow: ellipsis;
+    opacity: 0;
+    transform: translateY(70%);
+    transition: opacity 0.35s, transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .rc-hs__rotator-word.is-active {
+    opacity: 1;
+    transform: none;
+  }
+
+  .rc-hs__rotator-word.is-leaving {
+    opacity: 0;
+    transform: translateY(-70%);
   }
 
   .rc-hs__submit {
@@ -412,6 +513,10 @@
       justify-content: center;
     }
 
+    .rc-hs__rotator {
+      inset-inline-end: 62px;
+    }
+
     .rc-hs__submit span {
       position: absolute;
       width: 1px;
@@ -441,7 +546,8 @@
   @media (prefers-reduced-motion: reduce) {
     .rc-hs__photo-img,
     .rc-hs__submit,
-    .rc-hs__search {
+    .rc-hs__search,
+    .rc-hs__rotator-word {
       transition: none;
     }
 
@@ -498,6 +604,18 @@
       "id": "placeholder",
       "label": "Testo nel campo di ricerca",
       "default": "Nome, modello o codice ricambio"
+    },
+    {
+      "type": "text",
+      "id": "rotating_prefix",
+      "label": "Esempi a rotazione: testo fisso",
+      "default": "Cerca"
+    },
+    {
+      "type": "text",
+      "id": "rotating_terms",
+      "label": "Esempi a rotazione",
+      "info": "Brevi, separati da virgola (es. Citroën Ami, specchietto). Si alternano nel campo vuoto al posto del testo qui sopra. Vuoto = testo fisso."
     },
     {
       "type": "text",

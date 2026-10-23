@@ -24,7 +24,9 @@
         "auto_link_url": "",
         "padding_top": 72,
         "padding_bottom": 72,
-        "show_photos": true
+        "show_photos": true,
+        "rotating_prefix": "Cerca",
+        "rotating_terms": "Citroën Ami, Fiat Topolino, specchietto, tendina parasole, codice ricambio"
       }
     },
     "rc_usp": {
@@ -61,9 +63,18 @@
             "title": "Assistenza diretta",
             "text": "Ti aiutiamo a trovare il pezzo giusto"
           }
+        },
+        "f0": {
+          "type": "feature",
+          "settings": {
+            "icon": "truck",
+            "title": "Spedizione gratuita oltre 49 €",
+            "text": "Tracciata, fino a casa tua"
+          }
         }
       },
       "block_order": [
+        "f0",
         "f1",
         "f2",
         "f3",
@@ -73,7 +84,8 @@
         "style": "bar",
         "background": "subtle",
         "padding_top": 24,
-        "padding_bottom": 24
+        "padding_bottom": 24,
+        "auto_scroll": true
       }
     },
     "rc_brands": {
