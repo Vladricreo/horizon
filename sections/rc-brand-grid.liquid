@@ -2,13 +2,15 @@
   Ricreo · Marchi e modelli.
   Il cliente parte da quello che possiede (Citroën Ami, Sodastream Jet, Lavazza A Modo Mio…), non da una
   categoria. Ogni blocco è un marchio o un modello: compare solo se nel catalogo c'è almeno un prodotto
-  con una delle sue parole chiave nel titolo, e usa la foto del primo prodotto trovato.
+  con una delle sue parole chiave nel titolo, e usa la foto del primo prodotto trovato che non sia già
+  su un'altra tessera (molti prodotti valgono per più modelli).
   Così la sezione cresce da sola man mano che si caricano prodotti, senza tessere che portano al vuoto.
 {%- endcomment -%}
 
 {%- liquid
   assign source = section.settings.collection | default: collections.all
   assign shown = 0
+  assign used_ids = ','
 -%}
 
 {%- capture tiles -%}
@@ -23,6 +25,7 @@
         assign terms = match | downcase | split: ','
         assign count = 0
         assign first_product = nil
+        assign fresh_product = nil
 
         for product in source.products
           assign product_title = product.title | downcase
@@ -33,6 +36,12 @@
               if first_product == nil
                 assign first_product = product
               endif
+              assign product_key = product.id | prepend: ',' | append: ','
+              if fresh_product == nil and product.featured_image != blank
+                unless used_ids contains product_key
+                  assign fresh_product = product
+                endunless
+              endif
               break
             endif
           endfor
@@ -40,6 +49,13 @@
 
         if count == 0
           continue
+        endif
+
+        if fresh_product != nil
+          assign first_product = fresh_product
+        endif
+        if block.settings.image == blank
+          assign used_ids = used_ids | append: first_product.id | append: ','
         endif
 
         assign shown = shown | plus: 1
@@ -210,6 +226,7 @@
       padding-inline: var(--page-margin, 16px);
       padding-block-end: 4px;
       scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--page-margin, 16px);
       scrollbar-width: none;
     }
 
