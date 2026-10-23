@@ -11,9 +11,9 @@
   if template.name == 'collection' and section.settings.only_collections != blank
     assign show = false
     assign allowed = section.settings.only_collections | split: ','
-    for handle in allowed
-      assign handle = handle | strip
-      if handle == collection.handle
+    for entry in allowed
+      assign allowed_handle = entry | strip
+      if allowed_handle == collection.handle
         assign show = true
         break
       endif
