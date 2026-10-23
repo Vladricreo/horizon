@@ -51,6 +51,16 @@
     overflow: hidden;
   }
 
+  /* Product photos are mostly wide shots on white: show them whole inside the square card instead of
+     cropping (Horizon's card gallery sets object-fit: cover inline, hence !important). */
+  product-card .card-gallery .product-media-container {
+    background-color: #fff;
+  }
+
+  product-card .card-gallery .product-media-container img {
+    object-fit: contain !important;
+  }
+
   /* Vehicle compatibility badge (rc-garage.js fills it in). */
   rc-compat {
     display: flex;
