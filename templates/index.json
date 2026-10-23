@@ -9,83 +9,310 @@
  */
 {
   "sections": {
-    "hero_jVaWmY": {
-      "type": "hero",
+    "rc_hero": {
+      "type": "rc-hero-garage",
       "blocks": {
-        "text_YLPk4p": {
-          "type": "text",
-          "name": "t:names.heading",
+        "vehicle_1": {
+          "type": "vehicle",
           "settings": {
-            "text": "<p>Browse our latest products</p>",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h2",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "text_color": "{{ settings.color_palette.background }}",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "brand": "Volkswagen",
+            "models": "Golf 7\nGolf 8\nPolo\nT-Roc\nTiguan\nPassat"
+          }
         },
-        "button_H9gpTf": {
-          "type": "button",
-          "name": "t:names.button",
+        "vehicle_2": {
+          "type": "vehicle",
           "settings": {
-            "label": "Shop all",
-            "link": "shopify://collections/all",
-            "open_in_new_tab": false,
-            "style_class": "button-custom",
-            "custom_button_background": "rgba(0, 0, 0, 0)",
-            "custom_button_text": "{{ settings.color_palette.background }}",
-            "custom_button_border": "{{ settings.color_palette.background }}",
-            "width": "fit-content",
-            "custom_width": 100,
-            "width_mobile": "fit-content",
-            "custom_width_mobile": 100
-          },
-          "blocks": {}
+            "brand": "Fiat",
+            "models": "500\nPanda\nTipo\n500X\nPunto"
+          }
+        },
+        "vehicle_3": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "BMW",
+            "models": "Serie 1\nSerie 3\nSerie 5\nX1\nX3"
+          }
+        },
+        "vehicle_4": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Audi",
+            "models": "A1\nA3\nA4\nQ3\nQ5"
+          }
+        },
+        "vehicle_5": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Alfa Romeo",
+            "models": "Giulia\nStelvio\nGiulietta\nTonale\nMiTo"
+          }
+        },
+        "vehicle_6": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Mercedes-Benz",
+            "models": "Classe A\nClasse C\nClasse E\nGLA\nGLC"
+          }
+        },
+        "vehicle_7": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Ford",
+            "models": "Fiesta\nFocus\nPuma\nKuga"
+          }
+        },
+        "vehicle_8": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Toyota",
+            "models": "Yaris\nCorolla\nC-HR\nRAV4"
+          }
+        },
+        "hotspot_1": {
+          "type": "hotspot",
+          "settings": {
+            "position": "headlight",
+            "icon": "bulb",
+            "label": "Fari & illuminazione LED",
+            "description": "Lampade, kit LED e fendinebbia omologati.",
+            "link": "shopify://collections/all"
+          }
+        },
+        "hotspot_2": {
+          "type": "hotspot",
+          "settings": {
+            "position": "wheel",
+            "icon": "disc",
+            "label": "Freni & cerchi",
+            "description": "Pastiglie, dischi, distanziali e copricerchi.",
+            "link": "shopify://collections/all"
+          }
+        },
+        "hotspot_3": {
+          "type": "hotspot",
+          "settings": {
+            "position": "engine",
+            "icon": "engine",
+            "label": "Ricambi motore",
+            "description": "Filtri, candele, cinghie e kit tagliando.",
+            "link": "shopify://collections/all"
+          }
+        },
+        "hotspot_4": {
+          "type": "hotspot",
+          "settings": {
+            "position": "interior",
+            "icon": "seat",
+            "label": "Interni & comfort",
+            "description": "Tappetini su misura, coprisedili, organizer.",
+            "link": "shopify://collections/all"
+          }
+        },
+        "hotspot_5": {
+          "type": "hotspot",
+          "settings": {
+            "position": "body",
+            "icon": "sparkle",
+            "label": "Estetica & detailing",
+            "description": "Cere, pellicole, wrapping e kit pulizia.",
+            "link": "shopify://collections/all"
+          }
+        },
+        "hotspot_6": {
+          "type": "hotspot",
+          "settings": {
+            "position": "exhaust",
+            "icon": "exhaust",
+            "label": "Scarichi & sport",
+            "description": "Terminali, diffusori e accessori racing.",
+            "link": "shopify://collections/all"
+          }
         }
       },
       "block_order": [
-        "text_YLPk4p",
-        "button_H9gpTf"
+        "vehicle_1",
+        "vehicle_2",
+        "vehicle_3",
+        "vehicle_4",
+        "vehicle_5",
+        "vehicle_6",
+        "vehicle_7",
+        "vehicle_8",
+        "hotspot_1",
+        "hotspot_2",
+        "hotspot_3",
+        "hotspot_4",
+        "hotspot_5",
+        "hotspot_6"
       ],
-      "name": "t:names.hero",
+      "settings": {}
+    },
+    "rc_usp": {
+      "type": "rc-features",
+      "blocks": {
+        "f1": {
+          "type": "feature",
+          "settings": {
+            "icon": "truck",
+            "title": "Spedizione 24/48h",
+            "text": "Gratuita sopra i 49 €"
+          }
+        },
+        "f2": {
+          "type": "feature",
+          "settings": {
+            "icon": "shield",
+            "title": "Compatibilità garantita",
+            "text": "Verifichiamo il tuo veicolo"
+          }
+        },
+        "f3": {
+          "type": "feature",
+          "settings": {
+            "icon": "return",
+            "title": "Reso facile 30 giorni",
+            "text": "Senza domande"
+          }
+        },
+        "f4": {
+          "type": "feature",
+          "settings": {
+            "icon": "headset",
+            "title": "Assistenza esperta",
+            "text": "Meccanici veri, non bot"
+          }
+        }
+      },
+      "block_order": [
+        "f1",
+        "f2",
+        "f3",
+        "f4"
+      ],
       "settings": {
-        "media_type_1": "image",
-        "media_type_2": "image",
-        "link": "",
-        "open_in_new_tab": false,
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "space-between",
-        "vertical_alignment": "flex-end",
-        "align_baseline": true,
-        "horizontal_alignment_flex_direction_column": "center",
-        "vertical_alignment_flex_direction_column": "flex-end",
-        "gap": 24,
-        "section_width": "page-width",
-        "section_height": "medium",
-        "section_height_custom": 50,
-        "toggle_overlay": true,
-        "overlay_color": "#12121266",
-        "overlay_style": "solid",
-        "gradient_direction": "to bottom",
-        "blurred_reflection": false,
-        "reflection_opacity": 75,
-        "padding-block-start": 100,
-        "padding-block-end": 72
+        "style": "bar",
+        "background": "subtle",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "rc_categories": {
+      "type": "rc-category-grid",
+      "blocks": {
+        "c1": {
+          "type": "category",
+          "settings": {
+            "title": "Ricambi",
+            "icon": "wrench",
+            "tint": 18,
+            "subtitle": "Freni, filtri, sospensioni e molto altro",
+            "link": "shopify://collections/all"
+          }
+        },
+        "c2": {
+          "type": "category",
+          "settings": {
+            "title": "Illuminazione",
+            "icon": "bulb",
+            "tint": 45,
+            "subtitle": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "c3": {
+          "type": "category",
+          "settings": {
+            "title": "Detailing",
+            "icon": "sparkle",
+            "tint": 200,
+            "subtitle": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "c4": {
+          "type": "category",
+          "settings": {
+            "title": "Interni",
+            "icon": "seat",
+            "tint": 265,
+            "subtitle": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "c5": {
+          "type": "category",
+          "settings": {
+            "title": "Estetica",
+            "icon": "palette",
+            "tint": 330,
+            "subtitle": "",
+            "link": "shopify://collections/all"
+          }
+        },
+        "c6": {
+          "type": "category",
+          "settings": {
+            "title": "Olio & liquidi",
+            "icon": "drop",
+            "tint": 150,
+            "subtitle": "Lubrificanti, additivi e liquidi tecnici",
+            "link": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c6"
+      ],
+      "settings": {
+        "eyebrow": "Categorie",
+        "heading": "Cosa stai cercando?"
+      }
+    },
+    "rc_steps": {
+      "type": "rc-features",
+      "blocks": {
+        "s1": {
+          "type": "feature",
+          "settings": {
+            "icon": "car",
+            "title": "Scegli la tua auto",
+            "text": "Marca, modello e anno: la salviamo per te."
+          }
+        },
+        "s2": {
+          "type": "feature",
+          "settings": {
+            "icon": "search",
+            "title": "Trova il pezzo giusto",
+            "text": "Vedi solo articoli compatibili, con i punti chiave chiari."
+          }
+        },
+        "s3": {
+          "type": "feature",
+          "settings": {
+            "icon": "cart",
+            "title": "Completa con gli abbinati",
+            "text": "Ti suggeriamo ciò che serve davvero per il montaggio."
+          }
+        }
+      },
+      "block_order": [
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "settings": {
+        "style": "steps",
+        "background": "none",
+        "eyebrow": "Come funziona",
+        "heading": "Il ricambio giusto in 3 passi",
+        "padding_top": 72,
+        "padding_bottom": 72
       }
     },
     "product_list_fa6P9H": {
@@ -276,7 +503,10 @@
     }
   },
   "order": [
-    "hero_jVaWmY",
-    "product_list_fa6P9H"
+    "rc_hero",
+    "rc_usp",
+    "rc_categories",
+    "product_list_fa6P9H",
+    "rc_steps"
   ]
 }

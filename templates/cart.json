@@ -246,10 +246,15 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "rc_cart_upsell": {
+      "type": "rc-cart-upsell",
+      "settings": {}
     }
   },
   "order": [
     "cart-section",
+    "rc_cart_upsell",
     "product_list_NNFgcy"
   ]
 }

@@ -1,0 +1,309 @@
+{%- doc -%}
+  Ricreo · Suggerimenti basati sul carrello ("Completa il tuo acquisto").
+  Renderizzato lato server: si aggiorna da solo ogni volta che il carrello cambia,
+  perché il drawer di Horizon viene ri-renderizzato dalla Section Rendering API.
+
+  Ordine dei suggerimenti:
+  1. Metafield `custom.abbinabili` (lista prodotti) degli articoli nel carrello
+  2. Prodotti complementari di Shopify Search & Discovery
+  3. Collezione di riserva (prima i prodotti col tag del veicolo salvato, poi gli altri)
+  Esclude sempre i prodotti già nel carrello e quelli non disponibili.
+
+  @param {string} [context] - 'drawer' or 'page'
+  @param {string} [section_id] - Section id, used on the cart page to refresh after updates
+  @param {string} [heading] - Overrides the theme setting title
+  @param {number} [limit] - Overrides the theme setting limit
+  @param {object} [fallback_collection] - Overrides the theme setting collection
+  @param {boolean} [show_shipping_bar] - Defaults to true
+
+  @example
+  {% render 'rc-cart-upsell', context: 'drawer' %}
+{%- enddoc -%}
+
+{%- liquid
+  assign context = context | default: 'drawer'
+  assign limit = limit | default: settings.rc_upsell_limit | default: 4
+  assign fallback_collection = fallback_collection | default: settings.rc_upsell_collection
+  assign show_shipping_bar = show_shipping_bar | default: true, allow_false: true
+  assign enabled = settings.rc_upsell_enabled | default: true, allow_false: true
+
+  assign vehicle = cart.attributes.Veicolo | strip
+  assign vehicle_handle = vehicle | handleize
+
+  assign heading = heading | default: settings.rc_upsell_heading | default: 'Completa il tuo acquisto'
+  if vehicle != blank
+    assign heading_vehicle = settings.rc_upsell_heading_vehicle | default: 'Consigliati per la tua [veicolo]'
+    assign heading = heading_vehicle | replace: '[veicolo]', vehicle
+  endif
+
+  assign cart_ids = ','
+  for item in cart.items
+    assign cart_ids = cart_ids | append: item.product_id | append: ','
+  endfor
+  assign picked = ','
+  assign count = 0
+
+  assign threshold = settings.rc_free_shipping_threshold | default: 0
+  assign threshold_cents = threshold | times: 100
+-%}
+
+{%- if enabled and cart.item_count > 0 -%}
+  <script src="{{ 'rc-upsell.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+  {%- capture cards -%}
+    {%- for item in cart.items reversed -%}
+      {%- for source in (1..2) -%}
+        {%- liquid
+          if source == 1
+            assign recs = item.product.metafields.custom.abbinabili.value
+          else
+            assign recs = item.product.metafields['shopify--discovery--product_recommendation'].complementary_products.value
+          endif
+        -%}
+        {%- for rec in recs -%}
+          {%- if count >= limit -%}{%- break -%}{%- endif -%}
+          {%- liquid
+            assign key = ',' | append: rec.id | append: ','
+            assign eligible = rec.available
+            if cart_ids contains key or picked contains key
+              assign eligible = false
+            endif
+          -%}
+          {%- if eligible -%}
+            {%- render 'rc-upsell-card', product: rec, reason: item.product.title -%}
+            {%- assign picked = picked | append: rec.id | append: ',' -%}
+            {%- assign count = count | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endfor -%}
+    {%- endfor -%}
+
+    {%- if count < limit and fallback_collection != blank -%}
+      {%- for pass in (1..2) -%}
+        {%- if pass == 1 and vehicle_handle == blank -%}{%- continue -%}{%- endif -%}
+        {%- for rec in fallback_collection.products limit: 24 -%}
+          {%- if count >= limit -%}{%- break -%}{%- endif -%}
+          {%- liquid
+            assign key = ',' | append: rec.id | append: ','
+            assign matches_vehicle = false
+            if vehicle_handle != blank
+              for tag in rec.tags
+                assign tag_handle = tag | handleize
+                if tag_handle.size > 3
+                  if tag_handle contains vehicle_handle or vehicle_handle contains tag_handle
+                    assign matches_vehicle = true
+                    break
+                  endif
+                endif
+              endfor
+            endif
+          -%}
+          {%- if pass == 1 and matches_vehicle == false -%}{%- continue -%}{%- endif -%}
+          {%- liquid
+            assign eligible = rec.available
+            if cart_ids contains key or picked contains key
+              assign eligible = false
+            endif
+          -%}
+          {%- if eligible -%}
+            {%- liquid
+              assign reason = ''
+              if matches_vehicle
+                assign reason = vehicle
+              endif
+            -%}
+            {%- render 'rc-upsell-card', product: rec, reason: reason, reason_is_vehicle: matches_vehicle -%}
+            {%- assign picked = picked | append: rec.id | append: ',' -%}
+            {%- assign count = count | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endcapture -%}
+
+  <rc-upsell
+    class="rc-upsell rc-upsell--{{ context }}"
+    data-context="{{ context }}"
+    {% if section_id != blank %}
+      data-section-id="{{ section_id }}"
+    {% endif %}
+    data-money-format="{{ shop.money_format | strip_html | escape }}"
+    data-currency="{{ cart.currency.iso_code }}"
+  >
+    {%- if show_shipping_bar and threshold > 0 -%}
+      {%- liquid
+        assign remaining = threshold_cents | minus: cart.total_price
+        assign progress = cart.total_price | times: 100 | divided_by: threshold_cents
+        if progress > 100
+          assign progress = 100
+        endif
+      -%}
+      <div class="rc-ship{% if remaining <= 0 %} rc-ship--done{% endif %}">
+        <p class="rc-ship__text">
+          {% render 'rc-icon', name: 'truck', size: 18 %}
+          {%- if remaining > 0 -%}
+            <span>Ti mancano <strong>{{ remaining | money }}</strong> per la <strong>spedizione gratuita</strong></span>
+          {%- else -%}
+            <span>Hai sbloccato la <strong>spedizione gratuita</strong> 🎉</span>
+          {%- endif -%}
+        </p>
+        <div class="rc-ship__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress }}" aria-label="Avanzamento spedizione gratuita">
+          <span style="width: {{ progress }}%;"></span>
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if count > 0 -%}
+      <div class="rc-upsell__head">
+        <p class="rc-upsell__title">
+          {% render 'rc-icon', name: 'sparkle', size: 18 %}
+          {{ heading }}
+        </p>
+        {%- if context == 'drawer' and count > 1 -%}
+          <div class="rc-upsell__nav">
+            <button type="button" class="rc-upsell__arrow" data-rc-scroll="-1" aria-label="Precedente">
+              {% render 'rc-icon', name: 'arrow-right', size: 16, class: 'rc-flip' %}
+            </button>
+            <button type="button" class="rc-upsell__arrow" data-rc-scroll="1" aria-label="Successivo">
+              {% render 'rc-icon', name: 'arrow-right', size: 16 %}
+            </button>
+          </div>
+        {%- endif -%}
+      </div>
+      <ul class="rc-upsell__list" role="list" data-rc-track>
+        {{ cards }}
+      </ul>
+      <p class="rc-upsell__error" data-rc-error role="alert" hidden></p>
+    {%- endif -%}
+  </rc-upsell>
+{%- endif -%}
+
+{% stylesheet %}
+  rc-upsell {
+    --rc-accent: #ff5a1f;
+    display: grid;
+    gap: 14px;
+  }
+
+  .rc-upsell--drawer {
+    padding-block: 4px 18px;
+  }
+
+  .rc-upsell--page {
+    padding-block: 8px;
+  }
+
+  .rc-ship {
+    display: grid;
+    gap: 8px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgb(var(--color-foreground-rgb) / 0.04);
+  }
+
+  .rc-ship__text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 0.86rem;
+    line-height: 1.35;
+  }
+
+  .rc-ship__text .rc-icon {
+    flex: none;
+    color: var(--rc-accent);
+  }
+
+  .rc-ship__track {
+    height: 6px;
+    border-radius: 999px;
+    background: rgb(var(--color-foreground-rgb) / 0.08);
+    overflow: hidden;
+  }
+
+  .rc-ship__track span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--rc-accent), #ffb000);
+    transition: width 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .rc-ship--done .rc-ship__track span {
+    background: #16a34a;
+  }
+
+  .rc-upsell__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .rc-upsell__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-weight: 700;
+    font-size: 0.98rem;
+  }
+
+  .rc-upsell__title .rc-icon {
+    color: var(--rc-accent);
+  }
+
+  .rc-upsell__nav {
+    display: flex;
+    gap: 6px;
+  }
+
+  .rc-upsell__arrow {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.14);
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .rc-flip {
+    transform: scaleX(-1);
+  }
+
+  .rc-upsell__list {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rc-upsell--drawer .rc-upsell__list {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(250px, 82%);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-block-end: 2px;
+  }
+
+  .rc-upsell--drawer .rc-upsell__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rc-upsell--page .rc-upsell__list {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  }
+
+  .rc-upsell__error {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #dc2626;
+  }
+{% endstylesheet %}

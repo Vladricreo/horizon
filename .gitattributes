@@ -1,0 +1,5 @@
+# Ricreo: keep our store configuration when merging Horizon updates locally.
+# Requires once per clone:  git config merge.ours.driver true
+# (GitHub's web merge ignores custom drivers: resolve these files by keeping "ours".)
+templates/*.json merge=ours
+config/settings_data.json merge=ours

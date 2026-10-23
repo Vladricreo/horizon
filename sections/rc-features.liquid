@@ -1,0 +1,358 @@
+{%- comment -%}
+  Ricreo · Punti di forza / Come funziona.
+  Tre stili: barra compatta, schede con icona, passaggi numerati.
+{%- endcomment -%}
+
+<div class="section section--full-width rc-feat-section">
+  <div
+    class="rc-feat rc-feat--{{ section.settings.style }} rc-feat--bg-{{ section.settings.background }}"
+    style="--rc-accent: {{ section.settings.accent }}; --rc-pad-top: {{ section.settings.padding_top }}px; --rc-pad-bottom: {{ section.settings.padding_bottom }}px;"
+  >
+    <div class="rc-feat__inner">
+      {%- if section.settings.heading != blank -%}
+        <header class="rc-feat__header">
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="rc-feat__kicker">{{ section.settings.eyebrow }}</p>
+          {%- endif -%}
+          <h2 class="rc-feat__title">{{ section.settings.heading }}</h2>
+        </header>
+      {%- endif -%}
+
+      <ol class="rc-feat__list" role="list">
+        {%- for block in section.blocks -%}
+          <li class="rc-feat__item" {{ block.shopify_attributes }}>
+            <span class="rc-feat__icon">
+              {%- if section.settings.style == 'steps' -%}
+                <span class="rc-feat__num">{{ forloop.index }}</span>
+              {%- endif -%}
+              {% render 'rc-icon', name: block.settings.icon, size: 24 %}
+            </span>
+            <span class="rc-feat__text">
+              <strong>{{ block.settings.title }}</strong>
+              {%- if block.settings.text != blank -%}
+                <span>{{ block.settings.text }}</span>
+              {%- endif -%}
+            </span>
+          </li>
+        {%- endfor -%}
+      </ol>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .rc-feat {
+    padding-block: var(--rc-pad-top) var(--rc-pad-bottom);
+    color: var(--color-foreground);
+  }
+
+  .rc-feat--bg-subtle {
+    background: rgb(var(--color-foreground-rgb) / 0.035);
+  }
+
+  .rc-feat--bg-dark {
+    background: #0d1016;
+    color: #f5f7fa;
+    --color-foreground-rgb: 245 247 250;
+  }
+
+  .rc-feat__inner {
+    max-width: var(--page-width, 1400px);
+    margin-inline: auto;
+    padding-inline: var(--page-margin, 16px);
+  }
+
+  .rc-feat__header {
+    margin-block-end: 28px;
+    text-align: center;
+  }
+
+  .rc-feat__kicker {
+    margin: 0 0 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rc-accent);
+  }
+
+  .rc-feat__title {
+    margin: 0;
+    font-size: clamp(1.6rem, 3vw, 2.3rem);
+    letter-spacing: -0.03em;
+    color: inherit;
+  }
+
+  .rc-feat__list {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  }
+
+  .rc-feat__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .rc-feat__icon {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--rc-accent) 14%, transparent);
+    color: var(--rc-accent);
+  }
+
+  .rc-feat__text {
+    display: grid;
+    gap: 3px;
+    padding-block-start: 3px;
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  .rc-feat__text strong {
+    font-size: 1rem;
+  }
+
+  .rc-feat__text span {
+    opacity: 0.7;
+  }
+
+  /* Bar: compact strip */
+  .rc-feat--bar .rc-feat__list {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  }
+
+  .rc-feat--bar .rc-feat__item {
+    align-items: center;
+  }
+
+  .rc-feat--bar .rc-feat__icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+  }
+
+  @media screen and (max-width: 749px) {
+    .rc-feat--bar .rc-feat__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px 12px;
+    }
+
+    .rc-feat--bar .rc-feat__item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  }
+
+  /* Cards */
+  .rc-feat--cards .rc-feat__item {
+    flex-direction: column;
+    gap: 18px;
+    padding: 24px;
+    border-radius: 22px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    background: rgb(var(--color-foreground-rgb) / 0.03);
+    transition: transform 0.3s, border-color 0.3s;
+  }
+
+  .rc-feat--cards .rc-feat__item:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--rc-accent) 40%, transparent);
+  }
+
+  .rc-feat--cards .rc-feat__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--rc-accent), color-mix(in srgb, var(--rc-accent) 60%, #ffb000));
+    color: #fff;
+  }
+
+  /* Steps */
+  .rc-feat--steps .rc-feat__list {
+    counter-reset: step;
+  }
+
+  .rc-feat--steps .rc-feat__item {
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .rc-feat--steps .rc-feat__icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--color-background);
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.12);
+    box-shadow: 0 14px 30px -18px rgb(0 0 0 / 0.35);
+    z-index: 1;
+  }
+
+  .rc-feat--bg-dark.rc-feat--steps .rc-feat__icon {
+    background: #161a22;
+  }
+
+  .rc-feat__num {
+    position: absolute;
+    inset-block-start: -4px;
+    inset-inline-end: -4px;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--rc-accent);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  @media screen and (min-width: 750px) {
+    .rc-feat--steps .rc-feat__item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      inset-block-start: 36px;
+      inset-inline-start: calc(50% + 46px);
+      width: calc(100% - 92px + 14px);
+      border-top: 2px dashed rgb(var(--color-foreground-rgb) / 0.15);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ricreo · Punti di forza",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Stile",
+      "options": [
+        { "value": "bar", "label": "Barra compatta" },
+        { "value": "cards", "label": "Schede" },
+        { "value": "steps", "label": "Passaggi numerati" }
+      ],
+      "default": "bar"
+    },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Sfondo",
+      "options": [
+        { "value": "none", "label": "Nessuno" },
+        { "value": "subtle", "label": "Tenue" },
+        { "value": "dark", "label": "Scuro" }
+      ],
+      "default": "subtle"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Etichetta"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titolo"
+    },
+    {
+      "type": "color",
+      "id": "accent",
+      "label": "Colore d'accento",
+      "default": "#FF5A1F"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Spaziatura superiore",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Spaziatura inferiore",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Punto",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icona",
+          "options": [
+            { "value": "truck", "label": "Spedizione" },
+            { "value": "shield", "label": "Garanzia" },
+            { "value": "return", "label": "Reso" },
+            { "value": "headset", "label": "Assistenza" },
+            { "value": "lock", "label": "Pagamento sicuro" },
+            { "value": "car", "label": "Auto" },
+            { "value": "garage", "label": "Garage" },
+            { "value": "search", "label": "Ricerca" },
+            { "value": "wrench", "label": "Montaggio" },
+            { "value": "star", "label": "Recensioni" },
+            { "value": "tag", "label": "Prezzo" },
+            { "value": "cart", "label": "Carrello" },
+            { "value": "bolt", "label": "Velocità" },
+            { "value": "gift", "label": "Regalo" },
+            { "value": "check", "label": "Spunta" }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titolo",
+          "default": "Spedizione 24/48h"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Testo",
+          "default": "Gratuita sopra i 49 €"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ricreo · Punti di forza",
+      "category": "Ricreo",
+      "blocks": [
+        { "type": "feature", "settings": { "icon": "truck", "title": "Spedizione 24/48h", "text": "Gratuita sopra i 49 €" } },
+        { "type": "feature", "settings": { "icon": "shield", "title": "Compatibilità garantita", "text": "Verifichiamo il tuo veicolo" } },
+        { "type": "feature", "settings": { "icon": "return", "title": "Reso facile 30 giorni", "text": "Senza domande" } },
+        { "type": "feature", "settings": { "icon": "headset", "title": "Assistenza esperta", "text": "Meccanici veri, non bot" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

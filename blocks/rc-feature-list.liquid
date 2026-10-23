@@ -1,0 +1,301 @@
+{%- doc -%}
+  Ricreo · Punti chiave con icone (pagina prodotto).
+
+  Fonte dei punti, in ordine di priorità quando "Automatico":
+  1. Metafield prodotto `custom.punti_chiave` (lista di testo a riga singola)
+  2. Elenco puntato (<li>) nella descrizione del prodotto
+  3. Blocchi manuali "Punto"
+
+  Ogni punto può essere scritto come "Titolo: dettaglio". L'icona viene scelta in automatico
+  in base alle parole chiave; per forzarla scrivi "[shield] Garanzia 2 anni".
+{%- enddoc -%}
+
+{%- liquid
+  assign product = closest.product
+  if product == blank and request.visual_preview_mode
+    assign product = collections.all.products.first
+  endif
+
+  assign items = blank
+  if block.settings.source == 'auto'
+    assign metafield_items = product.metafields.custom.punti_chiave.value
+    if metafield_items != blank
+      assign items = metafield_items
+    elsif product.description contains '<li'
+      assign li_chunks = product.description | split: '<li'
+      assign parsed = ''
+      for chunk in li_chunks offset: 1
+        assign chunk_parts = chunk | split: '>'
+        assign inner = chunk_parts | slice: 1, 200 | join: '>'
+        assign text = inner | split: '</li' | first | strip_html | strip | replace: '|', '/'
+        if text != blank
+          assign parsed = parsed | append: text | append: '|'
+        endif
+      endfor
+      assign items = parsed | split: '|'
+    endif
+  endif
+
+  assign limit = block.settings.limit
+
+  # keyword|icon pairs, first match wins. Leading space = word start.
+  assign icon_map = 'compatib|car, adatt|car, modell|car, veicol|car, garanzi|shield, omolog|shield, certific|shield, protezion|shield, install|wrench, montagg|wrench, plug|wrench, attrezz|wrench, spedizi|truck, consegn|truck, led|bulb, luce|bulb, lumin|bulb, fari|bulb, lampad|bulb, xeno|bulb, carbonio|layers, materia|layers, allumin|layers, acciaio|layers, resisten|layers, abs|layers, pelle|seat, sedil|seat, tappet|seat, interni|seat, fren|disc, pastigl|disc, dischi|disc, olio|drop, liquid|drop, lubrific|drop, refriger|drop, impermeab|drop, idrorep|drop, shampoo|spray, spray|spray, pulizi|sparkle, lucid|sparkle, cera|sparkle, detail|sparkle, brillant|sparkle, prestazion|bolt, potenz|bolt, turbo|bolt, sport|bolt, batteri|bolt, elettr|bolt, uv|sun, sole|sun, calor|sun, dimension|ruler, misur|ruler, peso|ruler, ecolog|leaf, ambient|leaf, biodegrad|leaf, prezzo|tag, risparm|tag, regal|gift, cerchi|wheel, gomm|wheel, pneumat|wheel, scaric|exhaust, motore|engine, filtr|engine, candel|engine, specchi|mirror, colore|palette, verniciat|palette, wrapping|palette' | split: ', '
+-%}
+
+<div
+  class="rc-points rc-points--{{ block.settings.layout }} rc-points--{{ block.settings.style }}"
+  style="--rc-accent: {{ block.settings.accent }};"
+  {{ block.shopify_attributes }}
+>
+  {%- if block.settings.heading != blank -%}
+    <p class="rc-points__heading">{{ block.settings.heading }}</p>
+  {%- endif -%}
+
+  {%- if items != blank and items.size > 0 -%}
+    <ul class="rc-points__list" role="list">
+      {%- for raw in items limit: limit -%}
+        {%- liquid
+          assign entry = raw | strip
+          assign icon = ''
+
+          if entry contains '[' and entry contains ']'
+            assign first_char = entry | slice: 0
+            if first_char == '['
+              assign icon = entry | split: ']' | first | remove_first: '[' | strip
+              assign entry = entry | split: ']' | slice: 1, 50 | join: ']' | strip
+            endif
+          endif
+
+          if icon == blank
+            assign haystack = entry | downcase
+            for pair in icon_map
+              assign kv = pair | split: '|'
+              if haystack contains kv[0]
+                assign icon = kv[1]
+                break
+              endif
+            endfor
+          endif
+          assign icon = icon | default: block.settings.fallback_icon
+
+          assign title = entry
+          assign detail = ''
+          if entry contains ':'
+            assign head = entry | split: ':' | first | strip
+            if head.size <= 40
+              assign title = head
+              assign detail = entry | split: ':' | slice: 1, 50 | join: ':' | strip
+            endif
+          endif
+        -%}
+        <li class="rc-points__item" style="--i: {{ forloop.index0 }};">
+          <span class="rc-points__icon">{% render 'rc-icon', name: icon, size: 20 %}</span>
+          <span class="rc-points__text">
+            {%- if detail != blank -%}
+              <strong>{{ title }}</strong>
+              <span>{{ detail }}</span>
+            {%- else -%}
+              <span class="rc-points__single">{{ title }}</span>
+            {%- endif -%}
+          </span>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- else -%}
+    <ul class="rc-points__list" role="list">
+      {% content_for 'blocks' %}
+    </ul>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .rc-points {
+    --rc-accent: #ff5a1f;
+    display: grid;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .rc-points__heading {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .rc-points__list {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rc-points--grid .rc-points__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media screen and (max-width: 420px) {
+    .rc-points--grid .rc-points__list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .rc-points__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 0.94rem;
+    line-height: 1.4;
+    animation: rc-point-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: calc(var(--i, 0) * 60ms);
+  }
+
+  @keyframes rc-point-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  .rc-points__icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--rc-accent) 12%, transparent);
+    color: var(--rc-accent);
+  }
+
+  .rc-points__text {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+    padding-block-start: 2px;
+  }
+
+  .rc-points__text strong {
+    font-weight: 650;
+  }
+
+  .rc-points__text span {
+    opacity: 0.72;
+  }
+
+  .rc-points__text .rc-points__single {
+    opacity: 1;
+    padding-block-start: 7px;
+  }
+
+  .rc-points--cards .rc-points__item {
+    padding: 12px;
+    border-radius: 16px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    background: rgb(var(--color-foreground-rgb) / 0.025);
+  }
+
+  .rc-points--solid .rc-points__icon {
+    background: var(--rc-accent);
+    color: #fff;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rc-points__item {
+      animation: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ricreo · Punti chiave",
+  "tag": null,
+  "blocks": [{ "type": "_rc-feature" }],
+  "settings": [
+    {
+      "type": "select",
+      "id": "source",
+      "label": "Fonte",
+      "options": [
+        { "value": "auto", "label": "Automatico (metafield → elenco descrizione → blocchi)" },
+        { "value": "blocks", "label": "Solo blocchi manuali" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "paragraph",
+      "content": "In automatico vengono letti il metafield custom.punti_chiave (lista di testo) oppure i punti elenco della descrizione. Scrivi \"Titolo: dettaglio\" per un titolo in grassetto, oppure \"[shield] testo\" per forzare l'icona."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titolo",
+      "default": "Perché sceglierlo"
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Numero massimo di punti",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Disposizione",
+      "options": [
+        { "value": "list", "label": "Elenco" },
+        { "value": "grid", "label": "Griglia a 2 colonne" }
+      ],
+      "default": "list"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Stile",
+      "options": [
+        { "value": "soft", "label": "Icona tenue" },
+        { "value": "solid", "label": "Icona piena" },
+        { "value": "cards", "label": "Schede" }
+      ],
+      "default": "soft"
+    },
+    {
+      "type": "select",
+      "id": "fallback_icon",
+      "label": "Icona predefinita",
+      "options": [
+        { "value": "check", "label": "Spunta" },
+        { "value": "star", "label": "Stella" },
+        { "value": "bolt", "label": "Fulmine" },
+        { "value": "sparkle", "label": "Brillante" }
+      ],
+      "default": "check"
+    },
+    {
+      "type": "color",
+      "id": "accent",
+      "label": "Colore d'accento",
+      "default": "#FF5A1F"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ricreo · Punti chiave",
+      "category": "Ricreo",
+      "blocks": {
+        "point_1": { "type": "_rc-feature", "settings": { "icon": "car", "title": "Compatibilità verificata", "text": "Controlla il tuo modello prima dell'acquisto" } },
+        "point_2": { "type": "_rc-feature", "settings": { "icon": "wrench", "title": "Montaggio semplice", "text": "Plug & play, senza modifiche" } },
+        "point_3": { "type": "_rc-feature", "settings": { "icon": "shield", "title": "Garanzia 2 anni", "text": "Qualità OEM o superiore" } }
+      },
+      "block_order": ["point_1", "point_2", "point_3"]
+    }
+  ]
+}
+{% endschema %}

@@ -112,6 +112,8 @@
               >
                 <scroll-hint class="cart-drawer__items">
                   {% render 'cart-products', context: 'drawer' %}
+                  {%- # RICREO: cart-based upsell. Keep this line when merging Horizon updates. -%}
+                  {% render 'rc-cart-upsell', context: 'drawer' %}
                 </scroll-hint>
 
                 <div class="cart-drawer__summary">

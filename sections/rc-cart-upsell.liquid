@@ -1,0 +1,77 @@
+{%- comment -%}
+  Ricreo · Suggerimenti nella pagina carrello, basati sugli articoli nel carrello.
+{%- endcomment -%}
+
+<div class="section section--page-width rc-cart-upsell-section">
+  <div style="padding-block: {{ section.settings.padding_top }}px {{ section.settings.padding_bottom }}px;">
+    {%- liquid
+      assign heading = section.settings.heading | default: blank
+      render 'rc-cart-upsell', context: 'page', section_id: section.id, heading: heading, limit: section.settings.limit, fallback_collection: section.settings.collection, show_shipping_bar: section.settings.show_shipping_bar
+    -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Ricreo · Upsell carrello",
+  "tag": "section",
+  "enabled_on": {
+    "templates": ["cart"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titolo",
+      "info": "Se vuoto usa il titolo delle impostazioni del tema."
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Numero di suggerimenti",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collezione di riserva",
+      "info": "Se vuota usa quella delle impostazioni del tema."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping_bar",
+      "label": "Mostra barra spedizione gratuita",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Spaziatura superiore",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Spaziatura inferiore",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ricreo · Upsell carrello",
+      "category": "Ricreo"
+    }
+  ]
+}
+{% endschema %}

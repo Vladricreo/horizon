@@ -1,0 +1,1832 @@
+{%- comment -%}
+  Ricreo · Hero interattivo "Garage".
+  Auto illustrata in SVG con hotspot cliccabili per categoria, cambio colore carrozzeria
+  e ricerca ricambi per veicolo (marca / modello / anno) o per codice.
+  File custom: non esiste in Horizon, quindi non genera conflitti negli aggiornamenti.
+{%- endcomment -%}
+
+<script
+  src="{{ 'rc-hero-garage.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
+{%- liquid
+  assign vehicles = section.blocks | where: 'type', 'vehicle'
+  assign hotspots = section.blocks | where: 'type', 'hotspot'
+  assign uid = section.id | replace: '_', '-'
+
+  assign paints = ''
+  for i in (1..5)
+    assign key = 'paint_' | append: i
+    assign paint = section.settings[key]
+    if paint != blank
+      assign paints = paints | append: paint | append: '|'
+    endif
+  endfor
+  assign paints = paints | split: '|'
+  assign first_paint = paints | first | default: '#d7dbe0'
+-%}
+
+<div class="section section--full-width rc-hero-section rc-hero-section--{{ section.settings.theme }}">
+  <rc-hero-garage
+    class="rc-hero"
+    data-search-mode="{{ section.settings.search_mode }}"
+    data-search-url="{{ routes.search_url }}"
+    data-tag-collection-url="{{ section.settings.tag_collection.url | default: '/collections/all' }}"
+    data-save-to-cart="{{ section.settings.save_vehicle_to_cart }}"
+    data-cart-update-url="{{ routes.cart_update_url }}.js"
+    data-year-from="{{ section.settings.year_from }}"
+    data-autoplay="{{ section.settings.autoplay_hotspots }}"
+    style="
+      --rc-accent: {{ section.settings.accent }};
+      --rc-accent-2: {{ section.settings.accent | color_modify: 'hue', 30 | color_lighten: 8 }};
+      --rc-pad-top: {{ section.settings.padding_top }}px;
+      --rc-pad-bottom: {{ section.settings.padding_bottom }}px;
+      --rc-paint: {{ first_paint }};
+      --rc-paint-light: {{ first_paint | color_lighten: 22 }};
+      --rc-paint-dark: {{ first_paint | color_darken: 22 }};
+    "
+  >
+    <script type="application/json" data-rc-vehicles>
+      [
+        {%- for block in vehicles -%}
+          {%- assign models = block.settings.models | newline_to_br | split: '<br />' -%}
+          {"brand": {{ block.settings.brand | strip | json }}, "models": [
+            {%- for model in models -%}
+              {{- model | strip | json -}}
+              {%- unless forloop.last -%},{%- endunless -%}
+            {%- endfor -%}
+          ]}
+          {%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ]
+    </script>
+
+    <div class="rc-hero__backdrop" aria-hidden="true">
+      <span class="rc-hero__glow rc-hero__glow--a"></span>
+      <span class="rc-hero__glow rc-hero__glow--b"></span>
+      <span class="rc-hero__grid"></span>
+    </div>
+
+    <div class="rc-hero__inner">
+      <div class="rc-hero__copy">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="rc-hero__eyebrow">
+            <span class="rc-hero__live" aria-hidden="true"></span>
+            {{ section.settings.eyebrow }}
+          </p>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <h1 class="rc-hero__title">{{ section.settings.heading }}</h1>
+        {%- endif -%}
+
+        {%- if section.settings.subheading != blank -%}
+          <p class="rc-hero__sub">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+
+      <div class="rc-hero__finder">
+        <div class="rc-finder" role="search">
+          <div class="rc-finder__tabs" role="tablist" aria-label="Modalità di ricerca">
+            <button
+              type="button"
+              class="rc-finder__tab"
+              role="tab"
+              id="{{ uid }}-tab-vehicle"
+              aria-controls="{{ uid }}-panel-vehicle"
+              aria-selected="true"
+              data-rc-tab="vehicle"
+            >
+              {% render 'rc-icon', name: 'car', size: 18 %}
+              {{ section.settings.tab_vehicle_label }}
+            </button>
+            {%- if section.settings.show_code_search -%}
+              <button
+                type="button"
+                class="rc-finder__tab"
+                role="tab"
+                id="{{ uid }}-tab-code"
+                aria-controls="{{ uid }}-panel-code"
+                aria-selected="false"
+                tabindex="-1"
+                data-rc-tab="code"
+              >
+                {% render 'rc-icon', name: 'search', size: 18 %}
+                {{ section.settings.tab_code_label }}
+              </button>
+            {%- endif -%}
+          </div>
+
+          <form
+            class="rc-finder__panel rc-finder__panel--vehicle"
+            id="{{ uid }}-panel-vehicle"
+            role="tabpanel"
+            aria-labelledby="{{ uid }}-tab-vehicle"
+            action="{{ routes.search_url }}"
+            method="get"
+            data-rc-panel="vehicle"
+            data-rc-vehicle-form
+          >
+            <input type="hidden" name="type" value="product">
+            <input type="hidden" name="q" value="" data-rc-query>
+
+            <div class="rc-finder__fields{% if section.settings.show_year %} rc-finder__fields--3{% endif %}">
+              <label class="rc-field">
+                <span class="rc-field__label">Marca</span>
+                <select class="rc-field__control" data-rc-brand required>
+                  <option value="">Seleziona</option>
+                  {%- for block in vehicles -%}
+                    <option value="{{ block.settings.brand | escape }}">{{ block.settings.brand }}</option>
+                  {%- endfor -%}
+                </select>
+              </label>
+
+              <label class="rc-field">
+                <span class="rc-field__label">Modello</span>
+                <select class="rc-field__control" data-rc-model disabled>
+                  <option value="">Scegli</option>
+                </select>
+              </label>
+
+              {%- if section.settings.show_year -%}
+                <label class="rc-field">
+                  <span class="rc-field__label">Anno</span>
+                  <select class="rc-field__control" data-rc-year>
+                    <option value="">Tutti</option>
+                  </select>
+                </label>
+              {%- endif -%}
+            </div>
+
+            <button type="submit" class="rc-btn rc-btn--primary rc-finder__submit" data-rc-submit disabled>
+              <span>{{ section.settings.finder_button }}</span>
+              {% render 'rc-icon', name: 'arrow-right', size: 18 %}
+            </button>
+          </form>
+
+          {%- if section.settings.show_code_search -%}
+            <form
+              class="rc-finder__panel rc-finder__panel--code"
+              id="{{ uid }}-panel-code"
+              role="tabpanel"
+              aria-labelledby="{{ uid }}-tab-code"
+              action="{{ routes.search_url }}"
+              method="get"
+              data-rc-panel="code"
+              hidden
+            >
+              <input type="hidden" name="type" value="product">
+              <label class="rc-field rc-field--grow">
+                <span class="rc-field__label">Codice OEM, ricambio o parola chiave</span>
+                <input
+                  class="rc-field__control"
+                  type="search"
+                  name="q"
+                  placeholder="{{ section.settings.code_placeholder | escape }}"
+                  autocomplete="off"
+                  required
+                >
+              </label>
+              <button type="submit" class="rc-btn rc-btn--primary rc-finder__submit">
+                <span>Cerca</span>
+                {% render 'rc-icon', name: 'search', size: 18 %}
+              </button>
+            </form>
+          {%- endif -%}
+
+          <div class="rc-garage" data-rc-garage hidden>
+            <span class="rc-garage__icon">{% render 'rc-icon', name: 'garage', size: 18 %}</span>
+            <span class="rc-garage__text">
+              La tua auto: <strong data-rc-garage-label></strong>
+            </span>
+            <a class="rc-garage__go" href="#" data-rc-garage-go>Vedi ricambi</a>
+            <button type="button" class="rc-garage__clear" data-rc-garage-clear aria-label="Rimuovi auto salvata">
+              {% render 'rc-icon', name: 'close', size: 14 %}
+            </button>
+          </div>
+        </div>
+
+        {%- assign popular = section.settings.popular_searches | split: ',' -%}
+        {%- if section.settings.popular_searches != blank -%}
+          <div class="rc-popular">
+            <span class="rc-popular__label">Più cercati</span>
+            {%- for term in popular -%}
+              {%- assign term_clean = term | strip -%}
+              {%- if term_clean != blank -%}
+                <a class="rc-chip" href="{{ routes.search_url }}?q={{ term_clean | url_encode }}&type=product">
+                  {{- term_clean -}}
+                </a>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <ul class="rc-trust" role="list">
+          {%- if section.settings.trust_1 != blank -%}
+            <li>{% render 'rc-icon', name: 'star', size: 18 %}<span>{{ section.settings.trust_1 }}</span></li>
+          {%- endif -%}
+          {%- if section.settings.trust_2 != blank -%}
+            <li>{% render 'rc-icon', name: 'truck', size: 18 %}<span>{{ section.settings.trust_2 }}</span></li>
+          {%- endif -%}
+          {%- if section.settings.trust_3 != blank -%}
+            <li>{% render 'rc-icon', name: 'shield', size: 18 %}<span>{{ section.settings.trust_3 }}</span></li>
+          {%- endif -%}
+        </ul>
+      </div>
+
+      <div class="rc-hero__stage">
+        <div class="rc-stage" data-rc-stage>
+          {%- if section.settings.show_swatches and paints.size > 1 -%}
+            <div class="rc-swatches" role="radiogroup" aria-label="Colore carrozzeria">
+              {% render 'rc-icon', name: 'palette', size: 16, class: 'rc-swatches__icon' %}
+              {%- for paint in paints -%}
+                <button
+                  type="button"
+                  class="rc-swatch"
+                  role="radio"
+                  aria-checked="{% if forloop.first %}true{% else %}false{% endif %}"
+                  aria-label="Colore {{ forloop.index }}"
+                  style="--swatch: {{ paint }};"
+                  data-rc-paint="{{ paint }}"
+                  data-rc-paint-light="{{ paint | color_lighten: 22 }}"
+                  data-rc-paint-dark="{{ paint | color_darken: 22 }}"
+                ></button>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+
+          <div class="rc-car-wrap" data-rc-car-wrap>
+            <div class="rc-road" aria-hidden="true"><span></span></div>
+
+            <svg
+              class="rc-car"
+              viewBox="0 0 800 320"
+              role="img"
+              aria-label="Illustrazione interattiva di un'auto: seleziona una zona per esplorare la categoria"
+            >
+              <defs>
+                <linearGradient id="{{ uid }}-body" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" style="stop-color: var(--rc-paint-light)" />
+                  <stop offset="0.5" style="stop-color: var(--rc-paint)" />
+                  <stop offset="1" style="stop-color: var(--rc-paint-dark)" />
+                </linearGradient>
+                <linearGradient id="{{ uid }}-glass" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#9fb4c9" stop-opacity="0.95" />
+                  <stop offset="0.55" stop-color="#2b3644" stop-opacity="0.95" />
+                  <stop offset="1" stop-color="#11161d" stop-opacity="0.95" />
+                </linearGradient>
+                <radialGradient id="{{ uid }}-rim" cx="0.4" cy="0.35" r="0.75">
+                  <stop offset="0" stop-color="#f2f4f7" />
+                  <stop offset="0.6" stop-color="#9aa1ab" />
+                  <stop offset="1" stop-color="#4b5059" />
+                </radialGradient>
+                <linearGradient id="{{ uid }}-beam" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#fff6d6" stop-opacity="0.85" />
+                  <stop offset="1" stop-color="#fff6d6" stop-opacity="0" />
+                </linearGradient>
+                <linearGradient id="{{ uid }}-sheen" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#fff" stop-opacity="0" />
+                  <stop offset="0.5" stop-color="#fff" stop-opacity="0.55" />
+                  <stop offset="1" stop-color="#fff" stop-opacity="0" />
+                </linearGradient>
+                <clipPath id="{{ uid }}-clip">
+                  <path d="M60 228 L58 196 Q60 176 84 170 L170 156 Q222 106 300 96 L420 92 Q472 94 522 132 L640 150 Q722 160 738 186 L742 214 Q740 228 724 230 L660 230 A52 52 0 0 0 556 230 L250 230 A52 52 0 0 0 146 230 Z" />
+                </clipPath>
+                <filter id="{{ uid }}-blur" x="-20%" y="-50%" width="140%" height="200%">
+                  <feGaussianBlur stdDeviation="8" />
+                </filter>
+              </defs>
+
+              <ellipse class="rc-car__shadow" cx="400" cy="282" rx="350" ry="16" filter="url(#{{ uid }}-blur)" />
+
+              <path class="rc-car__beam" d="M736 180 L800 140 L800 250 L736 196 Z" fill="url(#{{ uid }}-beam)" />
+
+              <g class="rc-car__smoke" aria-hidden="true">
+                <circle cx="54" cy="226" r="8" />
+                <circle cx="40" cy="222" r="11" />
+                <circle cx="22" cy="216" r="14" />
+              </g>
+
+              <g class="rc-car__chassis">
+                <path
+                  class="rc-car__body"
+                  d="M60 228 L58 196 Q60 176 84 170 L170 156 Q222 106 300 96 L420 92 Q472 94 522 132 L640 150 Q722 160 738 186 L742 214 Q740 228 724 230 L660 230 A52 52 0 0 0 556 230 L250 230 A52 52 0 0 0 146 230 Z"
+                  fill="url(#{{ uid }}-body)"
+                />
+
+                <g clip-path="url(#{{ uid }}-clip)">
+                  <rect class="rc-car__sheen" x="-200" y="80" width="160" height="170" fill="url(#{{ uid }}-sheen)" />
+                </g>
+
+                <path class="rc-car__hood" d="M524 134 L640 151 Q718 160 736 184" />
+                <path class="rc-car__shoulder" d="M92 176 L180 164 Q400 146 712 172" />
+
+                <path
+                  class="rc-car__glass"
+                  d="M202 156 Q242 117 304 107 L412 104 Q452 107 494 141 Q497 148 488 150 L214 160 Q198 161 202 156 Z"
+                  fill="url(#{{ uid }}-glass)"
+                />
+                <path class="rc-car__pillar" d="M372 104 L374 154" />
+                <path class="rc-car__seat" d="M318 150 L322 124 Q324 116 332 118 L336 120 L334 150 Z" />
+
+                <path class="rc-car__line" d="M304 162 Q300 194 306 224" />
+                <path class="rc-car__line" d="M522 150 Q530 190 524 224" />
+                <rect class="rc-car__handle" x="462" y="166" width="28" height="5" rx="2.5" />
+                <path class="rc-car__skirt" d="M252 226 L554 226" />
+
+                <path class="rc-car__mirror" d="M496 140 Q510 130 526 136 L524 147 Q510 149 498 147 Z" />
+
+                <path class="rc-car__light rc-car__light--front" d="M698 166 Q728 170 738 186 L712 187 Q700 180 698 166 Z" />
+                <path class="rc-car__drl" d="M690 177 L728 183" />
+                <path class="rc-car__light rc-car__light--rear" d="M62 184 Q70 173 98 168 L100 177 Q80 181 64 192 Z" />
+
+                <path class="rc-car__intake" d="M704 212 L736 212" />
+                <path class="rc-car__intake" d="M70 218 L116 222" />
+                <ellipse class="rc-car__pipe" cx="84" cy="227" rx="11" ry="4.5" />
+              </g>
+
+              {%- assign wheel_centers = '198,608' | split: ',' -%}
+              {%- for cx in wheel_centers -%}
+                <g class="rc-car__wheel rc-car__wheel--{% if forloop.first %}rear{% else %}front{% endif %}" transform="translate({{ cx }} 232)">
+                  <circle r="46" class="rc-car__tire" />
+                  <circle r="34" fill="url(#{{ uid }}-rim)" />
+                  <path class="rc-car__caliper" d="M-24 -10 A26 26 0 0 1 -8 -25" />
+                  <g class="rc-car__spokes">
+                    <circle r="30" class="rc-car__rim-edge" />
+                    {%- for angle in (0..4) -%}
+                      <path d="M0 -8 L-5 -30 L5 -30 Z" transform="rotate({{ angle | times: 72 }})" />
+                    {%- endfor -%}
+                    <circle r="8" class="rc-car__hub" />
+                  </g>
+                </g>
+              {%- endfor -%}
+            </svg>
+
+            {%- for block in hotspots -%}
+              {%- liquid
+                case block.settings.position
+                  when 'headlight'
+                    assign x = 90
+                    assign y = 56
+                  when 'wheel'
+                    assign x = 76
+                    assign y = 72.5
+                  when 'rear_wheel'
+                    assign x = 24.75
+                    assign y = 72.5
+                  when 'engine'
+                    assign x = 74
+                    assign y = 46
+                  when 'mirror'
+                    assign x = 64
+                    assign y = 43
+                  when 'interior'
+                    assign x = 44
+                    assign y = 39
+                  when 'body'
+                    assign x = 52
+                    assign y = 61
+                  when 'exhaust'
+                    assign x = 10.5
+                    assign y = 70.5
+                  when 'taillight'
+                    assign x = 10
+                    assign y = 56
+                  when 'roof'
+                    assign x = 45
+                    assign y = 29
+                  else
+                    assign x = block.settings.custom_x
+                    assign y = block.settings.custom_y
+                endcase
+              -%}
+              <button
+                type="button"
+                class="rc-hotspot"
+                style="--x: {{ x }}%; --y: {{ y }}%;"
+                data-rc-hotspot="{{ block.id }}"
+                data-rc-zone="{{ block.settings.position }}"
+                aria-label="{{ block.settings.label | escape }}"
+                aria-controls="{{ uid }}-card"
+                {{ block.shopify_attributes }}
+              >
+                <span class="rc-hotspot__pulse" aria-hidden="true"></span>
+                <span class="rc-hotspot__dot">{% render 'rc-icon', name: block.settings.icon, size: 16 %}</span>
+              </button>
+            {%- endfor -%}
+          </div>
+
+          {%- if hotspots.size > 0 -%}
+            <div class="rc-zone" id="{{ uid }}-card" aria-live="polite">
+              {%- for block in hotspots -%}
+                {%- liquid
+                  assign zone_url = block.settings.link
+                  if block.settings.collection != blank
+                    assign zone_url = block.settings.collection.url
+                  endif
+                -%}
+                <a
+                  class="rc-zone__card"
+                  href="{{ zone_url | default: routes.all_products_collection_url }}"
+                  data-rc-card="{{ block.id }}"
+                  {% unless forloop.first %}
+                    hidden
+                  {% endunless %}
+                >
+                  <span class="rc-zone__icon">{% render 'rc-icon', name: block.settings.icon, size: 26 %}</span>
+                  <span class="rc-zone__body">
+                    <span class="rc-zone__title">{{ block.settings.label }}</span>
+                    {%- if block.settings.description != blank -%}
+                      <span class="rc-zone__text">{{ block.settings.description }}</span>
+                    {%- endif -%}
+                  </span>
+                  <span class="rc-zone__meta">
+                    {%- if block.settings.collection != blank and block.settings.collection.products_count > 0 -%}
+                      <span class="rc-zone__count">{{ block.settings.collection.products_count }} prodotti</span>
+                    {%- endif -%}
+                    <span class="rc-zone__cta">
+                      Esplora {% render 'rc-icon', name: 'arrow-right', size: 16 %}
+                    </span>
+                  </span>
+                </a>
+              {%- endfor -%}
+            </div>
+
+            <div class="rc-zone-nav" role="tablist" aria-label="Categorie">
+              {%- for block in hotspots -%}
+                <button
+                  type="button"
+                  class="rc-zone-nav__item"
+                  role="tab"
+                  aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                  aria-controls="{{ uid }}-card"
+                  data-rc-hotspot="{{ block.id }}"
+                  data-rc-zone="{{ block.settings.position }}"
+                >
+                  {% render 'rc-icon', name: block.settings.icon, size: 18 %}
+                  <span>{{ block.settings.label }}</span>
+                </button>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </rc-hero-garage>
+</div>
+
+{% stylesheet %}
+  .rc-hero-section {
+    --rc-bg: #0a0c11;
+    --rc-surface: rgb(255 255 255 / 0.06);
+    --rc-surface-strong: rgb(255 255 255 / 0.1);
+    --rc-border: rgb(255 255 255 / 0.12);
+    --rc-text: #f5f7fa;
+    --rc-muted: rgb(245 247 250 / 0.66);
+    --rc-field-bg: rgb(255 255 255 / 0.08);
+  }
+
+  .rc-hero-section--light {
+    --rc-bg: #f4f5f7;
+    --rc-surface: rgb(255 255 255 / 0.75);
+    --rc-surface-strong: #fff;
+    --rc-border: rgb(15 18 24 / 0.1);
+    --rc-text: #0f1218;
+    --rc-muted: rgb(15 18 24 / 0.6);
+    --rc-field-bg: #fff;
+  }
+
+  .rc-hero {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--rc-bg);
+    color: var(--rc-text);
+    padding-block: var(--rc-pad-top) var(--rc-pad-bottom);
+  }
+
+  .rc-hero__backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .rc-hero__glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.55;
+  }
+
+  .rc-hero__glow--a {
+    width: 46vw;
+    height: 46vw;
+    max-width: 680px;
+    max-height: 680px;
+    inset-inline-end: -8vw;
+    inset-block-start: -10vw;
+    background: radial-gradient(circle, var(--rc-accent), transparent 65%);
+  }
+
+  .rc-hero__glow--b {
+    width: 34vw;
+    height: 34vw;
+    max-width: 520px;
+    max-height: 520px;
+    inset-inline-start: -10vw;
+    inset-block-end: -14vw;
+    background: radial-gradient(circle, var(--rc-accent-2), transparent 65%);
+    opacity: 0.3;
+  }
+
+  .rc-hero-section--light .rc-hero__glow {
+    opacity: 0.22;
+  }
+
+  .rc-hero__grid {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(var(--rc-border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--rc-border) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse at 70% 40%, #000 0%, transparent 70%);
+    opacity: 0.45;
+  }
+
+  .rc-hero__inner {
+    width: 100%;
+    max-width: var(--page-width, 1400px);
+    margin-inline: auto;
+    padding-inline: var(--page-margin, 16px);
+    display: grid;
+    gap: 28px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'copy' 'finder' 'stage';
+  }
+
+  @media screen and (min-width: 990px) {
+    .rc-hero__inner {
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.15fr);
+      grid-template-areas: 'copy stage' 'finder stage';
+      align-items: start;
+      column-gap: 56px;
+      row-gap: 32px;
+    }
+  }
+
+  .rc-hero__copy {
+    grid-area: copy;
+    align-self: end;
+  }
+
+  .rc-hero__finder {
+    grid-area: finder;
+    display: grid;
+    gap: 18px;
+    align-content: start;
+  }
+
+  .rc-hero__stage {
+    grid-area: stage;
+    align-self: center;
+    min-width: 0;
+  }
+
+  .rc-hero__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 18px;
+    padding: 7px 14px;
+    border: 1px solid var(--rc-border);
+    border-radius: 999px;
+    background: var(--rc-surface);
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    color: var(--rc-muted);
+    backdrop-filter: blur(10px);
+  }
+
+  .rc-hero__live {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 0 rgb(34 197 94 / 0.6);
+    animation: rc-live 2s infinite;
+  }
+
+  @keyframes rc-live {
+    70% {
+      box-shadow: 0 0 0 8px rgb(34 197 94 / 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgb(34 197 94 / 0);
+    }
+  }
+
+  .rc-hero__title {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: 700;
+    font-size: clamp(2.3rem, 5.2vw, 4.4rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    color: var(--rc-text);
+    text-wrap: balance;
+  }
+
+  .rc-hero__title em,
+  .rc-hero__title i {
+    font-style: normal;
+    background: linear-gradient(100deg, var(--rc-accent), var(--rc-accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .rc-hero__sub {
+    margin: 18px 0 0;
+    max-width: 46ch;
+    font-size: clamp(1rem, 1.3vw, 1.125rem);
+    line-height: 1.55;
+    color: var(--rc-muted);
+  }
+
+  /* Finder */
+  .rc-finder {
+    padding: 8px;
+    border: 1px solid var(--rc-border);
+    border-radius: 22px;
+    background: var(--rc-surface);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.5);
+  }
+
+  .rc-finder__tabs {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .rc-finder__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--rc-muted);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .rc-finder__tab[aria-selected='true'] {
+    background: var(--rc-surface-strong);
+    color: var(--rc-text);
+  }
+
+  .rc-finder__panel {
+    display: grid;
+    gap: 10px;
+    padding: 8px;
+  }
+
+  .rc-finder__panel[hidden] {
+    display: none;
+  }
+
+  .rc-finder__fields {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .rc-finder__fields--3 {
+    grid-template-columns: 1fr 1fr 0.8fr;
+  }
+
+  @media screen and (max-width: 520px) {
+    .rc-finder__fields--3 {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .rc-finder__fields--3 .rc-field:last-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .rc-finder__panel--code {
+    grid-template-columns: 1fr;
+  }
+
+  .rc-field {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .rc-field__label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--rc-muted);
+    padding-inline: 4px;
+  }
+
+  .rc-field__control {
+    width: 100%;
+    min-height: 50px;
+    padding: 0 14px;
+    border: 1px solid var(--rc-border);
+    border-radius: 14px;
+    background-color: var(--rc-field-bg);
+    color: var(--rc-text);
+    font: inherit;
+    font-size: 0.98rem;
+    appearance: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  select.rc-field__control {
+    padding-inline-end: 36px;
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+      linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position: calc(100% - 20px) 22px, calc(100% - 15px) 22px;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+  }
+
+  select.rc-field__control option {
+    color: #111;
+  }
+
+  .rc-field__control:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .rc-field__control:focus-visible {
+    outline: none;
+    border-color: var(--rc-accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--rc-accent) 25%, transparent);
+  }
+
+  .rc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 52px;
+    padding: 0 22px;
+    border: 0;
+    border-radius: 14px;
+    font: inherit;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  }
+
+  .rc-btn--primary {
+    background: linear-gradient(100deg, var(--rc-accent), var(--rc-accent-2));
+    color: #fff;
+    box-shadow: 0 12px 30px -10px var(--rc-accent);
+  }
+
+  .rc-btn--primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 36px -10px var(--rc-accent);
+  }
+
+  .rc-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .rc-btn .rc-icon {
+    transition: transform 0.2s;
+  }
+
+  .rc-btn:hover:not(:disabled) .rc-icon--arrow-right {
+    transform: translateX(3px);
+  }
+
+  .rc-garage {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 4px 8px 8px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--rc-accent) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--rc-accent) 35%, transparent);
+    font-size: 0.9rem;
+  }
+
+  .rc-garage[hidden] {
+    display: none;
+  }
+
+  .rc-garage__icon {
+    display: inline-flex;
+    color: var(--rc-accent);
+  }
+
+  .rc-garage__text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .rc-garage__go {
+    color: var(--rc-text);
+    font-weight: 700;
+    text-underline-offset: 3px;
+  }
+
+  .rc-garage__clear {
+    display: inline-flex;
+    padding: 6px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--rc-muted);
+    cursor: pointer;
+  }
+
+  .rc-popular {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rc-popular__label {
+    font-size: 0.8rem;
+    color: var(--rc-muted);
+    margin-inline-end: 4px;
+  }
+
+  .rc-chip {
+    display: inline-flex;
+    padding: 7px 13px;
+    border: 1px solid var(--rc-border);
+    border-radius: 999px;
+    background: var(--rc-surface);
+    color: var(--rc-text);
+    font-size: 0.84rem;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .rc-chip:hover {
+    border-color: var(--rc-accent);
+    background: color-mix(in srgb, var(--rc-accent) 12%, transparent);
+  }
+
+  .rc-trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    margin: 4px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.86rem;
+    color: var(--rc-muted);
+  }
+
+  .rc-trust li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rc-trust .rc-icon {
+    color: var(--rc-accent);
+  }
+
+  /* Stage */
+  .rc-stage {
+    position: relative;
+    display: grid;
+    gap: 16px;
+  }
+
+  .rc-swatches {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-self: end;
+    padding: 6px 10px;
+    border: 1px solid var(--rc-border);
+    border-radius: 999px;
+    background: var(--rc-surface);
+    backdrop-filter: blur(10px);
+  }
+
+  .rc-swatches__icon {
+    color: var(--rc-muted);
+    margin-inline-end: 2px;
+  }
+
+  .rc-swatch {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 2px solid var(--rc-bg);
+    border-radius: 50%;
+    background: var(--swatch);
+    box-shadow: 0 0 0 1px var(--rc-border);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .rc-swatch[aria-checked='true'] {
+    box-shadow: 0 0 0 2px var(--rc-accent);
+    transform: scale(1.1);
+  }
+
+  .rc-car-wrap {
+    position: relative;
+    aspect-ratio: 800 / 320;
+    transform: perspective(1200px) rotateY(var(--ry, 0deg)) rotateX(var(--rx, 0deg));
+    transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .rc-car {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .rc-car__chassis {
+    animation: rc-idle 3.2s ease-in-out infinite;
+    transform-origin: 400px 230px;
+  }
+
+  @keyframes rc-idle {
+    50% {
+      transform: translateY(-1.5px);
+    }
+  }
+
+  .rc-car__shadow {
+    fill: #000;
+    opacity: 0.55;
+  }
+
+  .rc-hero-section--light .rc-car__shadow {
+    opacity: 0.25;
+  }
+
+  .rc-car__body {
+    transition: fill 0.5s;
+    stroke: rgb(0 0 0 / 0.35);
+    stroke-width: 1;
+  }
+
+  .rc-car__hood,
+  .rc-car__shoulder,
+  .rc-car__line,
+  .rc-car__pillar,
+  .rc-car__skirt,
+  .rc-car__drl,
+  .rc-car__intake {
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  .rc-car__shoulder {
+    stroke: rgb(255 255 255 / 0.35);
+    stroke-width: 2;
+  }
+
+  .rc-car__hood {
+    stroke: rgb(0 0 0 / 0.18);
+    stroke-width: 2;
+    transition: stroke 0.3s, stroke-width 0.3s;
+  }
+
+  .rc-car__line {
+    stroke: rgb(0 0 0 / 0.3);
+    stroke-width: 1.5;
+  }
+
+  .rc-car__pillar {
+    stroke: var(--rc-paint-dark);
+    stroke-width: 9;
+  }
+
+  .rc-car__skirt {
+    stroke: rgb(0 0 0 / 0.45);
+    stroke-width: 5;
+  }
+
+  .rc-car__handle {
+    fill: rgb(0 0 0 / 0.35);
+  }
+
+  .rc-car__glass {
+    transition: filter 0.4s;
+  }
+
+  .rc-car__seat {
+    fill: #0d1117;
+    opacity: 0.85;
+    transition: fill 0.3s;
+  }
+
+  .rc-car__mirror {
+    fill: var(--rc-paint-dark);
+    transition: fill 0.3s;
+  }
+
+  .rc-car__light--front {
+    fill: #fdfcf6;
+    filter: drop-shadow(0 0 4px rgb(255 255 255 / 0.7));
+    transition: filter 0.3s;
+  }
+
+  .rc-car__drl {
+    stroke: #e8f4ff;
+    stroke-width: 2.5;
+    filter: drop-shadow(0 0 3px #bfe3ff);
+  }
+
+  .rc-car__light--rear {
+    fill: #ff2d3d;
+    filter: drop-shadow(0 0 4px rgb(255 45 61 / 0.7));
+  }
+
+  .rc-car__intake {
+    stroke: #14171c;
+    stroke-width: 6;
+  }
+
+  .rc-car__pipe {
+    fill: #15181d;
+    stroke: #8b9099;
+    stroke-width: 2;
+  }
+
+  .rc-car__tire {
+    fill: #121418;
+    stroke: #23262c;
+    stroke-width: 4;
+  }
+
+  .rc-car__caliper {
+    fill: none;
+    stroke: var(--rc-accent);
+    stroke-width: 8;
+    stroke-linecap: round;
+  }
+
+  .rc-car__spokes {
+    fill: #e6e9ee;
+    stroke: rgb(0 0 0 / 0.25);
+    stroke-width: 0.75;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .rc-car__rim-edge {
+    fill: none;
+    stroke: #c9ced6;
+    stroke-width: 3;
+  }
+
+  .rc-car__hub {
+    fill: #2a2e35;
+  }
+
+  .rc-car__beam {
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .rc-car__smoke circle {
+    fill: rgb(200 205 214 / 0.5);
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .rc-car__sheen {
+    opacity: 0;
+  }
+
+  /* Zone reactions */
+  [data-zone='headlight'] .rc-car__beam {
+    opacity: 1;
+  }
+
+  [data-zone='headlight'] .rc-car__light--front {
+    filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 22px #fff3c4);
+  }
+
+  [data-zone='wheel'] .rc-car__wheel--front .rc-car__spokes,
+  [data-zone='rear_wheel'] .rc-car__wheel--rear .rc-car__spokes {
+    animation: rc-spin 1.1s linear infinite;
+  }
+
+  [data-zone='wheel'] .rc-car__wheel--front .rc-car__caliper,
+  [data-zone='rear_wheel'] .rc-car__wheel--rear .rc-car__caliper {
+    filter: drop-shadow(0 0 6px var(--rc-accent));
+  }
+
+  @keyframes rc-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  [data-zone='engine'] .rc-car__hood {
+    stroke: var(--rc-accent);
+    stroke-width: 3.5;
+    filter: drop-shadow(0 0 6px var(--rc-accent));
+  }
+
+  [data-zone='mirror'] .rc-car__mirror {
+    fill: var(--rc-accent);
+  }
+
+  [data-zone='interior'] .rc-car__glass,
+  [data-zone='roof'] .rc-car__glass {
+    filter: brightness(1.6) saturate(0.6);
+  }
+
+  [data-zone='interior'] .rc-car__seat {
+    fill: var(--rc-accent);
+  }
+
+  [data-zone='body'] .rc-car__sheen {
+    opacity: 1;
+    animation: rc-sheen 1.8s ease-in-out infinite;
+  }
+
+  @keyframes rc-sheen {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(1100px);
+    }
+  }
+
+  [data-zone='exhaust'] .rc-car__smoke circle {
+    animation: rc-smoke 1.6s ease-out infinite;
+  }
+
+  [data-zone='exhaust'] .rc-car__smoke circle:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+
+  [data-zone='exhaust'] .rc-car__smoke circle:nth-child(3) {
+    animation-delay: 0.6s;
+  }
+
+  @keyframes rc-smoke {
+    0% {
+      opacity: 0.8;
+      transform: translate(0, 0) scale(0.6);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-30px, -14px) scale(1.4);
+    }
+  }
+
+  [data-zone='taillight'] .rc-car__light--rear {
+    filter: drop-shadow(0 0 10px #ff2d3d) drop-shadow(0 0 20px #ff2d3d);
+  }
+
+  /* Road */
+  .rc-road {
+    position: absolute;
+    inset-inline: -4%;
+    inset-block-end: -2%;
+    height: 2px;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+  }
+
+  .rc-road span {
+    display: block;
+    width: 200%;
+    height: 100%;
+    background: repeating-linear-gradient(90deg, var(--rc-border) 0 40px, transparent 40px 80px);
+    animation: rc-road 1.6s linear infinite;
+  }
+
+  @keyframes rc-road {
+    to {
+      transform: translateX(-80px);
+    }
+  }
+
+  /* Hotspots */
+  .rc-hotspot {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  .rc-hotspot__dot {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.92);
+    color: #0f1218;
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.35);
+    transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1.4), background 0.25s, color 0.25s;
+  }
+
+  .rc-hotspot__pulse {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--rc-accent);
+    opacity: 0.5;
+    animation: rc-pulse 2.2s ease-out infinite;
+  }
+
+  @keyframes rc-pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.55;
+    }
+    100% {
+      transform: scale(2.1);
+      opacity: 0;
+    }
+  }
+
+  .rc-hotspot:hover .rc-hotspot__dot,
+  .rc-hotspot:focus-visible .rc-hotspot__dot,
+  .rc-hotspot.is-active .rc-hotspot__dot {
+    background: var(--rc-accent);
+    color: #fff;
+    transform: scale(1.18);
+  }
+
+  .rc-hotspot:focus-visible {
+    outline: none;
+  }
+
+  .rc-hotspot:focus-visible .rc-hotspot__dot {
+    box-shadow: 0 0 0 3px var(--rc-bg), 0 0 0 5px var(--rc-accent);
+  }
+
+  @media screen and (max-width: 749px) {
+    .rc-hotspot {
+      width: 26px;
+      height: 26px;
+    }
+
+    .rc-hotspot .rc-icon {
+      width: 12px;
+      height: 12px;
+    }
+
+    .rc-hotspot__pulse {
+      animation-duration: 2.8s;
+    }
+  }
+
+  /* Zone card */
+  .rc-zone {
+    position: relative;
+    min-height: 92px;
+  }
+
+  .rc-zone__card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 18px;
+    border: 1px solid var(--rc-border);
+    border-radius: 20px;
+    background: var(--rc-surface);
+    backdrop-filter: blur(16px);
+    color: var(--rc-text);
+    text-decoration: none;
+    animation: rc-card-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+    transition: border-color 0.2s;
+  }
+
+  .rc-zone__card:hover {
+    border-color: var(--rc-accent);
+  }
+
+  .rc-zone__card[hidden] {
+    display: none;
+  }
+
+  @keyframes rc-card-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  .rc-zone__icon {
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--rc-accent), var(--rc-accent-2));
+    color: #fff;
+  }
+
+  .rc-zone__body {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .rc-zone__title {
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  .rc-zone__text {
+    font-size: 0.88rem;
+    color: var(--rc-muted);
+    line-height: 1.4;
+  }
+
+  .rc-zone__meta {
+    display: grid;
+    justify-items: end;
+    gap: 4px;
+    font-size: 0.85rem;
+  }
+
+  .rc-zone__count {
+    color: var(--rc-muted);
+  }
+
+  .rc-zone__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: var(--rc-accent);
+    white-space: nowrap;
+  }
+
+  @media screen and (max-width: 520px) {
+    .rc-zone__card {
+      grid-template-columns: auto 1fr;
+    }
+
+    .rc-zone__meta {
+      grid-column: 1 / -1;
+      grid-auto-flow: column;
+      justify-content: space-between;
+    }
+  }
+
+  .rc-zone-nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-block-end: 2px;
+    mask-image: linear-gradient(90deg, #000 90%, transparent);
+  }
+
+  .rc-zone-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rc-zone-nav__item {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border: 1px solid var(--rc-border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--rc-muted);
+    font: inherit;
+    font-size: 0.86rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .rc-zone-nav__item:hover {
+    color: var(--rc-text);
+  }
+
+  .rc-zone-nav__item[aria-selected='true'] {
+    border-color: var(--rc-accent);
+    background: color-mix(in srgb, var(--rc-accent) 14%, transparent);
+    color: var(--rc-text);
+  }
+
+  .rc-zone-nav__item[aria-selected='true'] .rc-icon {
+    color: var(--rc-accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rc-hero *,
+    .rc-hero *::before,
+    .rc-hero *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+
+    .rc-car-wrap {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ricreo · Hero Garage",
+  "tag": "section",
+  "class": "rc-hero-shopify-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Testi"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Etichetta",
+      "default": "Oltre 10.000 ricambi e accessori disponibili"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Titolo",
+      "info": "Il testo in corsivo viene evidenziato con il colore d'accento.",
+      "default": "Tutto per la tua auto. <em>Compatibile al 100%.</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Sottotitolo",
+      "default": "Ricambi, accessori ed estetica selezionati per il tuo modello. Scegli l'auto, tocca una zona e trova subito ciò che ti serve."
+    },
+    {
+      "type": "header",
+      "content": "Ricerca veicolo"
+    },
+    {
+      "type": "text",
+      "id": "tab_vehicle_label",
+      "label": "Etichetta scheda veicolo",
+      "default": "La mia auto"
+    },
+    {
+      "type": "text",
+      "id": "finder_button",
+      "label": "Testo pulsante",
+      "default": "Trova ricambi compatibili"
+    },
+    {
+      "type": "select",
+      "id": "search_mode",
+      "label": "Destinazione ricerca",
+      "options": [
+        { "value": "search", "label": "Pagina di ricerca (marca + modello)" },
+        { "value": "tag", "label": "Collezione filtrata per tag (es. volkswagen-golf-7)" }
+      ],
+      "default": "search"
+    },
+    {
+      "type": "collection",
+      "id": "tag_collection",
+      "label": "Collezione base per filtro tag"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_year",
+      "label": "Mostra selezione anno",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "year_from",
+      "label": "Anno di partenza",
+      "default": 1995,
+      "visible_if": "{{ section.settings.show_year }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "save_vehicle_to_cart",
+      "label": "Salva il veicolo nel carrello",
+      "info": "Il veicolo appare come attributo dell'ordine e personalizza i suggerimenti nel carrello.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_code_search",
+      "label": "Mostra ricerca per codice",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tab_code_label",
+      "label": "Etichetta scheda codice",
+      "default": "Codice / OEM",
+      "visible_if": "{{ section.settings.show_code_search }}"
+    },
+    {
+      "type": "text",
+      "id": "code_placeholder",
+      "label": "Placeholder codice",
+      "default": "Es. 1K0698151 o pastiglie freno",
+      "visible_if": "{{ section.settings.show_code_search }}"
+    },
+    {
+      "type": "text",
+      "id": "popular_searches",
+      "label": "Ricerche popolari",
+      "info": "Separate da virgola.",
+      "default": "Pastiglie freno, Lampade LED, Tappetini, Kit detailing, Spazzole tergicristallo"
+    },
+    {
+      "type": "header",
+      "content": "Fiducia"
+    },
+    {
+      "type": "text",
+      "id": "trust_1",
+      "label": "Punto 1 (stella)",
+      "default": "4,9/5 da 2.300+ recensioni"
+    },
+    {
+      "type": "text",
+      "id": "trust_2",
+      "label": "Punto 2 (camion)",
+      "default": "Spedizione 24/48h"
+    },
+    {
+      "type": "text",
+      "id": "trust_3",
+      "label": "Punto 3 (scudo)",
+      "default": "Compatibilità garantita"
+    },
+    {
+      "type": "header",
+      "content": "Auto interattiva"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay_hotspots",
+      "label": "Scorri le zone automaticamente",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_swatches",
+      "label": "Mostra cambio colore",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "paint_1",
+      "label": "Colore 1 (iniziale)",
+      "default": "#D7DBE0"
+    },
+    {
+      "type": "color",
+      "id": "paint_2",
+      "label": "Colore 2",
+      "default": "#C8102E"
+    },
+    {
+      "type": "color",
+      "id": "paint_3",
+      "label": "Colore 3",
+      "default": "#1F4FD8"
+    },
+    {
+      "type": "color",
+      "id": "paint_4",
+      "label": "Colore 4",
+      "default": "#1A1D23"
+    },
+    {
+      "type": "color",
+      "id": "paint_5",
+      "label": "Colore 5",
+      "default": "#F2A900"
+    },
+    {
+      "type": "header",
+      "content": "Stile"
+    },
+    {
+      "type": "select",
+      "id": "theme",
+      "label": "Tema",
+      "options": [
+        { "value": "dark", "label": "Scuro" },
+        { "value": "light", "label": "Chiaro" }
+      ],
+      "default": "dark"
+    },
+    {
+      "type": "color",
+      "id": "accent",
+      "label": "Colore d'accento",
+      "default": "#FF5A1F"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Spaziatura superiore",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Spaziatura inferiore",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    }
+  ],
+  "blocks": [
+    {
+      "type": "vehicle",
+      "name": "Marca e modelli",
+      "settings": [
+        {
+          "type": "text",
+          "id": "brand",
+          "label": "Marca",
+          "default": "Volkswagen"
+        },
+        {
+          "type": "textarea",
+          "id": "models",
+          "label": "Modelli",
+          "info": "Uno per riga.",
+          "default": "Golf 7\nGolf 8\nPolo\nT-Roc\nTiguan"
+        }
+      ]
+    },
+    {
+      "type": "hotspot",
+      "name": "Zona auto",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "select",
+          "id": "position",
+          "label": "Zona",
+          "options": [
+            { "value": "headlight", "label": "Fari anteriori" },
+            { "value": "taillight", "label": "Fanali posteriori" },
+            { "value": "wheel", "label": "Ruota anteriore" },
+            { "value": "rear_wheel", "label": "Ruota posteriore" },
+            { "value": "engine", "label": "Cofano / motore" },
+            { "value": "mirror", "label": "Specchietto" },
+            { "value": "interior", "label": "Interni" },
+            { "value": "roof", "label": "Tetto" },
+            { "value": "body", "label": "Carrozzeria" },
+            { "value": "exhaust", "label": "Scarico" },
+            { "value": "custom", "label": "Posizione personalizzata" }
+          ],
+          "default": "headlight"
+        },
+        {
+          "type": "range",
+          "id": "custom_x",
+          "label": "Posizione orizzontale",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 50,
+          "visible_if": "{{ block.settings.position == 'custom' }}"
+        },
+        {
+          "type": "range",
+          "id": "custom_y",
+          "label": "Posizione verticale",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 50,
+          "visible_if": "{{ block.settings.position == 'custom' }}"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icona",
+          "options": [
+            { "value": "bulb", "label": "Lampadina" },
+            { "value": "wheel", "label": "Ruota" },
+            { "value": "disc", "label": "Disco freno" },
+            { "value": "engine", "label": "Motore" },
+            { "value": "wrench", "label": "Chiave" },
+            { "value": "gear", "label": "Ingranaggio" },
+            { "value": "seat", "label": "Sedile" },
+            { "value": "mirror", "label": "Specchietto" },
+            { "value": "palette", "label": "Colore" },
+            { "value": "sparkle", "label": "Brillante" },
+            { "value": "spray", "label": "Spray" },
+            { "value": "exhaust", "label": "Scarico" },
+            { "value": "drop", "label": "Goccia / olio" },
+            { "value": "bolt", "label": "Prestazioni" },
+            { "value": "car", "label": "Auto" },
+            { "value": "shield", "label": "Protezione" }
+          ],
+          "default": "bulb"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Titolo",
+          "default": "Fari & illuminazione LED"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Descrizione",
+          "default": "Lampade, kit LED e fendinebbia omologati."
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collezione"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link alternativo",
+          "info": "Usato se non scegli una collezione."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ricreo · Hero Garage",
+      "category": "Ricreo",
+      "blocks": [
+        { "type": "vehicle", "settings": { "brand": "Volkswagen", "models": "Golf 7\nGolf 8\nPolo\nT-Roc\nTiguan" } },
+        { "type": "vehicle", "settings": { "brand": "Fiat", "models": "500\nPanda\nTipo\n500X" } },
+        { "type": "vehicle", "settings": { "brand": "BMW", "models": "Serie 1\nSerie 3\nX1\nX3" } },
+        { "type": "hotspot", "settings": { "position": "headlight", "icon": "bulb", "label": "Fari & illuminazione LED", "description": "Lampade, kit LED e fendinebbia omologati." } },
+        { "type": "hotspot", "settings": { "position": "wheel", "icon": "disc", "label": "Freni & cerchi", "description": "Pastiglie, dischi, distanziali e copricerchi." } },
+        { "type": "hotspot", "settings": { "position": "engine", "icon": "engine", "label": "Ricambi motore", "description": "Filtri, candele, cinghie e tagliandi." } },
+        { "type": "hotspot", "settings": { "position": "interior", "icon": "seat", "label": "Interni & comfort", "description": "Tappetini su misura, coprisedili, organizer." } },
+        { "type": "hotspot", "settings": { "position": "body", "icon": "sparkle", "label": "Estetica & detailing", "description": "Cere, pellicole, wrapping e kit pulizia." } },
+        { "type": "hotspot", "settings": { "position": "exhaust", "icon": "exhaust", "label": "Scarichi & sport", "description": "Terminali, diffusori e accessori racing." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

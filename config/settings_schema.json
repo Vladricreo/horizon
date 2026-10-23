@@ -2116,5 +2116,54 @@
         "default": "equal-width-buttons"
       }
     ]
+  },
+  {
+    "name": "Ricreo · Upsell carrello",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Suggerimenti nel carrello basati sugli articoli aggiunti: prima il metafield custom.abbinabili, poi i prodotti complementari di Search & Discovery, infine la collezione di riserva (con priorità ai prodotti col tag del veicolo salvato)."
+      },
+      {
+        "type": "checkbox",
+        "id": "rc_upsell_enabled",
+        "label": "Mostra suggerimenti nel carrello",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "rc_upsell_heading",
+        "label": "Titolo",
+        "default": "Completa il tuo acquisto"
+      },
+      {
+        "type": "text",
+        "id": "rc_upsell_heading_vehicle",
+        "label": "Titolo con veicolo salvato",
+        "info": "[veicolo] viene sostituito con l'auto scelta dal cliente.",
+        "default": "Consigliati per la tua [veicolo]"
+      },
+      {
+        "type": "range",
+        "id": "rc_upsell_limit",
+        "label": "Numero di suggerimenti",
+        "min": 1,
+        "max": 8,
+        "step": 1,
+        "default": 4
+      },
+      {
+        "type": "collection",
+        "id": "rc_upsell_collection",
+        "label": "Collezione di riserva"
+      },
+      {
+        "type": "number",
+        "id": "rc_free_shipping_threshold",
+        "label": "Soglia spedizione gratuita",
+        "info": "Importo nella valuta del negozio. 0 per nascondere la barra.",
+        "default": 49
+      }
+    ]
   }
 ]

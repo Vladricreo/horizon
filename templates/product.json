@@ -240,13 +240,63 @@
                 "padding-inline-end": 0
               },
               "blocks": {}
+            },
+            "rc_points": {
+              "type": "rc-feature-list",
+              "settings": {
+                "source": "auto",
+                "heading": "Perché sceglierlo",
+                "layout": "list",
+                "style": "soft",
+                "limit": 6
+              },
+              "blocks": {
+                "point_1": {
+                  "type": "_rc-feature",
+                  "settings": {
+                    "icon": "car",
+                    "title": "Compatibilità verificata",
+                    "text": "Scegli la tua auto e controlla prima di acquistare"
+                  }
+                },
+                "point_2": {
+                  "type": "_rc-feature",
+                  "settings": {
+                    "icon": "wrench",
+                    "title": "Montaggio semplice",
+                    "text": "Istruzioni incluse, senza modifiche"
+                  }
+                },
+                "point_3": {
+                  "type": "_rc-feature",
+                  "settings": {
+                    "icon": "shield",
+                    "title": "Garanzia 2 anni",
+                    "text": "Qualità OEM o superiore"
+                  }
+                }
+              },
+              "block_order": [
+                "point_1",
+                "point_2",
+                "point_3"
+              ]
+            },
+            "rc_bundle": {
+              "type": "rc-bundle",
+              "settings": {
+                "limit": 3
+              },
+              "blocks": {}
             }
           },
           "block_order": [
             "group_icgrde",
+            "rc_points",
             "divider_VJhene",
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",
+            "rc_bundle",
             "text_aEtTtq"
           ]
         },

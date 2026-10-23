@@ -1,0 +1,73 @@
+{%- doc -%}
+  Ricreo · riga del blocco "Acquistati insieme".
+
+  @param {object} product - Suggested product
+  @param {string} reason - 'match', 'cart' or 'popular'
+  @param {string} [reason_title] - Title of the cart item it pairs with (reason 'cart')
+  @param {number} [index] - Position, used to pre-select only the first rows
+{%- enddoc -%}
+
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign available_variants = product.variants | where: 'available', true
+-%}
+
+<li class="rc-bundle__row" data-rc-bundle-item>
+  <label class="rc-bundle__check">
+    <input
+      type="checkbox"
+      data-rc-bundle-check
+      {% if index < 2 %}
+        checked
+      {% endif %}
+      aria-label="Aggiungi {{ product.title | escape }}"
+    >
+    <span class="rc-bundle__box" aria-hidden="true">{% render 'rc-icon', name: 'check', size: 14 %}</span>
+  </label>
+
+  <a class="rc-bundle__thumb" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+    {%- if product.featured_image -%}
+      {{ product.featured_image | image_url: width: 160 | image_tag: loading: 'lazy', sizes: '56px' }}
+    {%- endif -%}
+  </a>
+
+  <span class="rc-bundle__info">
+    {%- case reason -%}
+      {%- when 'cart' -%}
+        <span class="rc-bundle__badge rc-bundle__badge--cart">
+          {% render 'rc-icon', name: 'cart', size: 11 %}
+          Per {{ reason_title | truncate: 24 }}
+        </span>
+      {%- when 'popular' -%}
+        <span class="rc-bundle__badge">{% render 'rc-icon', name: 'star', size: 11 %} Popolare</span>
+      {%- else -%}
+        <span class="rc-bundle__badge">{% render 'rc-icon', name: 'plus', size: 11 %} Abbinabile</span>
+    {%- endcase -%}
+    <a class="rc-bundle__name" href="{{ product.url }}">{{ product.title }}</a>
+    {%- if product.has_only_default_variant == false and available_variants.size > 1 -%}
+      <select class="rc-bundle__variant" data-rc-variant aria-label="Variante di {{ product.title | escape }}">
+        {%- for v in available_variants -%}
+          <option
+            value="{{ v.id }}"
+            data-price="{{ v.price }}"
+            data-compare="{{ v.compare_at_price | default: 0 }}"
+            {% if v.id == variant.id %}
+              selected
+            {% endif %}
+          >
+            {{- v.title -}}
+          </option>
+        {%- endfor -%}
+      </select>
+    {%- else -%}
+      <input type="hidden" data-rc-variant value="{{ variant.id }}" data-price="{{ variant.price }}" data-compare="{{ variant.compare_at_price | default: 0 }}">
+    {%- endif -%}
+  </span>
+
+  <span class="rc-bundle__price" data-rc-price>
+    {%- if variant.compare_at_price > variant.price -%}
+      <s>{{ variant.compare_at_price | money }}</s>
+    {%- endif -%}
+    <span>{{ variant.price | money }}</span>
+  </span>
+</li>

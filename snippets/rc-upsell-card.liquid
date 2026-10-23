@@ -1,0 +1,246 @@
+{%- doc -%}
+  Ricreo · Scheda prodotto compatta con aggiunta rapida al carrello.
+
+  @param {object} product - Product to render
+  @param {string} [reason] - Title of the cart item (or vehicle) this product pairs with
+  @param {boolean} [reason_is_vehicle] - When true, the reason is the saved vehicle
+{%- enddoc -%}
+
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign available_variants = product.variants | where: 'available', true
+  assign show_picker = false
+  if product.has_only_default_variant == false and available_variants.size > 1
+    assign show_picker = true
+  endif
+-%}
+
+<li class="rc-up-card">
+  <a class="rc-up-card__media" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+    {%- if product.featured_image -%}
+      {%- assign image_alt = product.featured_image.alt | default: product.title -%}
+      {{
+        product.featured_image
+        | image_url: width: 240
+        | image_tag: loading: 'lazy', sizes: '96px', alt: image_alt
+      }}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'rc-up-card__placeholder' }}
+    {%- endif -%}
+  </a>
+
+  <div class="rc-up-card__info">
+    {%- if reason != blank -%}
+      <span class="rc-up-card__reason">
+        {%- if reason_is_vehicle -%}
+          {% render 'rc-icon', name: 'car', size: 12 %} Per {{ reason }}
+        {%- else -%}
+          {% render 'rc-icon', name: 'plus', size: 12 %} Si abbina a {{ reason | truncate: 26 }}
+        {%- endif -%}
+      </span>
+    {%- endif -%}
+
+    <a class="rc-up-card__title" href="{{ product.url }}">{{ product.title }}</a>
+
+    <span class="rc-up-card__price" data-rc-price>
+      {%- if variant.compare_at_price > variant.price -%}
+        <s>{{ variant.compare_at_price | money }}</s>
+      {%- endif -%}
+      <span>{{ variant.price | money }}</span>
+    </span>
+
+    <div class="rc-up-card__actions">
+      {%- if show_picker -%}
+        <select class="rc-up-card__variant" data-rc-variant aria-label="Variante di {{ product.title | escape }}">
+          {%- for v in available_variants -%}
+            <option
+              value="{{ v.id }}"
+              data-price="{{ v.price }}"
+              data-compare="{{ v.compare_at_price | default: 0 }}"
+              {% if v.id == variant.id %}
+                selected
+              {% endif %}
+            >
+              {{- v.title -}}
+            </option>
+          {%- endfor -%}
+        </select>
+      {%- endif -%}
+      <button
+        type="button"
+        class="rc-up-card__add"
+        data-rc-add
+        data-variant-id="{{ variant.id }}"
+        aria-label="Aggiungi {{ product.title | escape }} al carrello"
+      >
+        <span class="rc-up-card__add-icon">{% render 'rc-icon', name: 'plus', size: 16 %}</span>
+        <span class="rc-up-card__add-label">Aggiungi</span>
+        <span class="rc-up-card__added-label">Aggiunto</span>
+      </button>
+    </div>
+  </div>
+</li>
+
+{% stylesheet %}
+  .rc-up-card {
+    --rc-accent: #ff5a1f;
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    padding: 10px;
+    border-radius: 16px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.09);
+    background: var(--color-background);
+    scroll-snap-align: start;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .rc-up-card:hover {
+    border-color: rgb(var(--color-foreground-rgb) / 0.2);
+    box-shadow: 0 10px 24px -18px rgb(0 0 0 / 0.4);
+  }
+
+  .rc-up-card__media {
+    display: block;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 12px;
+    background: rgb(var(--color-foreground-rgb) / 0.04);
+  }
+
+  .rc-up-card__media img,
+  .rc-up-card__placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.4s;
+  }
+
+  .rc-up-card:hover .rc-up-card__media img {
+    transform: scale(1.05);
+  }
+
+  .rc-up-card__info {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .rc-up-card__reason {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--rc-accent);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rc-up-card__reason .rc-icon {
+    flex: none;
+  }
+
+  .rc-up-card__title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .rc-up-card__price {
+    display: inline-flex;
+    gap: 6px;
+    align-items: baseline;
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+
+  .rc-up-card__price s {
+    font-weight: 400;
+    opacity: 0.5;
+    font-size: 0.8rem;
+  }
+
+  .rc-up-card__actions {
+    display: flex;
+    gap: 6px;
+    margin-block-start: 2px;
+  }
+
+  .rc-up-card__variant {
+    flex: 1;
+    min-width: 0;
+    height: 34px;
+    padding: 0 8px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.15);
+    border-radius: 10px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.8rem;
+  }
+
+  .rc-up-card__add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--color-foreground);
+    color: var(--color-background);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .rc-up-card__add:hover {
+    background: var(--rc-accent);
+    color: #fff;
+  }
+
+  .rc-up-card__add:active {
+    transform: scale(0.97);
+  }
+
+  .rc-up-card__add[aria-busy='true'] {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .rc-up-card__add[aria-busy='true'] .rc-up-card__add-icon {
+    animation: rc-spin-btn 0.8s linear infinite;
+  }
+
+  @keyframes rc-spin-btn {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .rc-up-card__added-label,
+  .rc-up-card__add.is-added .rc-up-card__add-label {
+    display: none;
+  }
+
+  .rc-up-card__add.is-added {
+    background: #16a34a;
+    color: #fff;
+  }
+
+  .rc-up-card__add.is-added .rc-up-card__added-label {
+    display: inline;
+  }
+{% endstylesheet %}

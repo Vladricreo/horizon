@@ -1,0 +1,462 @@
+{%- comment -%}
+  Ricreo · Griglia categorie a icone (layout bento).
+  Ogni blocco è una categoria con icona, conteggio prodotti e colore d'accento.
+{%- endcomment -%}
+
+<div class="section section--page-width rc-cats-section">
+  <div
+    class="rc-cats"
+    style="--rc-accent: {{ section.settings.accent }}; --rc-pad-top: {{ section.settings.padding_top }}px; --rc-pad-bottom: {{ section.settings.padding_bottom }}px;"
+  >
+    {%- if section.settings.heading != blank or section.settings.link_label != blank -%}
+      <header class="rc-cats__header">
+        <div>
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="rc-kicker">{{ section.settings.eyebrow }}</p>
+          {%- endif -%}
+          {%- if section.settings.heading != blank -%}
+            <h2 class="rc-cats__title">{{ section.settings.heading }}</h2>
+          {%- endif -%}
+        </div>
+        {%- if section.settings.link_label != blank -%}
+          <a class="rc-link" href="{{ section.settings.link_url | default: routes.collections_url }}">
+            {{ section.settings.link_label }}
+            {% render 'rc-icon', name: 'arrow-right', size: 16 %}
+          </a>
+        {%- endif -%}
+      </header>
+    {%- endif -%}
+
+    <ul class="rc-cats__grid rc-cats__grid--{{ section.blocks.size | at_most: 8 }}" role="list">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign collection = block.settings.collection
+          assign url = block.settings.link
+          if collection != blank
+            assign url = collection.url
+          endif
+          assign title = block.settings.title | default: collection.title
+        -%}
+        <li class="rc-cat" style="--rc-cat-hue: {{ block.settings.tint }};" {{ block.shopify_attributes }}>
+          <a class="rc-cat__link" href="{{ url | default: routes.all_products_collection_url }}">
+            <span class="rc-cat__art" aria-hidden="true">
+              {%- if block.settings.image != blank -%}
+                {{ block.settings.image | image_url: width: 600 | image_tag: loading: 'lazy', class: 'rc-cat__img', sizes: '(min-width: 990px) 25vw, 50vw' }}
+              {%- else -%}
+                <span class="rc-cat__ring"></span>
+                <span class="rc-cat__mark">{% render 'rc-icon', name: block.settings.icon, size: 160 %}</span>
+                <span class="rc-cat__icon">{% render 'rc-icon', name: block.settings.icon, size: 34 %}</span>
+              {%- endif -%}
+            </span>
+            <span class="rc-cat__body">
+              <span class="rc-cat__name">{{ title }}</span>
+              {%- if block.settings.subtitle != blank -%}
+                <span class="rc-cat__sub">{{ block.settings.subtitle }}</span>
+              {%- elsif collection != blank and collection.products_count > 0 -%}
+                <span class="rc-cat__sub">{{ collection.products_count }} prodotti</span>
+              {%- endif -%}
+            </span>
+            <span class="rc-cat__arrow">{% render 'rc-icon', name: 'arrow-right', size: 18 %}</span>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</div>
+
+{% stylesheet %}
+  .rc-cats {
+    padding-block: var(--rc-pad-top) var(--rc-pad-bottom);
+  }
+
+  .rc-kicker {
+    margin: 0 0 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rc-accent, currentColor);
+  }
+
+  .rc-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .rc-link:hover {
+    color: var(--rc-accent);
+  }
+
+  .rc-cats__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-block-end: 28px;
+  }
+
+  .rc-cats__title {
+    margin: 0;
+    font-size: clamp(1.7rem, 3vw, 2.5rem);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  .rc-cats__grid {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Odd counts on mobile: the first card goes full width so rows stay even. */
+  .rc-cats__grid--3 .rc-cat:first-child,
+  .rc-cats__grid--5 .rc-cat:first-child,
+  .rc-cats__grid--7 .rc-cat:first-child {
+    grid-column: span 2;
+  }
+
+  @media screen and (min-width: 750px) {
+    .rc-cats__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-auto-rows: minmax(170px, auto);
+    }
+
+    .rc-cats__grid--3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .rc-cats__grid--3 .rc-cat:first-child {
+      grid-column: auto;
+    }
+
+    .rc-cats__grid--5 .rc-cat:first-child,
+    .rc-cats__grid--6 .rc-cat:first-child,
+    .rc-cats__grid--7 .rc-cat:first-child {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+
+    .rc-cats__grid--6 .rc-cat:nth-child(6) {
+      grid-column: 1 / -1;
+    }
+
+    .rc-cats__grid--7 .rc-cat:nth-child(n + 6) {
+      grid-column: span 2;
+    }
+  }
+
+  .rc-cat {
+    --rc-tint: hsl(var(--rc-cat-hue, 18) 90% 55%);
+    min-width: 0;
+  }
+
+  .rc-cat__link {
+    position: relative;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    height: 100%;
+    min-height: 160px;
+    padding: 18px;
+    overflow: hidden;
+    border-radius: 22px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    background:
+      radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--rc-tint) 22%, transparent), transparent 60%),
+      rgb(var(--color-foreground-rgb) / 0.03);
+    color: var(--color-foreground);
+    text-decoration: none;
+    isolation: isolate;
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.35s, border-color 0.35s;
+  }
+
+  .rc-cat__link:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--rc-tint) 45%, transparent);
+    box-shadow: 0 24px 40px -24px color-mix(in srgb, var(--rc-tint) 70%, transparent);
+  }
+
+  .rc-cat__art {
+    position: relative;
+    display: grid;
+    place-items: start;
+  }
+
+  .rc-cat__img {
+    position: absolute;
+    inset: -18px -18px auto auto;
+    width: 70%;
+    height: auto;
+    object-fit: contain;
+    z-index: -1;
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .rc-cat__link:hover .rc-cat__img {
+    transform: scale(1.06) rotate(-2deg);
+  }
+
+  .rc-cat__icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 62px;
+    border-radius: 18px;
+    background: var(--rc-tint);
+    color: #fff;
+    box-shadow: 0 12px 24px -12px var(--rc-tint);
+    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1.4);
+  }
+
+  .rc-cat__link:hover .rc-cat__icon {
+    transform: rotate(-8deg) scale(1.08);
+  }
+
+  .rc-cat__ring {
+    position: absolute;
+    inset-inline-end: -50px;
+    inset-block-start: -50px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 1px dashed color-mix(in srgb, var(--rc-tint) 40%, transparent);
+    animation: rc-ring-spin 30s linear infinite;
+  }
+
+  @keyframes rc-ring-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .rc-cat__mark {
+    position: absolute;
+    inset-inline-end: -14px;
+    inset-block-start: 6px;
+    color: var(--rc-tint);
+    opacity: 0.12;
+    transform: rotate(-12deg);
+    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.4s;
+    pointer-events: none;
+  }
+
+  .rc-cat__mark .rc-icon {
+    width: 96px;
+    height: 96px;
+    stroke-width: 1.25;
+  }
+
+  .rc-cat:first-child .rc-cat__mark .rc-icon {
+    width: 220px;
+    height: 220px;
+  }
+
+  .rc-cat__link:hover .rc-cat__mark {
+    opacity: 0.2;
+    transform: rotate(0deg) scale(1.06);
+  }
+
+  .rc-cat:first-child .rc-cat__icon {
+    width: 76px;
+    height: 76px;
+  }
+
+  .rc-cat__body {
+    display: grid;
+    gap: 4px;
+    padding-inline-end: 36px;
+    margin-block-start: 22px;
+  }
+
+  .rc-cat__name {
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1.2;
+  }
+
+  .rc-cat:first-child .rc-cat__name {
+    font-size: clamp(1.1rem, 2vw, 1.6rem);
+  }
+
+  .rc-cat__sub {
+    font-size: 0.86rem;
+    opacity: 0.65;
+  }
+
+  .rc-cat__arrow {
+    position: absolute;
+    inset-inline-end: 16px;
+    inset-block-end: 16px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgb(var(--color-foreground-rgb) / 0.06);
+    transition: background 0.3s, color 0.3s, transform 0.3s;
+  }
+
+  .rc-cat__link:hover .rc-cat__arrow {
+    background: var(--rc-tint);
+    color: #fff;
+    transform: translateX(2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rc-cat__ring {
+      animation: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ricreo · Categorie",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Etichetta",
+      "default": "Categorie"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titolo",
+      "default": "Cosa stai cercando?"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Testo link",
+      "default": "Tutte le categorie"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Link"
+    },
+    {
+      "type": "color",
+      "id": "accent",
+      "label": "Colore d'accento",
+      "default": "#FF5A1F"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Spaziatura superiore",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Spaziatura inferiore",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Categoria",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collezione"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link alternativo"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titolo",
+          "info": "Se vuoto usa il nome della collezione."
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Sottotitolo",
+          "info": "Se vuoto mostra il numero di prodotti."
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icona",
+          "options": [
+            { "value": "wrench", "label": "Chiave" },
+            { "value": "disc", "label": "Freni" },
+            { "value": "bulb", "label": "Luci" },
+            { "value": "engine", "label": "Motore" },
+            { "value": "drop", "label": "Olio / liquidi" },
+            { "value": "seat", "label": "Interni" },
+            { "value": "sparkle", "label": "Detailing" },
+            { "value": "spray", "label": "Pulizia" },
+            { "value": "palette", "label": "Estetica" },
+            { "value": "wheel", "label": "Ruote" },
+            { "value": "exhaust", "label": "Scarichi" },
+            { "value": "mirror", "label": "Specchietti" },
+            { "value": "bolt", "label": "Elettronica" },
+            { "value": "gear", "label": "Meccanica" },
+            { "value": "car", "label": "Auto" },
+            { "value": "gift", "label": "Regali" }
+          ],
+          "default": "wrench"
+        },
+        {
+          "type": "range",
+          "id": "tint",
+          "label": "Tonalità colore",
+          "min": 0,
+          "max": 359,
+          "step": 1,
+          "default": 18
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Immagine (opzionale)",
+          "info": "PNG scontornato consigliato. Se vuoto viene mostrata l'icona."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ricreo · Categorie",
+      "category": "Ricreo",
+      "blocks": [
+        { "type": "category", "settings": { "title": "Ricambi", "subtitle": "Freni, filtri, sospensioni e molto altro", "icon": "wrench", "tint": 18 } },
+        { "type": "category", "settings": { "title": "Illuminazione", "icon": "bulb", "tint": 45 } },
+        { "type": "category", "settings": { "title": "Detailing", "icon": "sparkle", "tint": 200 } },
+        { "type": "category", "settings": { "title": "Interni", "icon": "seat", "tint": 265 } },
+        { "type": "category", "settings": { "title": "Estetica", "icon": "palette", "tint": 330 } },
+        { "type": "category", "settings": { "title": "Olio & liquidi", "icon": "drop", "tint": 150 } }
+      ]
+    }
+  ]
+}
+{% endschema %}

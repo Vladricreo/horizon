@@ -1,0 +1,62 @@
+{%- comment -%} Ricreo · singolo punto per "Punti chiave" (blocco privato). {%- endcomment -%}
+<li class="rc-points__item" {{ block.shopify_attributes }}>
+  <span class="rc-points__icon">{% render 'rc-icon', name: block.settings.icon, size: 20 %}</span>
+  <span class="rc-points__text">
+    {%- if block.settings.text != blank -%}
+      <strong>{{ block.settings.title }}</strong>
+      <span>{{ block.settings.text }}</span>
+    {%- else -%}
+      <span class="rc-points__single">{{ block.settings.title }}</span>
+    {%- endif -%}
+  </span>
+</li>
+
+{% schema %}
+{
+  "name": "Punto",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icona",
+      "options": [
+        { "value": "check", "label": "Spunta" },
+        { "value": "car", "label": "Auto / compatibilità" },
+        { "value": "wrench", "label": "Montaggio" },
+        { "value": "shield", "label": "Garanzia" },
+        { "value": "truck", "label": "Spedizione" },
+        { "value": "bulb", "label": "Luce / LED" },
+        { "value": "layers", "label": "Materiale" },
+        { "value": "disc", "label": "Freni" },
+        { "value": "drop", "label": "Liquidi / impermeabile" },
+        { "value": "sparkle", "label": "Brillantezza" },
+        { "value": "spray", "label": "Pulizia" },
+        { "value": "bolt", "label": "Prestazioni" },
+        { "value": "sun", "label": "Anti UV" },
+        { "value": "ruler", "label": "Misure" },
+        { "value": "leaf", "label": "Ecologico" },
+        { "value": "seat", "label": "Interni" },
+        { "value": "wheel", "label": "Ruote" },
+        { "value": "engine", "label": "Motore" },
+        { "value": "palette", "label": "Colore" },
+        { "value": "star", "label": "Stella" },
+        { "value": "tag", "label": "Prezzo" },
+        { "value": "gift", "label": "Regalo" }
+      ],
+      "default": "check"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Titolo",
+      "default": "Montaggio semplice"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Dettaglio"
+    }
+  ]
+}
+{% endschema %}
