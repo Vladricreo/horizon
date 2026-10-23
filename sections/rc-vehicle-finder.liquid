@@ -9,15 +9,12 @@
 {%- liquid
   assign show = true
   if template.name == 'collection' and section.settings.only_collections != blank
+    assign allowed = section.settings.only_collections | remove: ' ' | prepend: ',' | append: ','
+    assign current = collection.handle | prepend: ',' | append: ','
     assign show = false
-    assign allowed = section.settings.only_collections | split: ','
-    for entry in allowed
-      assign allowed_handle = entry | strip
-      if allowed_handle == collection.handle
-        assign show = true
-        break
-      endif
-    endfor
+    if allowed contains current
+      assign show = true
+    endif
   endif
 -%}
 
