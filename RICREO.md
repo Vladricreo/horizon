@@ -9,7 +9,7 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 | --- | --- | --- |
 | Hero con ricerca su tutto il catalogo (nome, modello, codice ricambio), chip "Più cercati", link ai ricambi auto, griglia di icone (solo desktop) | `sections/rc-hero-search.liquid` | Homepage |
 | Griglia categorie a icone | `sections/rc-category-grid.liquid` | Homepage |
-| Cerca per veicolo (marca/modello) che ricorda l'auto | `sections/rc-vehicle-finder.liquid`, `assets/rc-garage.js` | Solo template collezione **auto** |
+| Cerca per veicolo (marca/modello) che ricorda l'auto | `sections/rc-vehicle-finder.liquid`, `assets/rc-garage.js` | Collezioni auto e microcar |
 | Punti di forza / Come funziona (3 stili) | `sections/rc-features.liquid` | Homepage, ovunque |
 | Punti chiave con icone automatiche | `blocks/rc-feature-list.liquid`, `blocks/_rc-feature.liquid` | Pagina prodotto |
 | "Spesso acquistati insieme" basato su prodotto **e** carrello | `blocks/rc-bundle.liquid`, `snippets/rc-bundle-row.liquid` | Pagina prodotto |
@@ -36,10 +36,11 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 
 ## Categorie e collezioni
 
-La homepage punta a queste collezioni (da creare in Shopify con questi handle esatti):
-`casa-cucina`, `auto`, `microcar`, `camper`, `moto`, `giardino`, `tech`, `fai-da-te`.
-Alle collezioni **auto** e **microcar** assegna il template `auto` (Prodotti → Collezioni → collezione →
-Modello tema): mostra *Ricreo · Cerca veicolo* sopra i prodotti.
+La homepage punta a queste collezioni Shopify:
+`casa-cucina`, `auto`, `microcar`, `camper-nautica`, `moto`, `giardino-trappole`, `tech-scrivania`,
+`fai-da-te-design` (create il 24/10/2026; Microcar contiene i 9 prodotti microcar).
+*Ricreo · Cerca veicolo* è nel template collezione standard e compare solo nelle collezioni elencate
+nella sua impostazione "Mostra solo nelle collezioni" (oggi `auto, microcar`).
 
 ## Come si configurano i dati
 
@@ -76,7 +77,7 @@ Modello tema): mostra *Ricreo · Cerca veicolo* sopra i prodotti.
    {%- render 'rc-global' -%}
    ```
 4. `templates/index.json`, `templates/product.json`, `templates/cart.json`, `templates/collection.json`,
-   `templates/collection.auto.json`, `templates/search.json`, `sections/header-group.json` — configurazione del negozio
+   `templates/search.json`, `sections/header-group.json` — configurazione del negozio
    (sezioni e blocchi Ricreo). Sono dati, non codice: in caso di conflitto tieni la nostra versione.
 
 ## Aggiornare Horizon

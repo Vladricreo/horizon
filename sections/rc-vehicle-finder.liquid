@@ -1,10 +1,27 @@
 {%- comment -%}
   Ricreo · Cerca per veicolo.
-  Pensata per le categorie auto/microcar (template collezione "auto"): marca e modello,
-  ricorda il veicolo nel browser e porta alla ricerca dei ricambi compatibili.
+  Pensata per le categorie auto/microcar: marca e modello, ricorda il veicolo nel browser
+  e porta alla ricerca dei ricambi compatibili. Nel template collezione compare solo nelle
+  collezioni elencate in "Mostra solo nelle collezioni".
   I badge "Compatibile con la tua …" su schede e prodotti usano lo stesso veicolo.
 {%- endcomment -%}
 
+{%- liquid
+  assign show = true
+  if template.name == 'collection' and section.settings.only_collections != blank
+    assign show = false
+    assign allowed = section.settings.only_collections | split: ','
+    for handle in allowed
+      assign handle = handle | strip
+      if handle == collection.handle
+        assign show = true
+        break
+      endif
+    endfor
+  endif
+-%}
+
+{%- if show -%}
 {%- liquid
   assign uid = section.id | handleize
   capture vehicles_json
@@ -88,6 +105,7 @@
     </div>
   </rc-vehicle-finder>
 </div>
+{%- endif -%}
 
 {% stylesheet %}
   .rc-vf {
@@ -302,6 +320,13 @@
       "id": "button_label",
       "label": "Testo pulsante",
       "default": "Trova ricambi"
+    },
+    {
+      "type": "text",
+      "id": "only_collections",
+      "label": "Mostra solo nelle collezioni",
+      "info": "Handle separati da virgola (es. auto, microcar). Vuoto = sempre.",
+      "default": "auto, microcar"
     },
     {
       "type": "checkbox",

@@ -117,7 +117,7 @@
             "subtitle": "Frigo Dometic, oblò, finestre, barca",
             "icon": "van",
             "tint": 200,
-            "link": "/collections/camper"
+            "link": "/collections/camper-nautica"
           }
         },
         "c5": {
@@ -137,7 +137,7 @@
             "subtitle": "Trappole insetti, mobili da giardino, robot",
             "icon": "bug",
             "tint": 100,
-            "link": "/collections/giardino"
+            "link": "/collections/giardino-trappole"
           }
         },
         "c7": {
@@ -147,7 +147,7 @@
             "subtitle": "Stream Deck, console, Mac mini, cuffie",
             "icon": "monitor",
             "tint": 230,
-            "link": "/collections/tech"
+            "link": "/collections/tech-scrivania"
           }
         },
         "c8": {
@@ -157,7 +157,7 @@
             "subtitle": "Utensili, plotter, termostati, oggetti di design",
             "icon": "ruler",
             "tint": 330,
-            "link": "/collections/fai-da-te"
+            "link": "/collections/fai-da-te-design"
           }
         }
       },
