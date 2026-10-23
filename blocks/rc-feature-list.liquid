@@ -3,7 +3,7 @@
 
   Fonte dei punti, in ordine di priorità quando "Automatico":
   1. Metafield prodotto `custom.punti_chiave` (lista di testo a riga singola)
-  2. Elenco puntato (<li>) nella descrizione del prodotto
+  2. Il primo elenco puntato (<ul>) nella descrizione del prodotto
   3. Blocchi manuali "Punto"
 
   Ogni punto può essere scritto come "Titolo: dettaglio". L'icona viene scelta in automatico
@@ -22,7 +22,12 @@
     if metafield_items != blank
       assign items = metafield_items
     elsif product.description contains '<li'
-      assign li_chunks = product.description | split: '<li'
+      # Only the first list: Ricreo · Descrizione hides exactly that one, so nothing is repeated.
+      assign first_list = product.description
+      if first_list contains '<ul'
+        assign first_list = first_list | split: '<ul' | slice: 1, 1 | first | split: '</ul>' | first
+      endif
+      assign li_chunks = first_list | split: '<li'
       assign parsed = ''
       for chunk in li_chunks offset: 1
         assign chunk_parts = chunk | split: '>'

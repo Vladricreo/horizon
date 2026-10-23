@@ -13,6 +13,7 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 | Cerca per veicolo (marca/modello) che ricorda l'auto | `sections/rc-vehicle-finder.liquid`, `assets/rc-garage.js` | Collezioni auto e microcar |
 | Punti di forza / Come funziona (3 stili) | `sections/rc-features.liquid` | Homepage, ovunque |
 | Punti chiave con icone automatiche | `blocks/rc-feature-list.liquid`, `blocks/_rc-feature.liquid` | Pagina prodotto |
+| Descrizione: introduzione + sezioni a fisarmonica per ogni titolo, senza ripetere i punti chiave | `blocks/rc-description.liquid` | Pagina prodotto |
 | "Spesso acquistati insieme" basato su prodotto **e** carrello | `blocks/rc-bundle.liquid`, `snippets/rc-bundle-row.liquid` | Pagina prodotto |
 | Upsell nel carrello + barra spedizione gratuita | `snippets/rc-cart-upsell.liquid`, `snippets/rc-upsell-card.liquid`, `sections/rc-cart-upsell.liquid` | Drawer e pagina carrello |
 | Logica aggiunta al carrello / bundle, barra spedizione animata (`<rc-ship-bar>`) | `assets/rc-upsell.js` | — |
@@ -65,7 +66,7 @@ nella sua impostazione "Mostra solo nelle collezioni" (oggi `auto, microcar`).
   dell'app Shopify **Search & Discovery**. Se non c'è nulla si usa la collezione di riserva
   (Impostazioni tema → *Ricreo · Upsell carrello*).
 - **Punti chiave con icone**: metafield `custom.punti_chiave` (*Lista di testo a riga singola*)
-  oppure un normale elenco puntato nella descrizione prodotto.
+  oppure il primo elenco puntato della descrizione prodotto (che il blocco *Ricreo · Descrizione* poi non ripete).
   - `Titolo: dettaglio` → titolo in grassetto + dettaglio.
   - L'icona è scelta dalle parole chiave (garanzia → scudo, LED → lampadina, montaggio → chiave…).
   - Per forzarla: `[shield] Garanzia 2 anni`. Icone: `car wrench shield truck bulb layers disc drop
