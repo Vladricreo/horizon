@@ -46,15 +46,31 @@ function shortLabel(vehicle) {
   return vehicle.model || vehicle.brand;
 }
 
+/** @param {string} value */
+function words(value) {
+  return handleize(value)
+    .split('-')
+    .filter((word) => word.length > 1);
+}
+
 /**
  * Same tag convention as the cart upsell: a product tagged `volkswagen-golf-7` (or a broader
  * `volkswagen-golf`, or brand-only `volkswagen`) fits a saved Volkswagen Golf 7.
+ * Untagged products fall back to the title ("… per Citroën Ami, Opel Rocks-e e Fiat Topolino"):
+ * every word of brand and model must appear in it.
  * @param {string[]} tags - handleized product tags
  * @param {Vehicle} vehicle
+ * @param {string} [title]
  * @returns {'match' | 'universal' | null}
  */
-function compatibility(tags, vehicle) {
+function compatibility(tags, vehicle, title = '') {
   if (tags.some((tag) => UNIVERSAL_TAGS.includes(tag))) return 'universal';
+
+  if (title && vehicle.model) {
+    const titleWords = new Set(words(title));
+    const needed = [...words(vehicle.brand), ...words(vehicle.model)];
+    if (needed.length && needed.every((word) => titleWords.has(word))) return 'match';
+  }
 
   const brand = handleize(vehicle.brand);
   if (!brand) return null;
@@ -110,7 +126,7 @@ class RcCompat extends HTMLElement {
     const isCard = this.dataset.context === 'card';
     const finderUrl = this.dataset.finderUrl || '/#rc-finder';
     const tags = (this.dataset.tags || '').split('|').map(handleize).filter(Boolean);
-    const state = vehicle ? compatibility(tags, vehicle) : null;
+    const state = vehicle ? compatibility(tags, vehicle, this.dataset.title) : null;
     const name = vehicle ? escapeHtml(shortLabel(vehicle)) : '';
 
     let html = '';

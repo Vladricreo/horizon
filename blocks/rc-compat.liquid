@@ -14,6 +14,7 @@
   <rc-compat
     data-context="product"
     data-tags="{{ product.tags | join: '|' | escape }}"
+    data-title="{{ product.title | escape }}"
     data-finder-url="{{ finder_url }}"
     {{ block.shopify_attributes }}
   ></rc-compat>

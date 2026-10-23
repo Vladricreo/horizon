@@ -155,7 +155,7 @@
               "type": "custom-liquid",
               "name": "Ricreo · Compatibilità",
               "settings": {
-                "custom_liquid": "<rc-compat data-context=\"card\" data-tags=\"{{ closest.product.tags | join: '|' | escape }}\" hidden></rc-compat>"
+                "custom_liquid": "<rc-compat data-context=\"card\" data-tags=\"{{ closest.product.tags | join: '|' | escape }}\" data-title=\"{{ closest.product.title | escape }}\" hidden></rc-compat>"
               },
               "blocks": {}
             }
