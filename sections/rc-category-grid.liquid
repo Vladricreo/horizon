@@ -324,6 +324,63 @@
     transform: translateX(2px);
   }
 
+  /* Phones: compact two-column tiles, name and icon only. */
+  @media screen and (max-width: 749px) {
+    .rc-cats {
+      padding-block: min(var(--rc-pad-top), 40px) min(var(--rc-pad-bottom), 40px);
+    }
+
+    .rc-cats__header {
+      margin-block-end: 16px;
+    }
+
+    .rc-cats__grid {
+      gap: 10px;
+    }
+
+    .rc-cat__link {
+      min-height: 0;
+      padding: 14px;
+      border-radius: 18px;
+      grid-template-rows: auto auto;
+    }
+
+    .rc-cat__icon,
+    .rc-cat:first-child .rc-cat__icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+    }
+
+    .rc-cat__icon .rc-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .rc-cat__mark,
+    .rc-cat__ring,
+    .rc-cat__sub {
+      display: none;
+    }
+
+    .rc-cat__body {
+      margin-block-start: 12px;
+      padding-inline-end: 30px;
+    }
+
+    .rc-cat__name,
+    .rc-cat:first-child .rc-cat__name {
+      font-size: 0.95rem;
+    }
+
+    .rc-cat__arrow {
+      inset-inline-end: 10px;
+      inset-block-end: 12px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .rc-cat__ring {
       animation: none;
@@ -436,6 +493,13 @@
             { "value": "bolt", "label": "Elettronica" },
             { "value": "gear", "label": "Meccanica" },
             { "value": "car", "label": "Auto" },
+            { "value": "scooter", "label": "Moto" },
+            { "value": "van", "label": "Camper" },
+            { "value": "home", "label": "Casa" },
+            { "value": "bug", "label": "Trappole / insetti" },
+            { "value": "leaf", "label": "Giardino" },
+            { "value": "monitor", "label": "Tech / scrivania" },
+            { "value": "ruler", "label": "Fai da te / design" },
             { "value": "gift", "label": "Regali" }
           ],
           "default": "wrench"

@@ -141,16 +141,93 @@
     border-radius: 50%;
   }
 
+  /* Phones: one swipeable row of short chips instead of a tall 2x2 grid. */
   @media screen and (max-width: 749px) {
+    .rc-feat {
+      padding-block: min(var(--rc-pad-top), 40px) min(var(--rc-pad-bottom), 40px);
+    }
+
+    .rc-feat--bar {
+      padding-block: 12px;
+    }
+
+    .rc-feat--bar .rc-feat__inner {
+      padding-inline: 0;
+    }
+
     .rc-feat--bar .rc-feat__list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px 12px;
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: max-content;
+      gap: 8px;
+      overflow-x: auto;
+      padding-inline: var(--page-margin, 16px);
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+    }
+
+    .rc-feat--bar .rc-feat__list::-webkit-scrollbar {
+      display: none;
     }
 
     .rc-feat--bar .rc-feat__item {
-      flex-direction: column;
-      align-items: flex-start;
       gap: 8px;
+      padding: 6px 12px 6px 6px;
+      border-radius: 999px;
+      background: var(--color-background);
+      border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+      scroll-snap-align: start;
+    }
+
+    .rc-feat--bar .rc-feat__icon {
+      width: 30px;
+      height: 30px;
+    }
+
+    .rc-feat--bar .rc-feat__icon .rc-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    .rc-feat--bar .rc-feat__text {
+      padding: 0;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .rc-feat--bar .rc-feat__text strong {
+      font-size: 0.85rem;
+    }
+
+    .rc-feat--bar .rc-feat__text span {
+      display: none;
+    }
+
+    .rc-feat__header {
+      margin-block-end: 18px;
+    }
+
+    /* Steps become compact rows: icon left, text right. */
+    .rc-feat--steps .rc-feat__list {
+      gap: 16px;
+    }
+
+    .rc-feat--steps .rc-feat__item {
+      flex-direction: row;
+      align-items: center;
+      text-align: start;
+      gap: 14px;
+    }
+
+    .rc-feat--steps .rc-feat__icon {
+      width: 52px;
+      height: 52px;
+    }
+
+    .rc-feat--steps .rc-feat__num {
+      width: 20px;
+      height: 20px;
+      font-size: 0.7rem;
     }
   }
 

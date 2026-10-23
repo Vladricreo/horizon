@@ -291,9 +291,7 @@
             },
             "rc_compat": {
               "type": "rc-compat",
-              "settings": {
-                "finder_url": ""
-              },
+              "settings": {},
               "blocks": {}
             }
           },

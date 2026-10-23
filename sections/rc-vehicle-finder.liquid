@@ -1,0 +1,360 @@
+{%- comment -%}
+  Ricreo · Cerca per veicolo.
+  Pensata per le categorie auto/microcar (template collezione "auto"): marca e modello,
+  ricorda il veicolo nel browser e porta alla ricerca dei ricambi compatibili.
+  I badge "Compatibile con la tua …" su schede e prodotti usano lo stesso veicolo.
+{%- endcomment -%}
+
+{%- liquid
+  assign uid = section.id | handleize
+  capture vehicles_json
+    echo '['
+    for block in section.blocks
+      if block.type != 'vehicle' or block.settings.brand == blank
+        continue
+      endif
+      assign models = block.settings.models | newline_to_br | split: '<br />'
+      assign clean = ''
+      for model in models
+        assign name = model | strip
+        if name != blank
+          assign clean = clean | append: '|' | append: name
+        endif
+      endfor
+      assign clean = clean | remove_first: '|' | split: '|'
+      assign brand_json = block.settings.brand | strip | json
+      assign models_json = clean | json
+      unless forloop.first
+        echo ','
+      endunless
+      echo '{"brand":' | append: brand_json | append: ',"models":' | append: models_json | append: '}'
+    endfor
+    echo ']'
+  endcapture
+-%}
+
+<script src="{{ 'rc-garage.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+<div class="section section--page-width rc-vf-section">
+  <rc-vehicle-finder
+    class="rc-vf"
+    data-search-url="{{ routes.search_url }}"
+    data-cart-update-url="{{ routes.cart_update_url }}.js"
+    data-save-to-cart="{{ section.settings.save_vehicle_to_cart }}"
+    style="--rc-pad-top: {{ section.settings.padding_top }}px; --rc-pad-bottom: {{ section.settings.padding_bottom }}px;"
+  >
+    <script type="application/json" data-rc-vehicles>{{ vehicles_json }}</script>
+
+    <div class="rc-vf__card">
+      <div class="rc-vf__saved" data-rc-vf-saved hidden>
+        <span class="rc-vf__badge" aria-hidden="true">{% render 'rc-icon', name: 'car', size: 20 %}</span>
+        <p class="rc-vf__saved-text">
+          <span>La tua auto</span>
+          <strong data-rc-vf-label></strong>
+        </p>
+        <div class="rc-vf__saved-actions">
+          <a class="rc-vf__go" href="{{ routes.search_url }}" data-rc-vf-go>Vedi i ricambi</a>
+          <button type="button" class="rc-vf__ghost" data-rc-vf-change>Cambia</button>
+          <button type="button" class="rc-vf__icon-btn" data-rc-vf-clear aria-label="Rimuovi la tua auto">
+            {% render 'rc-icon', name: 'close', size: 16 %}
+          </button>
+        </div>
+      </div>
+
+      <form class="rc-vf__form" data-rc-vf-form>
+        <p class="rc-vf__title">
+          <span class="rc-vf__badge" aria-hidden="true">{% render 'rc-icon', name: 'car', size: 20 %}</span>
+          {{ section.settings.heading }}
+        </p>
+        <div class="rc-vf__fields">
+          <label class="rc-vf__field">
+            <span class="visually-hidden">Marca</span>
+            <select data-rc-vf-brand id="{{ uid }}-brand">
+              <option value="">Marca</option>
+            </select>
+          </label>
+          <label class="rc-vf__field">
+            <span class="visually-hidden">Modello</span>
+            <select data-rc-vf-model id="{{ uid }}-model" disabled>
+              <option value="">Modello</option>
+            </select>
+          </label>
+        </div>
+        <button class="rc-vf__submit" type="submit" data-rc-vf-submit disabled>
+          {{ section.settings.button_label }}
+          {% render 'rc-icon', name: 'arrow-right', size: 18 %}
+        </button>
+      </form>
+    </div>
+  </rc-vehicle-finder>
+</div>
+
+{% stylesheet %}
+  .rc-vf {
+    display: block;
+    padding-block: var(--rc-pad-top) var(--rc-pad-bottom);
+  }
+
+  .rc-vf__card {
+    padding: 14px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.1);
+    border-radius: 20px;
+    background: color-mix(in srgb, var(--rc-accent) 5%, var(--color-background));
+  }
+
+  .rc-vf__badge {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--rc-accent) 15%, transparent);
+    color: var(--rc-accent-ink, var(--rc-accent));
+  }
+
+  .rc-vf__form {
+    display: grid;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .rc-vf__form[hidden],
+  .rc-vf__saved[hidden] {
+    display: none;
+  }
+
+  .rc-vf__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .rc-vf__fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .rc-vf__field select {
+    width: 100%;
+    height: 48px;
+    padding: 0 36px 0 14px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.16);
+    border-radius: 12px;
+    background-color: var(--color-background);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23888' stroke-width='1.8' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    color: inherit;
+    font: inherit;
+    appearance: none;
+  }
+
+  .rc-vf__field select:disabled {
+    opacity: 0.55;
+  }
+
+  .rc-vf__field select:focus-visible {
+    outline: none;
+    border-color: var(--rc-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--rc-accent) 22%, transparent);
+  }
+
+  .rc-vf__submit,
+  .rc-vf__go {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 48px;
+    padding-inline: 20px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--rc-accent-ink, var(--rc-accent));
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .rc-vf__submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .rc-vf__saved {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .rc-vf__saved-text {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    line-height: 1.25;
+  }
+
+  .rc-vf__saved-text span {
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+
+  .rc-vf__saved-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rc-vf__go {
+    height: 42px;
+  }
+
+  .rc-vf__ghost {
+    height: 42px;
+    padding-inline: 14px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.16);
+    border-radius: 12px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .rc-vf__icon-btn {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    opacity: 0.6;
+    cursor: pointer;
+  }
+
+  .rc-vf__icon-btn:hover {
+    opacity: 1;
+    background: rgb(var(--color-foreground-rgb) / 0.06);
+  }
+
+  @media screen and (min-width: 750px) {
+    .rc-vf__card {
+      padding: 16px 18px;
+    }
+
+    .rc-vf__form {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 16px;
+    }
+
+    .rc-vf__fields {
+      min-width: 0;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .rc-vf {
+      padding-block: min(var(--rc-pad-top), 16px) min(var(--rc-pad-bottom), 8px);
+    }
+
+    .rc-vf__submit {
+      width: 100%;
+    }
+
+    .rc-vf__saved-actions {
+      width: 100%;
+    }
+
+    .rc-vf__go {
+      flex: 1;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ricreo · Cerca veicolo",
+  "tag": "section",
+  "class": "rc-vf-shopify-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titolo",
+      "default": "Trova i ricambi per il tuo veicolo"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Testo pulsante",
+      "default": "Trova ricambi"
+    },
+    {
+      "type": "checkbox",
+      "id": "save_vehicle_to_cart",
+      "label": "Salva il veicolo nell'ordine",
+      "info": "Aggiunge l'attributo carrello \"Veicolo\", visibile nell'ordine.",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Spaziatura superiore",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Spaziatura inferiore",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "vehicle",
+      "name": "Marca e modelli",
+      "settings": [
+        {
+          "type": "text",
+          "id": "brand",
+          "label": "Marca"
+        },
+        {
+          "type": "textarea",
+          "id": "models",
+          "label": "Modelli",
+          "info": "Uno per riga."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ricreo · Cerca veicolo",
+      "category": "Ricreo"
+    }
+  ]
+}
+{% endschema %}

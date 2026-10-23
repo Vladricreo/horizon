@@ -1,0 +1,552 @@
+{%- comment -%}
+  Ricreo · Hero con ricerca.
+  Una sola azione chiara per tutto il catalogo: cerca per nome, modello o codice ricambio.
+  Le ricerche popolari diventano chip; il link "ricambi auto" porta alla categoria con il finder veicolo.
+  A destra (solo desktop) una griglia decorativa di icone categoria.
+{%- endcomment -%}
+
+{%- liquid
+  assign uid = section.id | handleize
+  assign popular = section.settings.popular_searches | split: ','
+  assign art_icons = section.settings.art_icons | split: ','
+-%}
+
+<div class="section section--full-width rc-hs-section">
+  <div
+    class="rc-hs rc-hs--{{ section.settings.style }}"
+    style="--rc-pad-top: {{ section.settings.padding_top }}px; --rc-pad-bottom: {{ section.settings.padding_bottom }}px;"
+  >
+    <div class="rc-hs__inner{% if section.settings.show_art %} rc-hs__inner--art{% endif %}">
+      <div class="rc-hs__copy">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="rc-hs__eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <h1 class="rc-hs__title">{{ section.settings.heading }}</h1>
+        {%- endif -%}
+
+        {%- if section.settings.subheading != blank -%}
+          <p class="rc-hs__sub">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+
+        <form class="rc-hs__search" action="{{ routes.search_url }}" method="get" role="search">
+          <input type="hidden" name="type" value="product">
+          <input type="hidden" name="options[prefix]" value="last">
+          <label class="visually-hidden" for="{{ uid }}-q">{{ section.settings.placeholder }}</label>
+          {% render 'rc-icon', name: 'search', size: 20, class: 'rc-hs__search-icon' %}
+          <input
+            class="rc-hs__input"
+            id="{{ uid }}-q"
+            type="search"
+            name="q"
+            placeholder="{{ section.settings.placeholder | escape }}"
+            autocomplete="off"
+            enterkeyhint="search"
+          >
+          <button class="rc-hs__submit" type="submit">
+            <span>{{ section.settings.button_label }}</span>
+            {% render 'rc-icon', name: 'arrow-right', size: 18 %}
+          </button>
+        </form>
+
+        {%- if section.settings.popular_searches != blank -%}
+          <div class="rc-hs__chips">
+            {%- if section.settings.popular_label != blank -%}
+              <span class="rc-hs__chips-label">{{ section.settings.popular_label }}</span>
+            {%- endif -%}
+            {%- for term in popular -%}
+              {%- assign term = term | strip -%}
+              {%- if term != blank -%}
+                <a class="rc-hs__chip" href="{{ routes.search_url }}?q={{ term | url_encode }}&type=product">{{ term }}</a>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.auto_link_label != blank -%}
+          <a class="rc-hs__auto" href="{{ section.settings.auto_link_url | default: routes.collections_url }}">
+            <span class="rc-hs__auto-icon">{% render 'rc-icon', name: 'car', size: 18 %}</span>
+            <span>{{ section.settings.auto_link_label }}</span>
+            {% render 'rc-icon', name: 'arrow-right', size: 16 %}
+          </a>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.show_art -%}
+        <div class="rc-hs__art" aria-hidden="true">
+          {%- for name in art_icons limit: 8 -%}
+            {%- assign icon_name = name | strip -%}
+            {%- if forloop.index == 5 -%}
+              <span class="rc-hs__tile rc-hs__tile--center">?</span>
+            {%- endif -%}
+            <span class="rc-hs__tile" style="--rc-tile-hue: {{ forloop.index0 | times: 45 | plus: 15 }};">
+              {% render 'rc-icon', name: icon_name, size: 30 %}
+            </span>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .rc-hs {
+    --rc-hs-bg: color-mix(in srgb, var(--rc-accent) 5%, var(--color-background));
+    --rc-hs-text: var(--color-foreground);
+    --rc-hs-muted: rgb(var(--color-foreground-rgb) / 0.68);
+    --rc-hs-field: var(--color-background);
+    --rc-hs-border: rgb(var(--color-foreground-rgb) / 0.14);
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--rc-pad-top) var(--rc-pad-bottom);
+    background:
+      radial-gradient(60% 80% at 100% 0%, color-mix(in srgb, var(--rc-accent) 14%, transparent), transparent 70%),
+      var(--rc-hs-bg);
+    color: var(--rc-hs-text);
+  }
+
+  .rc-hs--dark {
+    --rc-hs-bg: #0f1218;
+    --rc-hs-text: #f5f7fa;
+    --rc-hs-muted: rgb(245 247 250 / 0.7);
+    --rc-hs-field: rgb(255 255 255 / 0.08);
+    --rc-hs-border: rgb(255 255 255 / 0.16);
+  }
+
+  .rc-hs__inner {
+    display: grid;
+    gap: 40px;
+    align-items: center;
+    max-width: var(--page-width, 1400px);
+    margin-inline: auto;
+    padding-inline: var(--page-margin, 16px);
+  }
+
+  @media screen and (min-width: 990px) {
+    .rc-hs__inner--art {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 64px;
+    }
+  }
+
+  .rc-hs__copy {
+    display: grid;
+    gap: 18px;
+    min-width: 0;
+    max-width: 680px;
+  }
+
+  .rc-hs__eyebrow {
+    justify-self: start;
+    margin: 0;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--rc-accent) 12%, transparent);
+    color: var(--rc-accent-ink, var(--rc-accent));
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .rc-hs--dark .rc-hs__eyebrow {
+    color: var(--rc-accent);
+  }
+
+  .rc-hs__title {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.8rem);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+    color: inherit;
+  }
+
+  /* Italic words in the heading get a soft marker highlight instead of italics. */
+  .rc-hs__title em {
+    font-style: normal;
+    background: linear-gradient(transparent 62%, color-mix(in srgb, var(--rc-accent) 30%, transparent) 62%);
+    padding-inline: 2px;
+  }
+
+  .rc-hs__sub {
+    margin: 0;
+    max-width: 56ch;
+    font-size: clamp(1rem, 1.6vw, 1.12rem);
+    line-height: 1.55;
+    color: var(--rc-hs-muted);
+  }
+
+  .rc-hs__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-block-start: 6px;
+    padding: 6px;
+    border: 1.5px solid var(--rc-hs-border);
+    border-radius: 18px;
+    background: var(--rc-hs-field);
+    box-shadow: 0 18px 40px -28px rgb(0 0 0 / 0.45);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .rc-hs__search:focus-within {
+    border-color: var(--rc-accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--rc-accent) 22%, transparent);
+  }
+
+  .rc-hs__search-icon {
+    flex: none;
+    margin-inline-start: 10px;
+    opacity: 0.55;
+  }
+
+  .rc-hs__input {
+    flex: 1;
+    min-width: 0;
+    height: 46px;
+    padding: 0 4px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 1rem;
+    outline: none;
+    box-shadow: none;
+  }
+
+  .rc-hs__input::placeholder {
+    color: var(--rc-hs-muted);
+    opacity: 1;
+  }
+
+  .rc-hs__input::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  .rc-hs__submit {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    height: 46px;
+    padding-inline: 18px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--rc-accent-ink, var(--rc-accent));
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+  }
+
+  .rc-hs__submit:hover {
+    background: var(--rc-accent);
+  }
+
+  .rc-hs__submit:active {
+    transform: scale(0.97);
+  }
+
+  .rc-hs__chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rc-hs__chips-label {
+    margin-inline-end: 2px;
+    font-size: 0.82rem;
+    color: var(--rc-hs-muted);
+  }
+
+  .rc-hs__chip {
+    padding: 7px 13px;
+    border: 1px solid var(--rc-hs-border);
+    border-radius: 999px;
+    background: var(--rc-hs-field);
+    color: inherit;
+    font-size: 0.86rem;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color 0.2s, background-color 0.2s;
+  }
+
+  .rc-hs__chip:hover {
+    border-color: var(--rc-accent);
+    background: color-mix(in srgb, var(--rc-accent) 10%, var(--rc-hs-field));
+  }
+
+  .rc-hs__auto {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: inherit;
+    font-weight: 600;
+    font-size: 0.92rem;
+    text-decoration: none;
+  }
+
+  .rc-hs__auto-icon {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--rc-accent) 14%, transparent);
+    color: var(--rc-accent-ink, var(--rc-accent));
+  }
+
+  .rc-hs__auto:hover > span:not(.rc-hs__auto-icon) {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* Decorative category tiles (desktop only). */
+  .rc-hs__art {
+    display: none;
+  }
+
+  @media screen and (min-width: 990px) {
+    .rc-hs__art {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      max-width: 420px;
+      justify-self: end;
+      width: 100%;
+    }
+  }
+
+  .rc-hs__tile {
+    --rc-tile: hsl(var(--rc-tile-hue, 15) 70% 52%);
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border-radius: 24px;
+    background: color-mix(in srgb, var(--rc-tile) 13%, var(--color-background));
+    color: hsl(var(--rc-tile-hue, 15) 65% 34%);
+    border: 1px solid color-mix(in srgb, var(--rc-tile) 18%, transparent);
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1.4);
+  }
+
+  .rc-hs__tile:nth-child(odd) {
+    transform: rotate(-3deg);
+  }
+
+  .rc-hs__tile:nth-child(even) {
+    transform: rotate(2deg);
+  }
+
+  .rc-hs__tile:hover {
+    transform: rotate(0deg) scale(1.06);
+  }
+
+  .rc-hs__tile--center {
+    background: var(--rc-accent);
+    border-color: transparent;
+    color: #fff;
+    font-family: var(--font-heading--family);
+    font-size: 3rem;
+    font-weight: 700;
+    box-shadow: 0 20px 40px -22px var(--rc-accent);
+  }
+
+  .rc-hs--dark .rc-hs__tile:not(.rc-hs__tile--center) {
+    background: rgb(255 255 255 / 0.06);
+    border-color: rgb(255 255 255 / 0.1);
+    color: hsl(var(--rc-tile-hue, 15) 80% 72%);
+  }
+
+  /* Phones: compact, search first, chips in one swipeable row. */
+  @media screen and (max-width: 749px) {
+    .rc-hs {
+      padding-block: min(var(--rc-pad-top), 32px) min(var(--rc-pad-bottom), 28px);
+    }
+
+    .rc-hs__copy {
+      gap: 14px;
+    }
+
+    .rc-hs__sub {
+      font-size: 0.95rem;
+    }
+
+    .rc-hs__submit {
+      width: 46px;
+      padding: 0;
+      justify-content: center;
+    }
+
+    .rc-hs__submit span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    .rc-hs__chips {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      margin-inline: calc(var(--page-margin, 16px) * -1);
+      padding-inline: var(--page-margin, 16px);
+      scrollbar-width: none;
+    }
+
+    .rc-hs__chips::-webkit-scrollbar {
+      display: none;
+    }
+
+    .rc-hs__chips-label {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rc-hs__tile,
+    .rc-hs__submit,
+    .rc-hs__search {
+      transition: none;
+    }
+
+    .rc-hs__tile:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ricreo · Hero ricerca",
+  "tag": "section",
+  "class": "rc-hs-shopify-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Stile",
+      "options": [
+        { "value": "light", "label": "Chiaro" },
+        { "value": "dark", "label": "Scuro" }
+      ],
+      "default": "light"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Etichetta sopra il titolo",
+      "default": "Ricambi e accessori compatibili"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Titolo",
+      "info": "Il testo in corsivo viene evidenziato.",
+      "default": "Il pezzo che non trovi? <em>Lo facciamo noi.</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Sottotitolo",
+      "default": "Ricambi e accessori su misura per casa, auto, camper, giardino e scrivania."
+    },
+    {
+      "type": "header",
+      "content": "Ricerca"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Testo nel campo di ricerca",
+      "default": "Cerca per nome, modello o codice ricambio"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Testo pulsante",
+      "default": "Cerca"
+    },
+    {
+      "type": "text",
+      "id": "popular_label",
+      "label": "Etichetta ricerche popolari",
+      "default": "Più cercati"
+    },
+    {
+      "type": "text",
+      "id": "popular_searches",
+      "label": "Ricerche popolari",
+      "info": "Separate da virgola."
+    },
+    {
+      "type": "header",
+      "content": "Link ricambi auto"
+    },
+    {
+      "type": "text",
+      "id": "auto_link_label",
+      "label": "Testo",
+      "default": "Ricambi auto? Cerca per veicolo"
+    },
+    {
+      "type": "url",
+      "id": "auto_link_url",
+      "label": "Link",
+      "info": "La categoria auto, dove c'è la ricerca per marca e modello."
+    },
+    {
+      "type": "header",
+      "content": "Illustrazione"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_art",
+      "label": "Mostra griglia di icone (solo desktop)",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "art_icons",
+      "label": "Icone",
+      "info": "8 nomi separati da virgola: car, home, bug, monitor, van, scooter, ruler, drop, leaf, wrench, gift…",
+      "default": "home, car, bug, monitor, van, scooter, ruler, drop"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Spaziatura superiore",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Spaziatura inferiore",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ricreo · Hero ricerca",
+      "category": "Ricreo"
+    }
+  ]
+}
+{% endschema %}

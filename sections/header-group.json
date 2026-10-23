@@ -17,7 +17,7 @@
         "announcement_BxgCk9": {
           "type": "_announcement",
           "settings": {
-            "text": "Il pezzo che non trovi? Cercalo per veicolo o per codice ricambio",
+            "text": "Ricambi e accessori compatibili, progettati e stampati in 3D da Ricreo",
             "link": "",
             "font": "var(--font-subheading--family)",
             "font_size": "0.75rem",
@@ -99,19 +99,10 @@
         "enable_transparent_header_product": false,
         "enable_transparent_header_collection": false
       }
-    },
-    "rc_garage_bar": {
-      "type": "rc-garage-bar",
-      "settings": {
-        "show_empty": true,
-        "empty_text": "Scegli il tuo veicolo",
-        "finder_url": ""
-      }
     }
   },
   "order": [
     "header_announcements_9jGBFp",
-    "header_section",
-    "rc_garage_bar"
+    "header_section"
   ]
 }

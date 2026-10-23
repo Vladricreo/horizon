@@ -1,21 +1,18 @@
 {%- comment -%}
   Ricreo · Compatibilità veicolo (pagina prodotto).
-  Confronta l'auto salvata dal cliente con i tag del prodotto (es. volkswagen-golf-7, universale).
+  Se il cliente ha salvato un veicolo e il prodotto risulta compatibile (tag marca-modello,
+  "universale" o modello citato nel titolo) mostra "Compatibile con la tua …"; altrimenti non mostra nulla.
   Il contenuto è generato da rc-garage.js (caricato da snippets/rc-global.liquid).
 {%- endcomment -%}
 
-{%- liquid
-  assign product = closest.product
-  assign finder_url = block.settings.finder_url | default: routes.root_url
-  assign finder_url = finder_url | append: '#rc-finder'
--%}
+{%- assign product = closest.product -%}
 
 {%- if product != blank -%}
   <rc-compat
     data-context="product"
     data-tags="{{ product.tags | join: '|' | escape }}"
     data-title="{{ product.title | escape }}"
-    data-finder-url="{{ finder_url }}"
+    hidden
     {{ block.shopify_attributes }}
   ></rc-compat>
 {%- endif -%}
@@ -27,13 +24,7 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "Mostra se il prodotto è compatibile con l'auto salvata dal cliente. Usa i tag prodotto nel formato marca-modello (es. volkswagen-golf-7), solo marca (volkswagen) oppure universale."
-    },
-    {
-      "type": "url",
-      "id": "finder_url",
-      "label": "Pagina con la ricerca veicolo",
-      "info": "Di solito la homepage (dove c'è l'hero)."
+      "content": "Compare solo se il cliente ha scelto un veicolo (nelle categorie auto) e il prodotto è compatibile: tag marca-modello (es. volkswagen-golf-7), solo marca, \"universale\", oppure modello citato nel titolo."
     }
   ],
   "presets": [

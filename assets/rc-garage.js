@@ -1,9 +1,8 @@
 /**
- * Ricreo · Garage (site-wide)
- * - <rc-garage-bar>: slim bar in the header group showing the saved vehicle, with change / clear
- *   and, on collection pages, a one-click "only parts for my car" filter
- * - <rc-compat>: compatibility badge on product cards and the product page, from product tags
- * The vehicle is saved by the hero finder (rc-hero-garage.js) under the same storage key.
+ * Ricreo · Garage
+ * - <rc-vehicle-finder>: make/model picker shown only in the auto categories; remembers the vehicle
+ * - <rc-compat>: "Compatibile con la tua …" badge on product cards and the product page. It only ever
+ *   confirms a match, so non-automotive products (home, garden, desk…) never show vehicle prompts.
  */
 
 const GARAGE_KEY = 'rc-garage';
@@ -22,13 +21,15 @@ function readGarage() {
   }
 }
 
-function clearGarage() {
+/** @param {Vehicle | null} vehicle */
+function writeGarage(vehicle) {
   try {
-    localStorage.removeItem(GARAGE_KEY);
+    if (vehicle) localStorage.setItem(GARAGE_KEY, JSON.stringify(vehicle));
+    else localStorage.removeItem(GARAGE_KEY);
   } catch {
-    // Storage unavailable: nothing was saved anyway.
+    // Storage unavailable (private mode): the finder still works, it just won't remember.
   }
-  document.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: { vehicle: null } }));
+  document.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: { vehicle } }));
 }
 
 /** @param {string} value */
@@ -41,11 +42,6 @@ function handleize(value) {
     .replace(/^-+|-+$/g, '');
 }
 
-/** @param {Vehicle} vehicle */
-function shortLabel(vehicle) {
-  return vehicle.model || vehicle.brand;
-}
-
 /** @param {string} value */
 function words(value) {
   return handleize(value)
@@ -53,10 +49,14 @@ function words(value) {
     .filter((word) => word.length > 1);
 }
 
+/** @param {Vehicle} vehicle */
+function shortLabel(vehicle) {
+  return vehicle.model || vehicle.brand;
+}
+
 /**
- * Same tag convention as the cart upsell: a product tagged `volkswagen-golf-7` (or a broader
- * `volkswagen-golf`, or brand-only `volkswagen`) fits a saved Volkswagen Golf 7.
- * Untagged products fall back to the title ("… per Citroën Ami, Opel Rocks-e e Fiat Topolino"):
+ * Tags like `volkswagen-golf-7` (or broader `volkswagen-golf`, brand-only `volkswagen`) fit a saved
+ * Volkswagen Golf 7. Untagged products fall back to the title ("… per Citroën Ami, Opel Rocks-e"):
  * every word of brand and model must appear in it.
  * @param {string[]} tags - handleized product tags
  * @param {Vehicle} vehicle
@@ -96,16 +96,8 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-const ICONS = {
-  check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
-  car: '<path d="M5 16.5h14M3.5 16.5v-3.2c0-.6.2-1.1.6-1.5L6 9.6l1.4-3.1A2 2 0 0 1 9.2 5.3h5.6a2 2 0 0 1 1.8 1.2L18 9.6l1.9 2.2c.4.4.6.9.6 1.5v3.2"/><path d="M6 9.6h12"/><circle cx="7.5" cy="16.5" r="1.8"/><circle cx="16.5" cy="16.5" r="1.8"/>',
-  info: '<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/>',
-};
-
-/** @param {keyof typeof ICONS} name */
-function icon(name) {
-  return `<svg class="rc-compat__icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
-}
+const CHECK_ICON =
+  '<svg class="rc-compat__icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
 
 /* ------------------------------------------------------------------------------------------ */
 
@@ -123,45 +115,49 @@ class RcCompat extends HTMLElement {
 
   #render() {
     const vehicle = readGarage();
-    const isCard = this.dataset.context === 'card';
-    const finderUrl = this.dataset.finderUrl || '/#rc-finder';
     const tags = (this.dataset.tags || '').split('|').map(handleize).filter(Boolean);
     const state = vehicle ? compatibility(tags, vehicle, this.dataset.title) : null;
-    const name = vehicle ? escapeHtml(shortLabel(vehicle)) : '';
 
-    let html = '';
-    let tone = '';
-    if (state === 'match') {
-      tone = 'ok';
-      html = `${icon('check')}<span>Compatibile con la tua <strong>${name}</strong></span>`;
-    } else if (state === 'universal') {
-      tone = 'ok';
-      html = `${icon('check')}<span>Universale: va bene anche per la tua <strong>${name}</strong></span>`;
-    } else if (isCard) {
-      // On cards we only ever confirm; unknown stays silent to keep the grid calm.
-    } else if (vehicle) {
-      tone = 'unknown';
-      html = `${icon('info')}<span>Compatibilità con la tua <strong>${name}</strong> da verificare: controlla il codice OEM in descrizione.</span>`;
-    } else {
-      tone = 'empty';
-      html = `${icon('car')}<span>Va bene per la tua auto? <a href="${escapeHtml(finderUrl)}">Scegli il tuo veicolo</a></span>`;
+    this.hidden = !state;
+    this.dataset.tone = state ? 'ok' : '';
+    if (!state || !vehicle) {
+      this.innerHTML = '';
+      return;
     }
 
-    this.hidden = !html;
-    this.dataset.tone = tone;
-    this.innerHTML = html;
+    const name = escapeHtml(shortLabel(vehicle));
+    this.innerHTML =
+      state === 'universal'
+        ? `${CHECK_ICON}<span>Universale: va bene anche per la tua <strong>${name}</strong></span>`
+        : `${CHECK_ICON}<span>Compatibile con la tua <strong>${name}</strong></span>`;
   }
 }
 
 /* ------------------------------------------------------------------------------------------ */
 
-class RcGarageBar extends HTMLElement {
+class RcVehicleFinder extends HTMLElement {
   #abort = new AbortController();
+  /** @type {{brand: string, models: string[]}[]} */
+  #vehicles = [];
 
   connectedCallback() {
     const signal = this.#abort.signal;
+    try {
+      this.#vehicles = JSON.parse(this.querySelector('[data-rc-vehicles]')?.textContent || '[]');
+    } catch {
+      this.#vehicles = [];
+    }
+
+    const brand = this.#brand;
+    if (brand) {
+      this.#vehicles.forEach((v) => brand.add(new Option(v.brand, v.brand)));
+      brand.addEventListener('change', () => this.#populateModels(brand.value), { signal });
+    }
+    this.querySelector('[data-rc-vf-form]')?.addEventListener('submit', this.#onSubmit, { signal });
+    this.querySelector('[data-rc-vf-change]')?.addEventListener('click', () => this.#showForm(true), { signal });
+    this.querySelector('[data-rc-vf-clear]')?.addEventListener('click', () => this.#clear(), { signal });
     document.addEventListener(CHANGE_EVENT, () => this.#render(), { signal });
-    this.querySelector('[data-rc-gbar-clear]')?.addEventListener('click', () => this.#clear(), { signal });
+
     this.#render();
   }
 
@@ -169,48 +165,94 @@ class RcGarageBar extends HTMLElement {
     this.#abort.abort();
   }
 
-  #render() {
-    const vehicle = readGarage();
-    const saved = /** @type {HTMLElement | null} */ (this.querySelector('[data-rc-gbar-saved]'));
-    const empty = /** @type {HTMLElement | null} */ (this.querySelector('[data-rc-gbar-empty]'));
-    const clear = /** @type {HTMLElement | null} */ (this.querySelector('[data-rc-gbar-clear]'));
-    const change = this.querySelector('[data-rc-gbar-change]');
-    const filter = /** @type {HTMLAnchorElement | null} */ (this.querySelector('[data-rc-gbar-filter]'));
-
-    this.hidden = !vehicle && this.dataset.showEmpty !== 'true';
-    if (saved) saved.hidden = !vehicle;
-    if (empty) empty.hidden = Boolean(vehicle);
-    if (clear) clear.hidden = !vehicle;
-    if (change) change.textContent = vehicle ? 'Cambia' : 'Scegli auto';
-
-    const label = this.querySelector('[data-rc-gbar-label]');
-    if (label) label.textContent = vehicle?.label || '';
-
-    if (filter) {
-      const base = (this.dataset.collectionUrl || '').replace(/\/$/, '');
-      const tag = vehicle ? handleize([vehicle.brand, vehicle.model].filter(Boolean).join(' ')) : '';
-      filter.hidden = !base || !tag;
-      if (base && tag) {
-        const active = (this.dataset.currentTags || '').split('|').map(handleize).includes(tag);
-        filter.href = active ? base : `${base}/${tag}`;
-        filter.textContent = active ? 'Mostra tutti i ricambi' : `Solo ricambi per ${shortLabel(/** @type {Vehicle} */ (vehicle))}`;
-        filter.classList.toggle('is-active', active);
-      }
-    }
+  get #brand() {
+    return /** @type {HTMLSelectElement | null} */ (this.querySelector('[data-rc-vf-brand]'));
   }
 
-  #clear() {
-    clearGarage();
-    const url = this.dataset.cartUpdateUrl;
-    if (url) {
-      fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ attributes: { Veicolo: '' } }),
-      }).catch(() => {});
+  get #model() {
+    return /** @type {HTMLSelectElement | null} */ (this.querySelector('[data-rc-vf-model]'));
+  }
+
+  /** @param {Vehicle} vehicle */
+  #searchUrl(vehicle) {
+    const params = new URLSearchParams({
+      q: [vehicle.brand, vehicle.model].filter(Boolean).join(' '),
+      type: 'product',
+      'options[prefix]': 'last',
+    });
+    return `${this.dataset.searchUrl || '/search'}?${params}`;
+  }
+
+  /**
+   * @param {string} brandName
+   * @param {string} [selected]
+   */
+  #populateModels(brandName, selected = '') {
+    const model = this.#model;
+    const submit = /** @type {HTMLButtonElement | null} */ (this.querySelector('[data-rc-vf-submit]'));
+    if (!model) return;
+    const vehicle = this.#vehicles.find((v) => v.brand === brandName);
+    model.length = 0;
+    model.add(new Option(vehicle ? 'Tutti i modelli' : 'Modello', ''));
+    vehicle?.models.forEach((name) => model.add(new Option(name, name, false, name === selected)));
+    model.disabled = !vehicle;
+    if (submit) submit.disabled = !vehicle;
+  }
+
+  #render() {
+    const saved = readGarage();
+    const label = this.querySelector('[data-rc-vf-label]');
+    const go = /** @type {HTMLAnchorElement | null} */ (this.querySelector('[data-rc-vf-go]'));
+    if (label) label.textContent = saved?.label || '';
+    if (go && saved) go.href = this.#searchUrl(saved);
+
+    if (saved && this.#brand && this.#vehicles.some((v) => v.brand === saved.brand)) {
+      this.#brand.value = saved.brand;
+      this.#populateModels(saved.brand, saved.model);
     }
+    this.#showForm(!saved);
+  }
+
+  /** @param {boolean} show */
+  #showForm(show) {
+    const form = /** @type {HTMLElement | null} */ (this.querySelector('[data-rc-vf-form]'));
+    const saved = /** @type {HTMLElement | null} */ (this.querySelector('[data-rc-vf-saved]'));
+    if (form) form.hidden = !show;
+    if (saved) saved.hidden = show || !readGarage();
+    if (show && readGarage()) this.#brand?.focus();
+  }
+
+  /** @param {SubmitEvent} event */
+  #onSubmit = async (event) => {
+    event.preventDefault();
+    const brand = this.#brand?.value || '';
+    if (!brand) return;
+    const model = this.#model?.value || '';
+    /** @type {Vehicle} */
+    const vehicle = { brand, model, year: '', label: [brand, model].filter(Boolean).join(' ') };
+    writeGarage(vehicle);
+
+    if (this.dataset.saveToCart === 'true') {
+      // Best effort: the vehicle shows up on the order, but never delay navigation for long.
+      await Promise.race([this.#saveToCart(vehicle.label), new Promise((r) => setTimeout(r, 1200))]);
+    }
+    window.location.href = this.#searchUrl(vehicle);
+  };
+
+  #clear() {
+    writeGarage(null);
+    if (this.dataset.saveToCart === 'true') this.#saveToCart('');
+  }
+
+  /** @param {string} label */
+  #saveToCart(label) {
+    return fetch(this.dataset.cartUpdateUrl || '/cart/update.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ attributes: { Veicolo: label } }),
+    }).catch(() => {});
   }
 }
 
 if (!customElements.get('rc-compat')) customElements.define('rc-compat', RcCompat);
-if (!customElements.get('rc-garage-bar')) customElements.define('rc-garage-bar', RcGarageBar);
+if (!customElements.get('rc-vehicle-finder')) customElements.define('rc-vehicle-finder', RcVehicleFinder);

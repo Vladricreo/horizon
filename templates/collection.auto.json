@@ -1,0 +1,404 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "section": {
+      "type": "section",
+      "blocks": {
+        "text_tqQTNE": {
+          "type": "text",
+          "name": "t:names.title",
+          "settings": {
+            "text": "<h1>{{ closest.collection.title }}</h1>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h2",
+            "font": "var(--font-body--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "text_twGGkJ": {
+          "type": "text",
+          "name": "t:names.description",
+          "settings": {
+            "text": "{{ closest.collection.description }}",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "rte",
+            "font": "var(--font-body--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "text_tqQTNE",
+        "text_twGGkJ"
+      ],
+      "name": "t:names.heading",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    },
+    "rc_vehicle_finder": {
+      "type": "rc-vehicle-finder",
+      "blocks": {
+        "vehicle_1": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Abarth",
+            "models": "500\n595\n695"
+          }
+        },
+        "vehicle_2": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Alfa Romeo",
+            "models": "Giulietta\nMiTo\n147\nGT"
+          }
+        },
+        "vehicle_3": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Audi",
+            "models": "A4\nA5\nQ3\nQ5\nTT"
+          }
+        },
+        "vehicle_4": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "BMW",
+            "models": "Serie 3\nSerie 5\niX"
+          }
+        },
+        "vehicle_5": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Citroën",
+            "models": "Ami\nC3\nC4 Picasso\nBerlingo\nDS3\nJumper\nNemo"
+          }
+        },
+        "vehicle_6": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Dacia",
+            "models": "Duster"
+          }
+        },
+        "vehicle_7": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Fiat",
+            "models": "500\n500X\nPanda\nPunto\nGrande Punto\nTipo\nTopolino\nDoblò\nDucato\nStilo\nBravo"
+          }
+        },
+        "vehicle_8": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Ford",
+            "models": "Fiesta\nPuma"
+          }
+        },
+        "vehicle_9": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Jeep",
+            "models": "Compass\nRenegade"
+          }
+        },
+        "vehicle_10": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Lancia",
+            "models": "Ypsilon\nDelta"
+          }
+        },
+        "vehicle_11": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Land Rover",
+            "models": "Defender"
+          }
+        },
+        "vehicle_12": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Mercedes-Benz",
+            "models": "Classe A\nClasse B"
+          }
+        },
+        "vehicle_13": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Opel",
+            "models": "Rocks-e"
+          }
+        },
+        "vehicle_14": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Peugeot",
+            "models": "307\nPartner\nBoxer"
+          }
+        },
+        "vehicle_15": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Renault",
+            "models": "Twingo"
+          }
+        },
+        "vehicle_16": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Seat",
+            "models": "Arosa\nArona\nIbiza\nMii"
+          }
+        },
+        "vehicle_17": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Smart",
+            "models": "ForTwo 450\nForTwo 451"
+          }
+        },
+        "vehicle_18": {
+          "type": "vehicle",
+          "settings": {
+            "brand": "Volkswagen",
+            "models": "Lupo\nPolo\nUp\nTiguan\nT-Cross\nT-Roc\nID.4\nID.5"
+          }
+        }
+      },
+      "block_order": [
+        "vehicle_1",
+        "vehicle_2",
+        "vehicle_3",
+        "vehicle_4",
+        "vehicle_5",
+        "vehicle_6",
+        "vehicle_7",
+        "vehicle_8",
+        "vehicle_9",
+        "vehicle_10",
+        "vehicle_11",
+        "vehicle_12",
+        "vehicle_13",
+        "vehicle_14",
+        "vehicle_15",
+        "vehicle_16",
+        "vehicle_17",
+        "vehicle_18"
+      ],
+      "settings": {
+        "heading": "Trova i ricambi per il tuo veicolo",
+        "button_label": "Trova ricambi",
+        "save_vehicle_to_cart": true,
+        "padding_top": 24,
+        "padding_bottom": 8
+      }
+    },
+    "main": {
+      "type": "main-collection",
+      "blocks": {
+        "filters": {
+          "type": "filters",
+          "static": true,
+          "settings": {
+            "enable_filtering": true,
+            "filter_style": "horizontal",
+            "filter_width": "centered",
+            "text_label_case": "default",
+            "show_swatch_label": false,
+            "show_filter_label": false,
+            "enable_sorting": true,
+            "enable_grid_density": true,
+            "padding-block-start": 8,
+            "padding-block-end": 8,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0,
+            "facets_margin_bottom": 8,
+            "facets_margin_right": 20
+          },
+          "blocks": {}
+        },
+        "product-card": {
+          "type": "_product-card",
+          "static": true,
+          "settings": {
+            "product_card_gap": 4,
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "card-gallery": {
+              "type": "_product-card-gallery",
+              "settings": {
+                "image_ratio": "square",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "product_title_4nY4eT": {
+              "type": "product-title",
+              "name": "t:names.product_title",
+              "settings": {
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "paragraph",
+                "font": "var(--font-body--family)",
+                "font_size": "0.95rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 4,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "price_EzJzMm": {
+              "type": "price",
+              "settings": {
+                "show_sale_price_first": true,
+                "show_installments": false,
+                "show_tax_info": false,
+                "type_preset": "h6",
+                "width": "100%",
+                "alignment": "left",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "swatches": {
+              "type": "swatches",
+              "name": "t:names.swatches",
+              "settings": {
+                "product_swatches_alignment": "flex-start",
+                "product_swatches_padding_top": 4,
+                "product_swatches_padding_bottom": 0,
+                "product_swatches_padding_left": 0,
+                "product_swatches_padding_right": 0
+              }
+            },
+            "rc_compat": {
+              "type": "custom-liquid",
+              "name": "Ricreo · Compatibilità",
+              "settings": {
+                "custom_liquid": "<rc-compat data-context=\"card\" data-tags=\"{{ closest.product.tags | join: '|' | escape }}\" data-title=\"{{ closest.product.title | escape }}\" hidden></rc-compat>"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "card-gallery",
+            "product_title_4nY4eT",
+            "price_EzJzMm",
+            "rc_compat",
+            "swatches"
+          ]
+        }
+      },
+      "settings": {
+        "layout_type": "grid",
+        "product_card_size": "medium",
+        "mobile_product_card_size": "small",
+        "product_grid_width": "centered",
+        "full_width_on_mobile": true,
+        "columns_gap_horizontal": 16,
+        "columns_gap_vertical": 24,
+        "padding-inline-start": 0,
+        "padding-inline-end": 0,
+        "padding-block-start": 0,
+        "padding-block-end": 32
+      }
+    }
+  },
+  "order": [
+    "section",
+    "rc_vehicle_finder",
+    "main"
+  ]
+}

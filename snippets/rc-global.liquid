@@ -2,8 +2,8 @@
   Ricreo · stile e script globali.
   - Token (Impostazioni tema → Ricreo · Stile): le sezioni e i blocchi rc-* leggono --rc-accent
     da qui, salvo override locale.
-  - Micro-animazione dell'icona carrello, badge di compatibilità <rc-compat> e rc-garage.js,
-    usati anche dentro le card prodotto di Horizon.
+  - Micro-animazione dell'icona carrello, badge di compatibilità <rc-compat> e rc-garage.js
+    (il badge vive anche dentro le card prodotto di Horizon).
   Renderizzato in layout/theme.liquid subito dopo 'color-palette'.
 {%- endcomment -%}
 
@@ -69,32 +69,14 @@
     margin-block-start: 1px;
   }
 
-  rc-compat a {
-    color: inherit;
-    font-weight: 600;
-    text-underline-offset: 3px;
+  rc-compat[data-tone='ok'] {
+    color: #15803d;
   }
 
   rc-compat[data-context='product'] {
     padding: 10px 14px;
     border-radius: 14px;
-    background: rgb(var(--color-foreground-rgb) / 0.04);
-  }
-
-  rc-compat[data-tone='ok'] {
-    color: #15803d;
-  }
-
-  rc-compat[data-context='product'][data-tone='ok'] {
     background: #ecfdf3;
-  }
-
-  rc-compat[data-context='product'][data-tone='empty'] {
-    background: var(--rc-accent-tint);
-  }
-
-  rc-compat[data-context='product'][data-tone='empty'] .rc-compat__icon {
-    color: var(--rc-accent-ink);
   }
 
   rc-compat[data-context='card'] {
