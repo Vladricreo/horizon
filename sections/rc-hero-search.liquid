@@ -68,7 +68,7 @@
                 {%- for term in rotating -%}
                   {%- assign term = term | strip -%}
                   {%- if term != blank -%}
-                    <span class="rc-hs__rotator-word">{{ term }}</span>
+                    <span class="rc-hs__rotator-word{% if forloop.first %} is-active{% endif %}">{{ term }}</span>
                   {%- endif -%}
                 {%- endfor -%}
               </span>
@@ -144,8 +144,8 @@
           connectedCallback() {
             const words = [...this.querySelectorAll('.rc-hs__rotator-word')];
             if (!words.length) return;
+            // The first word is already active in the markup, so it shows without a transition.
             let index = 0;
-            words[0].classList.add('is-active');
             if (words.length < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
             this.timer = setInterval(() => {
               words[index].classList.replace('is-active', 'is-leaving');
