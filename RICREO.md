@@ -7,15 +7,15 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 
 | Funzione | File | Dove si usa |
 | --- | --- | --- |
-| Hero interattivo: auto in SVG con zone cliccabili, cambio colore, ricerca per marca/modello/anno o codice OEM, "garage" che ricorda l'auto | `sections/rc-hero-garage.liquid`, `assets/rc-hero-garage.js` | Homepage |
-| Griglia categorie a icone (bento) | `sections/rc-category-grid.liquid` | Homepage |
+| Hero con ricerca su tutto il catalogo (nome, modello, codice ricambio), chip "Più cercati", link ai ricambi auto, griglia di icone (solo desktop) | `sections/rc-hero-search.liquid` | Homepage |
+| Griglia categorie a icone | `sections/rc-category-grid.liquid` | Homepage |
+| Cerca per veicolo (marca/modello) che ricorda l'auto | `sections/rc-vehicle-finder.liquid`, `assets/rc-garage.js` | Solo template collezione **auto** |
 | Punti di forza / Come funziona (3 stili) | `sections/rc-features.liquid` | Homepage, ovunque |
 | Punti chiave con icone automatiche | `blocks/rc-feature-list.liquid`, `blocks/_rc-feature.liquid` | Pagina prodotto |
 | "Spesso acquistati insieme" basato su prodotto **e** carrello | `blocks/rc-bundle.liquid`, `snippets/rc-bundle-row.liquid` | Pagina prodotto |
 | Upsell nel carrello + barra spedizione gratuita | `snippets/rc-cart-upsell.liquid`, `snippets/rc-upsell-card.liquid`, `sections/rc-cart-upsell.liquid` | Drawer e pagina carrello |
 | Logica aggiunta al carrello / bundle, barra spedizione animata (`<rc-ship-bar>`) | `assets/rc-upsell.js` | — |
-| Barra garage: auto salvata, "Cambia", filtro rapido "Solo ricambi per…" nelle collezioni | `sections/rc-garage-bar.liquid`, `assets/rc-garage.js` | Gruppo header, tutto il sito |
-| Badge compatibilità veicolo | `blocks/rc-compat.liquid` (pagina prodotto), blocco *Liquid personalizzato* nelle card | Prodotto, collezione, ricerca, consigliati |
+| Badge "Compatibile con la tua …" (solo conferme, mai inviti) | `blocks/rc-compat.liquid` (pagina prodotto), blocco *Liquid personalizzato* nelle card | Prodotto, collezione, ricerca, consigliati |
 | Icone | `snippets/rc-icon.liquid` | — |
 | Token globali (`--rc-accent`, `--rc-accent-2`, `--rc-accent-ink`, `--rc-accent-tint`), animazione icona carrello, stile badge compatibilità | `snippets/rc-global.liquid` | Tutto il sito |
 
@@ -28,8 +28,18 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 - **Font**: titoli e sottotitoli Space Grotesk, testo Inter 16px.
 - **Raggi**: card 16, immagini prodotto 12, input 12, popover 16, bottoni 14.
 - **Movimento**: nessuna animazione continua. Gli effetti partono solo da un'azione del cliente
-  (hover, aggiunta al carrello, soglia spedizione raggiunta) o si fermano dopo pochi cicli
-  (pulse degli hotspot, zone dell'auto). Tutti i file `rc-*` rispettano `prefers-reduced-motion`.
+  (hover, aggiunta al carrello, soglia spedizione raggiunta). Tutti i file `rc-*` rispettano
+  `prefers-reduced-motion`.
+- **Mobile prima di tutto**: sotto i 750px la hero mette la ricerca in alto e i chip su una riga
+  scorrevole, le categorie sono tessere compatte a 2 colonne, i punti di forza una riga di chip,
+  i passaggi righe icona + testo.
+
+## Categorie e collezioni
+
+La homepage punta a queste collezioni (da creare in Shopify con questi handle esatti):
+`casa-cucina`, `auto`, `microcar`, `camper`, `moto`, `giardino`, `tech`, `fai-da-te`.
+Alle collezioni **auto** e **microcar** assegna il template `auto` (Prodotti → Collezioni → collezione →
+Modello tema): mostra *Ricreo · Cerca veicolo* sopra i prodotti.
 
 ## Come si configurano i dati
 
@@ -43,17 +53,15 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
   - L'icona è scelta dalle parole chiave (garanzia → scudo, LED → lampadina, montaggio → chiave…).
   - Per forzarla: `[shield] Garanzia 2 anni`. Icone: `car wrench shield truck bulb layers disc drop
     sparkle spray bolt sun ruler leaf seat wheel engine palette star tag gift check`.
-- **Veicolo**: quando il cliente cerca per auto, il veicolo viene salvato nel browser e come
+- **Veicolo**: quando il cliente cerca con *Cerca veicolo*, il veicolo viene salvato nel browser e come
   attributo carrello `Veicolo` (lo vedi nell'ordine). I suggerimenti nel carrello danno priorità
   ai prodotti con un tag che contiene il veicolo, es. `volkswagen-golf-7`.
-- **Compatibilità** (badge e filtro della barra garage): tag prodotto nel formato `marca-modello`
-  (`volkswagen-golf-7`, anche più specifico come `volkswagen-golf-7-2015-2020`), più generico
-  (`volkswagen-golf`, solo marca `volkswagen`) oppure `universale`. Nelle card il badge compare solo
-  se il prodotto è compatibile; nella pagina prodotto mostra anche "da verificare" o "Scegli il tuo veicolo".
-  Il badge nelle card è un blocco *Liquid personalizzato* che usa `closest.product`: se dopo il
-  caricamento non compare mai, verifica nell'editor che il blocco riceva il prodotto.
-- **Marche/modelli** dell'hero: blocchi *Marca e modelli* nella sezione (un modello per riga).
-  Con la destinazione "Collezione filtrata per tag" il link diventa `/collections/<base>/<marca-modello>`.
+- **Compatibilità** (badge): tag prodotto nel formato `marca-modello` (`volkswagen-golf-7`, anche più
+  specifico come `volkswagen-golf-7-2015-2020`), più generico (`volkswagen-golf`, solo marca `volkswagen`)
+  oppure `universale`. Senza tag vale il titolo: se contiene marca e modello ("… per Citroën Ami, Opel
+  Rocks-e e Fiat Topolino") il prodotto è compatibile. Il badge compare solo quando c'è una corrispondenza.
+- **Marche/modelli** di *Cerca veicolo*: blocchi *Marca e modelli* nella sezione (un modello per riga),
+  presi dai titoli del catalogo Ricreo (schema `inventory` su Supabase).
 - La soglia della spedizione gratuita è nella valuta principale del negozio.
 
 ## File di Horizon modificati (da ricontrollare a ogni aggiornamento)
@@ -68,7 +76,7 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
    {%- render 'rc-global' -%}
    ```
 4. `templates/index.json`, `templates/product.json`, `templates/cart.json`, `templates/collection.json`,
-   `templates/search.json`, `sections/header-group.json` — configurazione del negozio
+   `templates/collection.auto.json`, `templates/search.json`, `sections/header-group.json` — configurazione del negozio
    (sezioni e blocchi Ricreo). Sono dati, non codice: in caso di conflitto tieni la nostra versione.
 
 ## Aggiornare Horizon

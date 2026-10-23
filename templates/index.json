@@ -13,10 +13,10 @@
       "type": "rc-hero-search",
       "settings": {
         "style": "light",
-        "eyebrow": "Ricambi e accessori compatibili, progettati da Ricreo",
+        "eyebrow": "",
         "heading": "Il pezzo che non trovi? <em>Lo facciamo noi.</em>",
-        "subheading": "Ricambi e accessori su misura per casa, auto, camper, giardino e scrivania. Progettati e stampati in 3D da noi.",
-        "placeholder": "Cerca per nome, modello o codice ricambio",
+        "subheading": "Ricambi e accessori su misura per casa, auto, camper, giardino e scrivania.",
+        "placeholder": "Nome, modello o codice ricambio",
         "button_label": "Cerca",
         "popular_label": "Più cercati",
         "popular_searches": "Sodastream, Ganci cappelliera, Dometic, Citroën Ami, Trappola Popillia, Stream Deck, IKEA",
