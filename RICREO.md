@@ -42,7 +42,9 @@ mai a pagine vuote:
 
 - **Marchi e modelli**: ogni blocco ha un nome e delle "parole nel titolo prodotto"
   (es. `citroën ami, citroen ami, per ami`). La tessera compare solo se almeno un prodotto del catalogo
-  (primi 250) le contiene; la foto è quella del primo prodotto trovato. Per un marchio nuovo basta un
+  (primi 250) le contiene. La foto è quella del veicolo o dell'oggetto che il cliente possiede (da caricare nel
+  blocco), mai di un accessorio; senza foto compare l'icona scelta. Modelli che condividono gli stessi ricambi
+  (Ami, Rocks-e, Topolino) stanno in una sola tessera. Per un marchio nuovo basta un
   blocco: comparirà da solo col primo prodotto caricato. Se la ricerca del nome non trova tutto
   (es. titoli che dicono solo "Rocks"), imposta il Link a una ricerca più corta.
 - **Categorie**: le collezioni senza prodotti sono nascoste; la sezione compare da 2 categorie con prodotti.

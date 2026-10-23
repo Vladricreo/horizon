@@ -82,151 +82,152 @@
         "b1": {
           "type": "brand",
           "settings": {
-            "title": "Citroën Ami",
-            "match": "citroën ami, citroen ami, per ami",
-            "link": "/search?q=Ami&type=product&options%5Bprefix%5D=last"
-          }
-        },
-        "b2": {
-          "type": "brand",
-          "settings": {
-            "title": "Opel Rocks-e",
-            "match": "rocks",
-            "link": "/search?q=Rocks&type=product&options%5Bprefix%5D=last"
-          }
-        },
-        "b3": {
-          "type": "brand",
-          "settings": {
-            "title": "Fiat Topolino",
-            "match": "topolino",
-            "link": "/search?q=Topolino&type=product&options%5Bprefix%5D=last"
+            "title": "Citroën Ami, Opel Rocks-e e Fiat Topolino",
+            "subtitle": "È la stessa microcar con tre marchi: ogni ricambio va bene per tutti e tre.",
+            "match": "citroën ami, citroen ami, per ami, rocks, topolino",
+            "link": "/collections/microcar",
+            "icon": "bolt"
           }
         },
         "b4": {
           "type": "brand",
           "settings": {
             "title": "Fiat",
-            "match": "fiat 500, fiat panda, fiat punto, grande punto, fiat tipo, fiat doblò, fiat ducato, fiat stilo, fiat bravo"
+            "match": "fiat 500, fiat panda, fiat punto, grande punto, fiat tipo, fiat doblò, fiat ducato, fiat stilo, fiat bravo",
+            "icon": "car"
           }
         },
         "b5": {
           "type": "brand",
           "settings": {
             "title": "Abarth",
-            "match": "abarth"
+            "match": "abarth",
+            "icon": "car"
           }
         },
         "b6": {
           "type": "brand",
           "settings": {
             "title": "Alfa Romeo",
-            "match": "alfa romeo"
+            "match": "alfa romeo",
+            "icon": "car"
           }
         },
         "b7": {
           "type": "brand",
           "settings": {
             "title": "Mercedes-Benz",
-            "match": "mercedes"
+            "match": "mercedes",
+            "icon": "car"
           }
         },
         "b8": {
           "type": "brand",
           "settings": {
             "title": "Volkswagen",
-            "match": "volkswagen"
+            "match": "volkswagen",
+            "icon": "car"
           }
         },
         "b9": {
           "type": "brand",
           "settings": {
             "title": "BMW",
-            "match": "bmw"
+            "match": "bmw",
+            "icon": "car"
           }
         },
         "b10": {
           "type": "brand",
           "settings": {
             "title": "Moto Honda",
-            "match": "honda"
+            "match": "honda",
+            "icon": "scooter"
           }
         },
         "b11": {
           "type": "brand",
           "settings": {
             "title": "Sodastream",
-            "match": "sodastream"
+            "match": "sodastream",
+            "icon": "drop"
           }
         },
         "b12": {
           "type": "brand",
           "settings": {
             "title": "Lavazza",
-            "match": "lavazza"
+            "match": "lavazza",
+            "icon": "home"
           }
         },
         "b13": {
           "type": "brand",
           "settings": {
             "title": "De'Longhi",
-            "match": "de'longhi, delonghi, de longhi"
+            "match": "de'longhi, delonghi, de longhi",
+            "icon": "home"
           }
         },
         "b14": {
           "type": "brand",
           "settings": {
             "title": "IKEA",
-            "match": "ikea"
+            "match": "ikea",
+            "icon": "home"
           }
         },
         "b15": {
           "type": "brand",
           "settings": {
             "title": "Velux",
-            "match": "velux"
+            "match": "velux",
+            "icon": "home"
           }
         },
         "b16": {
           "type": "brand",
           "settings": {
             "title": "Dometic",
-            "match": "dometic"
+            "match": "dometic",
+            "icon": "van"
           }
         },
         "b17": {
           "type": "brand",
           "settings": {
             "title": "PlayStation",
-            "match": "playstation, ps5, ps4"
+            "match": "playstation, ps5, ps4",
+            "icon": "monitor"
           }
         },
         "b18": {
           "type": "brand",
           "settings": {
             "title": "Stream Deck",
-            "match": "stream deck"
+            "match": "stream deck",
+            "icon": "monitor"
           }
         },
         "b19": {
           "type": "brand",
           "settings": {
             "title": "Padel e tennis",
-            "match": "padel"
+            "match": "padel",
+            "icon": "star"
           }
         },
         "b20": {
           "type": "brand",
           "settings": {
             "title": "Trappole Popillia",
-            "match": "popillia"
+            "match": "popillia",
+            "icon": "bug"
           }
         }
       },
       "block_order": [
         "b1",
-        "b2",
-        "b3",
         "b4",
         "b5",
         "b6",

@@ -1,16 +1,17 @@
 {%- comment -%}
   Ricreo · Marchi e modelli.
-  Il cliente parte da quello che possiede (Citroën Ami, Sodastream Jet, Lavazza A Modo Mio…), non da una
-  categoria. Ogni blocco è un marchio o un modello: compare solo se nel catalogo c'è almeno un prodotto
-  con una delle sue parole chiave nel titolo, e usa la foto del primo prodotto trovato che non sia già
-  su un'altra tessera (molti prodotti valgono per più modelli).
-  Così la sezione cresce da sola man mano che si caricano prodotti, senza tessere che portano al vuoto.
+  Il cliente parte da quello che possiede (la sua auto, la sua Sodastream, la sua macchina del caffè…),
+  non da una categoria. Ogni blocco è un marchio o un modello con la foto di quell'oggetto, caricata
+  nell'editor; finché non c'è, un'icona. Mai la foto di un accessorio: la tessera rappresenta ciò che il
+  cliente ha, non ciò che compra.
+  Un blocco compare solo se nel catalogo c'è almeno un prodotto con una delle sue parole chiave nel titolo,
+  così la sezione cresce da sola man mano che si caricano prodotti, senza tessere che portano al vuoto.
+  Con una o due tessere la sezione usa schede larghe, per non lasciare un riquadro isolato.
 {%- endcomment -%}
 
 {%- liquid
   assign source = section.settings.collection | default: collections.all
   assign shown = 0
-  assign used_ids = ','
 -%}
 
 {%- capture tiles -%}
@@ -24,8 +25,6 @@
         assign match = block.settings.match | default: block.settings.title
         assign terms = match | downcase | split: ','
         assign count = 0
-        assign first_product = nil
-        assign fresh_product = nil
 
         for product in source.products
           assign product_title = product.title | downcase
@@ -33,15 +32,6 @@
             assign term = term | strip
             if term != blank and product_title contains term
               assign count = count | plus: 1
-              if first_product == nil
-                assign first_product = product
-              endif
-              assign product_key = product.id | prepend: ',' | append: ','
-              if fresh_product == nil and product.featured_image != blank
-                unless used_ids contains product_key
-                  assign fresh_product = product
-                endunless
-              endif
               break
             endif
           endfor
@@ -51,42 +41,38 @@
           continue
         endif
 
-        if fresh_product != nil
-          assign first_product = fresh_product
-        endif
-        if block.settings.image == blank
-          assign used_ids = used_ids | append: first_product.id | append: ','
-        endif
-
         assign shown = shown | plus: 1
         assign url = block.settings.link
         if url == blank
           assign query = block.settings.title | url_encode
           assign url = routes.search_url | append: '?q=' | append: query | append: '&type=product&options[prefix]=last'
         endif
-        assign image = block.settings.image | default: first_product.featured_image
       -%}
       <li class="rc-brands__item" {{ block.shopify_attributes }}>
         <a class="rc-brand" href="{{ url }}">
-          <span class="rc-brand__media">
-            {%- if image != blank -%}
+          <span class="rc-brand__media{% if block.settings.image == blank %} rc-brand__media--icon{% endif %}">
+            {%- if block.settings.image != blank -%}
               {{
-                image
-                | image_url: width: 400
+                block.settings.image
+                | image_url: width: 640
                 | image_tag:
                   loading: 'lazy',
                   class: 'rc-brand__img',
-                  sizes: '(min-width: 990px) 180px, 40vw',
+                  sizes: '(min-width: 990px) 320px, 60vw',
                   alt: ''
               }}
             {%- else -%}
-              {% render 'rc-icon', name: 'wrench', size: 32 %}
+              {% render 'rc-icon', name: block.settings.icon, size: 44 %}
             {%- endif -%}
           </span>
           <span class="rc-brand__body">
             <span class="rc-brand__name">{{ block.settings.title }}</span>
+            {%- if block.settings.subtitle != blank -%}
+              <span class="rc-brand__sub">{{ block.settings.subtitle }}</span>
+            {%- endif -%}
             <span class="rc-brand__count">
               {%- if count == 1 -%}1 prodotto{%- else -%}{{ count }} prodotti{%- endif -%}
+              {% render 'rc-icon', name: 'arrow-right', size: 16 %}
             </span>
           </span>
         </a>
@@ -113,7 +99,7 @@
         </header>
       {%- endif -%}
 
-      <ul class="rc-brands__list" role="list">
+      <ul class="rc-brands__list{% if shown < 3 %} rc-brands__list--wide{% endif %}" role="list">
         {{ tiles }}
       </ul>
     </div>
@@ -182,16 +168,27 @@
     place-items: center;
     aspect-ratio: 4 / 3;
     overflow: hidden;
-    background: #fff;
-    color: rgb(var(--color-foreground-rgb) / 0.35);
+    background: rgb(var(--color-foreground-rgb) / 0.04);
   }
 
-  /* Whole product on white, never cropped. */
+  /* Photos of the vehicle or device fill the frame. */
   .rc-brand__img {
     width: 100%;
     height: 100%;
-    padding: 8px;
-    object-fit: contain;
+    object-fit: cover;
+  }
+
+  .rc-brand__media--icon {
+    background: color-mix(in srgb, var(--rc-accent) 9%, var(--color-background));
+    color: var(--rc-accent-ink, var(--rc-accent));
+  }
+
+  .rc-brand__media--icon .rc-icon {
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1.4);
+  }
+
+  .rc-brand:hover .rc-brand__media--icon .rc-icon {
+    transform: scale(1.1) rotate(-4deg);
   }
 
   .rc-brand__body {
@@ -205,9 +202,52 @@
     line-height: 1.25;
   }
 
+  .rc-brand__sub {
+    font-size: 0.86rem;
+    line-height: 1.4;
+    opacity: 0.75;
+  }
+
   .rc-brand__count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-block-start: 4px;
     font-size: 0.84rem;
-    opacity: 0.65;
+    font-weight: 600;
+    color: var(--rc-accent-ink, var(--rc-accent));
+  }
+
+  .rc-brand__count .rc-icon {
+    transition: transform 0.3s;
+  }
+
+  .rc-brand:hover .rc-brand__count .rc-icon {
+    transform: translateX(3px);
+  }
+
+  /* One or two tiles: wide cards, picture beside the text, so nothing sits alone in a big grid. */
+  .rc-brands__list--wide {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+  }
+
+  .rc-brands__list--wide .rc-brand {
+    grid-template-columns: 40% 1fr;
+    align-items: center;
+  }
+
+  .rc-brands__list--wide .rc-brand__media {
+    height: 100%;
+    min-height: 140px;
+    aspect-ratio: auto;
+  }
+
+  .rc-brands__list--wide .rc-brand__body {
+    padding: 18px 20px;
+  }
+
+  .rc-brands__list--wide .rc-brand__name {
+    font-size: 1.15rem;
   }
 
   /* Phones: one swipeable row so the section never pushes the rest far down. */
@@ -241,6 +281,22 @@
       scroll-snap-align: start;
     }
 
+    .rc-brands__list--wide .rc-brands__item {
+      flex-basis: 100%;
+    }
+
+    .rc-brands__list--wide .rc-brand__media {
+      min-height: 112px;
+    }
+
+    .rc-brands__list--wide .rc-brand__body {
+      padding: 12px 14px;
+    }
+
+    .rc-brands__list--wide .rc-brand__name {
+      font-size: 1rem;
+    }
+
     .rc-brand__body {
       padding: 10px 12px 12px;
     }
@@ -251,11 +307,13 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .rc-brand {
+    .rc-brand,
+    .rc-brand .rc-icon {
       transition: none;
     }
 
-    .rc-brand:hover {
+    .rc-brand:hover,
+    .rc-brand:hover .rc-icon {
       transform: none;
     }
   }
@@ -338,6 +396,12 @@
         },
         {
           "type": "text",
+          "id": "subtitle",
+          "label": "Sottotitolo",
+          "info": "Facoltativo, es. \"Stessi ricambi per tutti e tre i modelli\"."
+        },
+        {
+          "type": "text",
           "id": "match",
           "label": "Parole nel titolo prodotto",
           "info": "Separate da virgola, es. \"citroën ami, citroen ami\". Vuoto = il nome. La tessera compare solo se almeno un prodotto le contiene."
@@ -351,8 +415,28 @@
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Immagine",
-          "info": "Vuoto = foto del primo prodotto trovato."
+          "label": "Foto del veicolo o dell'oggetto",
+          "info": "La cosa che il cliente possiede (l'auto, la macchina del caffè…), non l'accessorio. Vuoto = icona."
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icona (se non c'è la foto)",
+          "options": [
+            { "value": "car", "label": "Auto" },
+            { "value": "bolt", "label": "Elettrico / microcar" },
+            { "value": "scooter", "label": "Moto" },
+            { "value": "van", "label": "Camper" },
+            { "value": "home", "label": "Casa" },
+            { "value": "drop", "label": "Acqua / bevande" },
+            { "value": "monitor", "label": "Tech" },
+            { "value": "bug", "label": "Insetti" },
+            { "value": "leaf", "label": "Giardino" },
+            { "value": "ruler", "label": "Fai da te" },
+            { "value": "star", "label": "Sport e tempo libero" },
+            { "value": "wrench", "label": "Altro" }
+          ],
+          "default": "wrench"
         }
       ]
     }
@@ -362,10 +446,10 @@
       "name": "Ricreo · Marchi e modelli",
       "category": "Ricreo",
       "blocks": [
-        { "type": "brand", "settings": { "title": "Citroën Ami", "match": "citroën ami, citroen ami" } },
-        { "type": "brand", "settings": { "title": "Sodastream" } },
-        { "type": "brand", "settings": { "title": "Lavazza" } },
-        { "type": "brand", "settings": { "title": "IKEA" } }
+        { "type": "brand", "settings": { "title": "Citroën Ami", "match": "citroën ami, citroen ami", "icon": "bolt" } },
+        { "type": "brand", "settings": { "title": "Sodastream", "icon": "drop" } },
+        { "type": "brand", "settings": { "title": "Lavazza", "icon": "home" } },
+        { "type": "brand", "settings": { "title": "IKEA", "icon": "home" } }
       ]
     }
   ]
