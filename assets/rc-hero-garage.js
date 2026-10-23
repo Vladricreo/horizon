@@ -66,6 +66,14 @@ class RcHeroGarage extends HTMLElement {
     this.#renderGarage();
 
     document.addEventListener('shopify:block:select', this.#onEditorBlockSelect, { signal });
+    // The vehicle can also be cleared from the site-wide garage bar.
+    document.addEventListener('rc:garage-change', () => this.#renderGarage(), { signal });
+
+    // Links like "/#rc-finder" (garage bar, product badge) land straight on the finder.
+    if (window.location.hash === '#rc-finder') {
+      this.querySelector('[data-rc-vehicle-form]')?.scrollIntoView({ block: 'center' });
+      this.#brandSelect?.focus({ preventScroll: true });
+    }
   }
 
   disconnectedCallback() {
@@ -163,6 +171,7 @@ class RcHeroGarage extends HTMLElement {
 
     const submit = /** @type {HTMLButtonElement | null} */ (this.querySelector('[data-rc-submit]'));
     if (submit) submit.setAttribute('aria-busy', 'true');
+    this.classList.add('is-searching');
 
     if (this.dataset.saveToCart === 'true') {
       // Best effort: never block navigation for more than ~1.2s.
@@ -281,17 +290,17 @@ class RcHeroGarage extends HTMLElement {
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Tilt follows the pointer on devices that can hover.
+    // A gentle tilt follows the pointer, on desktop only.
     const wrap = /** @type {HTMLElement | null} */ (this.querySelector('[data-rc-car-wrap]'));
-    if (wrap && !reduceMotion && window.matchMedia('(hover: hover)').matches) {
+    if (wrap && !reduceMotion && window.matchMedia('(hover: hover) and (min-width: 990px)').matches) {
       stage.addEventListener(
         'pointermove',
         (event) => {
           const rect = stage.getBoundingClientRect();
           const px = (event.clientX - rect.left) / rect.width - 0.5;
           const py = (event.clientY - rect.top) / rect.height - 0.5;
-          wrap.style.setProperty('--ry', `${(px * 8).toFixed(2)}deg`);
-          wrap.style.setProperty('--rx', `${(-py * 5).toFixed(2)}deg`);
+          wrap.style.setProperty('--ry', `${(px * 5).toFixed(2)}deg`);
+          wrap.style.setProperty('--rx', `${(-py * 3).toFixed(2)}deg`);
         },
         { signal }
       );
@@ -346,6 +355,7 @@ class RcHeroGarage extends HTMLElement {
 
   #stopAutoplay() {
     this.#userInteracted = true;
+    this.dataset.interacted = '';
     window.clearInterval(this.#autoplayTimer);
   }
 

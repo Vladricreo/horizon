@@ -242,4 +242,15 @@
   .rc-up-card__add.is-added .rc-up-card__added-label {
     display: inline;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rc-up-card:hover .rc-up-card__media img,
+    .rc-up-card__add:active {
+      transform: none;
+    }
+
+    .rc-up-card__add[aria-busy='true'] .rc-up-card__add-icon {
+      animation-duration: 2.4s;
+    }
+  }
 {% endstylesheet %}

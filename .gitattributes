@@ -3,3 +3,4 @@
 # (GitHub's web merge ignores custom drivers: resolve these files by keeping "ours".)
 templates/*.json merge=ours
 config/settings_data.json merge=ours
+sections/*-group.json merge=ours

@@ -150,12 +150,21 @@
                 "padding-inline-end": 0
               },
               "blocks": {}
+            },
+            "rc_compat": {
+              "type": "custom-liquid",
+              "name": "Ricreo · Compatibilità",
+              "settings": {
+                "custom_liquid": "<rc-compat data-context=\"card\" data-tags=\"{{ closest.product.tags | join: '|' | escape }}\" hidden></rc-compat>"
+              },
+              "blocks": {}
             }
           },
           "block_order": [
             "product_card_gallery_cFExAi",
             "product_title_j7qXTx",
-            "price_fYkUgG"
+            "price_fYkUgG",
+            "rc_compat"
           ]
         }
       },

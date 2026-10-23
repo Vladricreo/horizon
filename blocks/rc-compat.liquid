@@ -1,0 +1,45 @@
+{%- comment -%}
+  Ricreo · Compatibilità veicolo (pagina prodotto).
+  Confronta l'auto salvata dal cliente con i tag del prodotto (es. volkswagen-golf-7, universale).
+  Il contenuto è generato da rc-garage.js (caricato da snippets/rc-global.liquid).
+{%- endcomment -%}
+
+{%- liquid
+  assign product = closest.product
+  assign finder_url = block.settings.finder_url | default: routes.root_url
+  assign finder_url = finder_url | append: '#rc-finder'
+-%}
+
+{%- if product != blank -%}
+  <rc-compat
+    data-context="product"
+    data-tags="{{ product.tags | join: '|' | escape }}"
+    data-finder-url="{{ finder_url }}"
+    {{ block.shopify_attributes }}
+  ></rc-compat>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Ricreo · Compatibilità",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Mostra se il prodotto è compatibile con l'auto salvata dal cliente. Usa i tag prodotto nel formato marca-modello (es. volkswagen-golf-7), solo marca (volkswagen) oppure universale."
+    },
+    {
+      "type": "url",
+      "id": "finder_url",
+      "label": "Pagina con la ricerca veicolo",
+      "info": "Di solito la homepage (dove c'è l'hero)."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ricreo · Compatibilità",
+      "category": "Ricreo"
+    }
+  ]
+}
+{% endschema %}

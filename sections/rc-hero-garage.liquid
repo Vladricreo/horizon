@@ -90,7 +90,7 @@
       </div>
 
       <div class="rc-hero__finder">
-        <div class="rc-finder" role="search">
+        <div class="rc-finder" id="rc-finder" role="search">
           <div class="rc-finder__tabs" role="tablist" aria-label="Modalità di ricerca">
             <button
               type="button"
@@ -619,7 +619,7 @@
     border-radius: 50%;
     background: #22c55e;
     box-shadow: 0 0 0 0 rgb(34 197 94 / 0.6);
-    animation: rc-live 2s infinite;
+    animation: rc-live 2s 3;
   }
 
   @keyframes rc-live {
@@ -661,6 +661,7 @@
 
   /* Finder */
   .rc-finder {
+    scroll-margin-block: 120px;
     padding: 8px;
     border: 1px solid var(--rc-border);
     border-radius: 22px;
@@ -1146,7 +1147,7 @@
 
   [data-zone='wheel'] .rc-car__wheel--front .rc-car__spokes,
   [data-zone='rear_wheel'] .rc-car__wheel--rear .rc-car__spokes {
-    animation: rc-spin 1.1s linear infinite;
+    animation: rc-spin 1.1s cubic-bezier(0.3, 0, 0.3, 1) 2;
   }
 
   [data-zone='wheel'] .rc-car__wheel--front .rc-car__caliper,
@@ -1181,7 +1182,7 @@
 
   [data-zone='body'] .rc-car__sheen {
     opacity: 1;
-    animation: rc-sheen 1.8s ease-in-out infinite;
+    animation: rc-sheen 1.8s ease-in-out 1 both;
   }
 
   @keyframes rc-sheen {
@@ -1194,7 +1195,7 @@
   }
 
   [data-zone='exhaust'] .rc-car__smoke circle {
-    animation: rc-smoke 1.6s ease-out infinite;
+    animation: rc-smoke 1.6s ease-out 3 both;
   }
 
   [data-zone='exhaust'] .rc-car__smoke circle:nth-child(2) {
@@ -1235,7 +1236,13 @@
     width: 200%;
     height: 100%;
     background: repeating-linear-gradient(90deg, var(--rc-border) 0 40px, transparent 40px 80px);
-    animation: rc-road 1.6s linear infinite;
+    animation: rc-road 1.6s linear infinite paused;
+  }
+
+  /* The road only moves while the visitor is engaging with the car or searching. */
+  .rc-stage:hover .rc-road span,
+  .rc-hero.is-searching .rc-road span {
+    animation-play-state: running;
   }
 
   @keyframes rc-road {
@@ -1278,7 +1285,12 @@
     border-radius: 50%;
     background: var(--rc-accent);
     opacity: 0.5;
-    animation: rc-pulse 2.2s ease-out infinite;
+    animation: rc-pulse 2.2s ease-out 3 both;
+  }
+
+  /* Once the visitor has found the hotspots, the pulse has done its job. */
+  .rc-hero[data-interacted] .rc-hotspot__pulse {
+    display: none;
   }
 
   @keyframes rc-pulse {

@@ -228,7 +228,12 @@
     height: 180px;
     border-radius: 50%;
     border: 1px dashed color-mix(in srgb, var(--rc-tint) 40%, transparent);
-    animation: rc-ring-spin 30s linear infinite;
+    animation: rc-ring-spin 12s linear infinite paused;
+  }
+
+  .rc-cat__link:hover .rc-cat__ring,
+  .rc-cat__link:focus-visible .rc-cat__ring {
+    animation-play-state: running;
   }
 
   @keyframes rc-ring-spin {

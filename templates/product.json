@@ -288,10 +288,18 @@
                 "limit": 3
               },
               "blocks": {}
+            },
+            "rc_compat": {
+              "type": "rc-compat",
+              "settings": {
+                "finder_url": ""
+              },
+              "blocks": {}
             }
           },
           "block_order": [
             "group_icgrde",
+            "rc_compat",
             "rc_points",
             "divider_VJhene",
             "variant_picker_R3rGDr",
@@ -426,12 +434,21 @@
                 "padding-inline-end": 0
               },
               "blocks": {}
+            },
+            "rc_compat": {
+              "type": "custom-liquid",
+              "name": "Ricreo · Compatibilità",
+              "settings": {
+                "custom_liquid": "<rc-compat data-context=\"card\" data-tags=\"{{ closest.product.tags | join: '|' | escape }}\" hidden></rc-compat>"
+              },
+              "blocks": {}
             }
           },
           "block_order": [
             "product_card_gallery_DNizbJ",
             "product_title_M7MJkb",
-            "price_gLWgA6"
+            "price_gLWgA6",
+            "rc_compat"
           ]
         }
       },

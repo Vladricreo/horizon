@@ -99,10 +99,19 @@
         "enable_transparent_header_product": false,
         "enable_transparent_header_collection": false
       }
+    },
+    "rc_garage_bar": {
+      "type": "rc-garage-bar",
+      "settings": {
+        "show_empty": true,
+        "empty_text": "Scegli la tua auto e vedi solo i ricambi compatibili",
+        "finder_url": ""
+      }
     }
   },
   "order": [
     "header_announcements_9jGBFp",
-    "header_section"
+    "header_section",
+    "rc_garage_bar"
   ]
 }

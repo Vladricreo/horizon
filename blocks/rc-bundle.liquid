@@ -461,6 +461,18 @@
     font-size: 0.85rem;
     color: #dc2626;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rc-bundle *,
+    .rc-bundle *::before,
+    .rc-bundle *::after {
+      transition-duration: 0.01ms !important;
+    }
+
+    .rc-bundle__cta:hover:not(:disabled) {
+      transform: none;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}

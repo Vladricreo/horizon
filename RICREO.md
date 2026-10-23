@@ -13,9 +13,11 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 | Punti chiave con icone automatiche | `blocks/rc-feature-list.liquid`, `blocks/_rc-feature.liquid` | Pagina prodotto |
 | "Spesso acquistati insieme" basato su prodotto **e** carrello | `blocks/rc-bundle.liquid`, `snippets/rc-bundle-row.liquid` | Pagina prodotto |
 | Upsell nel carrello + barra spedizione gratuita | `snippets/rc-cart-upsell.liquid`, `snippets/rc-upsell-card.liquid`, `sections/rc-cart-upsell.liquid` | Drawer e pagina carrello |
-| Logica aggiunta al carrello / bundle | `assets/rc-upsell.js` | — |
+| Logica aggiunta al carrello / bundle, barra spedizione animata (`<rc-ship-bar>`) | `assets/rc-upsell.js` | — |
+| Barra garage: auto salvata, "Cambia", filtro rapido "Solo ricambi per…" nelle collezioni | `sections/rc-garage-bar.liquid`, `assets/rc-garage.js` | Gruppo header, tutto il sito |
+| Badge compatibilità veicolo | `blocks/rc-compat.liquid` (pagina prodotto), blocco *Liquid personalizzato* nelle card | Prodotto, collezione, ricerca, consigliati |
 | Icone | `snippets/rc-icon.liquid` | — |
-| Token globali (`--rc-accent`, `--rc-accent-2`, `--rc-accent-ink`, `--rc-accent-tint`) | `snippets/rc-theme-tokens.liquid` | Tutto il sito |
+| Token globali (`--rc-accent`, `--rc-accent-2`, `--rc-accent-ink`, `--rc-accent-tint`), animazione icona carrello, stile badge compatibilità | `snippets/rc-global.liquid` | Tutto il sito |
 
 ## Stile globale
 
@@ -25,6 +27,9 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
   (sfondo footer), `color2` `#FFF1EB` (tinta accento: badge saldi), `color3` `#E4E2DC` (bordi, badge esaurito).
 - **Font**: titoli e sottotitoli Space Grotesk, testo Inter 16px.
 - **Raggi**: card 16, immagini prodotto 12, input 12, popover 16, bottoni 14.
+- **Movimento**: nessuna animazione continua. Gli effetti partono solo da un'azione del cliente
+  (hover, aggiunta al carrello, soglia spedizione raggiunta) o si fermano dopo pochi cicli
+  (pulse degli hotspot, zone dell'auto). Tutti i file `rc-*` rispettano `prefers-reduced-motion`.
 
 ## Come si configurano i dati
 
@@ -41,6 +46,12 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 - **Veicolo**: quando il cliente cerca per auto, il veicolo viene salvato nel browser e come
   attributo carrello `Veicolo` (lo vedi nell'ordine). I suggerimenti nel carrello danno priorità
   ai prodotti con un tag che contiene il veicolo, es. `volkswagen-golf-7`.
+- **Compatibilità** (badge e filtro della barra garage): tag prodotto nel formato `marca-modello`
+  (`volkswagen-golf-7`, anche più specifico come `volkswagen-golf-7-2015-2020`), più generico
+  (`volkswagen-golf`, solo marca `volkswagen`) oppure `universale`. Nelle card il badge compare solo
+  se il prodotto è compatibile; nella pagina prodotto mostra anche "da verificare" o "Scegli il tuo veicolo".
+  Il badge nelle card è un blocco *Liquid personalizzato* che usa `closest.product`: se dopo il
+  caricamento non compare mai, verifica nell'editor che il blocco riceva il prodotto.
 - **Marche/modelli** dell'hero: blocchi *Marca e modelli* nella sezione (un modello per riga).
   Con la destinazione "Collezione filtrata per tag" il link diventa `/collections/<base>/<marca-modello>`.
 - La soglia della spedizione gratuita è nella valuta principale del negozio.
@@ -54,9 +65,10 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 2. `config/settings_schema.json` — gruppi *Ricreo · Stile* e *Ricreo · Upsell carrello* aggiunti in fondo all'array.
 3. `layout/theme.liquid` — una riga subito dopo `{%- render 'color-palette' -%}`:
    ```liquid
-   {%- render 'rc-theme-tokens' -%}
+   {%- render 'rc-global' -%}
    ```
-4. `templates/index.json`, `templates/product.json`, `templates/cart.json` — configurazione del negozio
+4. `templates/index.json`, `templates/product.json`, `templates/cart.json`, `templates/collection.json`,
+   `templates/search.json`, `sections/header-group.json` — configurazione del negozio
    (sezioni e blocchi Ricreo). Sono dati, non codice: in caso di conflitto tieni la nostra versione.
 
 ## Aggiornare Horizon

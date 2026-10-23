@@ -170,6 +170,16 @@
     border-color: color-mix(in srgb, var(--rc-accent) 40%, transparent);
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .rc-feat--cards .rc-feat__item {
+      transition: border-color 0.3s;
+    }
+
+    .rc-feat--cards .rc-feat__item:hover {
+      transform: none;
+    }
+  }
+
   .rc-feat--cards .rc-feat__icon {
     width: 56px;
     height: 56px;

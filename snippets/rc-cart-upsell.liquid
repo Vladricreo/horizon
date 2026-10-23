@@ -138,7 +138,7 @@
           assign progress = 100
         endif
       -%}
-      <div class="rc-ship{% if remaining <= 0 %} rc-ship--done{% endif %}">
+      <rc-ship-bar class="rc-ship{% if remaining <= 0 %} rc-ship--done{% endif %}" data-progress="{{ progress }}">
         <p class="rc-ship__text">
           {% render 'rc-icon', name: 'truck', size: 18 %}
           {%- if remaining > 0 -%}
@@ -148,9 +148,9 @@
           {%- endif -%}
         </p>
         <div class="rc-ship__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress }}" aria-label="Avanzamento spedizione gratuita">
-          <span style="width: {{ progress }}%;"></span>
+          <span data-rc-ship-fill style="width: {{ progress }}%;"></span>
         </div>
-      </div>
+      </rc-ship-bar>
     {%- endif -%}
 
     {%- if count > 0 -%}
@@ -231,6 +231,66 @@
 
   .rc-ship--done .rc-ship__track span {
     background: #16a34a;
+  }
+
+  /* One-off celebration when the free shipping threshold is crossed (set by rc-upsell.js). */
+  .rc-ship__track {
+    position: relative;
+  }
+
+  .rc-ship.is-celebrating .rc-ship__text {
+    animation: rc-ship-pop 0.6s cubic-bezier(0.3, 0.7, 0.4, 1.5);
+  }
+
+  .rc-ship.is-celebrating .rc-ship__text .rc-icon {
+    animation: rc-ship-drive 1.2s cubic-bezier(0.5, 0, 0.3, 1);
+  }
+
+  .rc-ship.is-celebrating .rc-ship__track::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 20%, rgb(255 255 255 / 0.75) 50%, transparent 80%);
+    transform: translateX(-100%);
+    animation: rc-ship-shine 1s 0.2s ease-out;
+  }
+
+  @keyframes rc-ship-pop {
+    40% {
+      transform: scale(1.04);
+    }
+  }
+
+  @keyframes rc-ship-drive {
+    45% {
+      transform: translateX(10px);
+      opacity: 0;
+    }
+    46% {
+      transform: translateX(-10px);
+    }
+    100% {
+      transform: none;
+      opacity: 1;
+    }
+  }
+
+  @keyframes rc-ship-shine {
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rc-ship__track span {
+      transition: none;
+    }
+
+    .rc-ship.is-celebrating .rc-ship__text,
+    .rc-ship.is-celebrating .rc-ship__text .rc-icon,
+    .rc-ship.is-celebrating .rc-ship__track::after {
+      animation: none;
+    }
   }
 
   .rc-upsell__head {

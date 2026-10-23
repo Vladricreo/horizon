@@ -1,0 +1,101 @@
+{%- comment -%}
+  Ricreo · stile e script globali.
+  - Token (Impostazioni tema → Ricreo · Stile): le sezioni e i blocchi rc-* leggono --rc-accent
+    da qui, salvo override locale.
+  - Micro-animazione dell'icona carrello, badge di compatibilità <rc-compat> e rc-garage.js,
+    usati anche dentro le card prodotto di Horizon.
+  Renderizzato in layout/theme.liquid subito dopo 'color-palette'.
+{%- endcomment -%}
+
+<script src="{{ 'rc-garage.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+{%- liquid
+  assign rc_accent = settings.rc_accent
+  if rc_accent == blank
+    assign rc_accent = '#FF5A1F'
+  endif
+-%}
+
+<style>
+  :root {
+    --rc-accent: {{ rc_accent }};
+    --rc-accent-2: {{ rc_accent | color_modify: 'hue', 30 | color_lighten: 8 }};
+    --rc-accent-ink: {{ rc_accent | color_darken: 18 }};
+    --rc-accent-tint: {{ rc_accent | color_mix: '#ffffff', 10 }};
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--rc-accent) 24%, transparent);
+  }
+
+  /* The header cart icon gives a little hop while Horizon animates the count bubble. */
+  @keyframes rc-cart-bump {
+    30% {
+      transform: translateY(-3px) rotate(-8deg);
+    }
+    60% {
+      transform: translateY(0) rotate(5deg);
+    }
+  }
+
+  .header-actions__cart-icon:has(.cart-bubble--animating) svg {
+    animation: rc-cart-bump 0.5s cubic-bezier(0.3, 0.7, 0.4, 1.4);
+  }
+
+  /* Vehicle compatibility badge (rc-garage.js fills it in). */
+  rc-compat {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.85rem;
+    line-height: 1.35;
+  }
+
+  rc-compat[hidden] {
+    display: none;
+  }
+
+  .rc-compat__icon {
+    flex: none;
+    margin-block-start: 1px;
+  }
+
+  rc-compat a {
+    color: inherit;
+    font-weight: 600;
+    text-underline-offset: 3px;
+  }
+
+  rc-compat[data-context='product'] {
+    padding: 10px 14px;
+    border-radius: 14px;
+    background: rgb(var(--color-foreground-rgb) / 0.04);
+  }
+
+  rc-compat[data-tone='ok'] {
+    color: #15803d;
+  }
+
+  rc-compat[data-context='product'][data-tone='ok'] {
+    background: #ecfdf3;
+  }
+
+  rc-compat[data-context='product'][data-tone='empty'] {
+    background: var(--rc-accent-tint);
+  }
+
+  rc-compat[data-context='product'][data-tone='empty'] .rc-compat__icon {
+    color: var(--rc-accent-ink);
+  }
+
+  rc-compat[data-context='card'] {
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .header-actions__cart-icon:has(.cart-bubble--animating) svg {
+      animation: none;
+    }
+  }
+</style>

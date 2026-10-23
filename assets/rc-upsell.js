@@ -106,6 +106,70 @@ function selectedVariantData(field) {
   return null;
 }
 
+const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ------------------------------------------------------------------------------------------ */
+
+const SHIP_KEY = 'rc-ship-progress';
+
+/**
+ * Free shipping bar. Horizon may morph the drawer in place (attribute change) or swap the node
+ * (new element), so both paths animate from the last progress this session has seen.
+ */
+class RcShipBar extends HTMLElement {
+  static observedAttributes = ['data-progress'];
+
+  connectedCallback() {
+    this.#render();
+  }
+
+  attributeChangedCallback() {
+    if (this.isConnected) this.#render();
+  }
+
+  #render() {
+    const progress = Math.min(100, Number(this.dataset.progress) || 0);
+    const fill = /** @type {HTMLElement | null} */ (this.querySelector('[data-rc-ship-fill]'));
+    const last = RcShipBar.#readLast();
+    RcShipBar.#writeLast(progress);
+    if (!fill || last === null || last === progress) return;
+
+    if (!reduceMotion()) {
+      fill.style.transition = 'none';
+      fill.style.width = `${last}%`;
+      void fill.offsetWidth;
+      fill.style.transition = '';
+    }
+    fill.style.width = `${progress}%`;
+
+    if (last < 100 && progress >= 100) {
+      this.classList.remove('is-celebrating');
+      void this.offsetWidth;
+      this.classList.add('is-celebrating');
+      window.setTimeout(() => this.classList.remove('is-celebrating'), 1600);
+    }
+  }
+
+  /** @returns {number | null} */
+  static #readLast() {
+    try {
+      const value = sessionStorage.getItem(SHIP_KEY);
+      return value === null ? null : Number(value);
+    } catch {
+      return null;
+    }
+  }
+
+  /** @param {number} value */
+  static #writeLast(value) {
+    try {
+      sessionStorage.setItem(SHIP_KEY, String(value));
+    } catch {
+      // Storage unavailable: the bar simply renders without the transition.
+    }
+  }
+}
+
 /* ------------------------------------------------------------------------------------------ */
 
 class RcUpsell extends HTMLElement {
@@ -190,6 +254,9 @@ class RcBundle extends HTMLElement {
   #abort = new AbortController();
   /** @type {Record<string, {price: number, compare: number, available: boolean}>} */
   #mainVariants = {};
+  /** @type {number | null} */
+  #shownTotal = null;
+  #countFrame = 0;
 
   connectedCallback() {
     const signal = this.#abort.signal;
@@ -276,7 +343,7 @@ class RcBundle extends HTMLElement {
     const button = /** @type {HTMLButtonElement | null} */ (this.querySelector('[data-rc-bundle-add]'));
     const label = this.querySelector('[data-rc-cta-label]');
 
-    if (totalEl) totalEl.textContent = money(this, total);
+    if (totalEl instanceof HTMLElement) this.#countTo(totalEl, total);
     if (compareEl) {
       compareEl.hidden = compare <= total;
       compareEl.textContent = money(this, compare);
@@ -289,6 +356,32 @@ class RcBundle extends HTMLElement {
     if (label) {
       label.textContent = lines.length > 1 ? `Aggiungi ${lines.length} articoli` : lines.length === 1 ? 'Aggiungi al carrello' : 'Seleziona un articolo';
     }
+  }
+
+  /**
+   * Rolls the total from the previously shown amount to the new one, so ticking an item feels alive.
+   * @param {HTMLElement} el
+   * @param {number} to - cents
+   */
+  #countTo(el, to) {
+    const from = this.#shownTotal;
+    this.#shownTotal = to;
+    window.cancelAnimationFrame(this.#countFrame);
+
+    if (from === null || from === to || reduceMotion()) {
+      el.textContent = money(this, to);
+      return;
+    }
+
+    const duration = 420;
+    const start = performance.now();
+    const step = (/** @type {number} */ now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = money(this, Math.round(from + (to - from) * eased));
+      if (t < 1) this.#countFrame = window.requestAnimationFrame(step);
+    };
+    this.#countFrame = window.requestAnimationFrame(step);
   }
 
   #onAdd = async () => {
@@ -314,5 +407,6 @@ class RcBundle extends HTMLElement {
   };
 }
 
+if (!customElements.get('rc-ship-bar')) customElements.define('rc-ship-bar', RcShipBar);
 if (!customElements.get('rc-upsell')) customElements.define('rc-upsell', RcUpsell);
 if (!customElements.get('rc-bundle')) customElements.define('rc-bundle', RcBundle);
