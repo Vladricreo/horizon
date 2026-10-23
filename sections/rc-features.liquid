@@ -6,7 +6,7 @@
 <div class="section section--full-width rc-feat-section">
   <div
     class="rc-feat rc-feat--{{ section.settings.style }} rc-feat--bg-{{ section.settings.background }}"
-    style="--rc-accent: {{ section.settings.accent }}; --rc-pad-top: {{ section.settings.padding_top }}px; --rc-pad-bottom: {{ section.settings.padding_bottom }}px;"
+    style="{% if section.settings.accent != blank %}--rc-accent: {{ section.settings.accent }};{% endif %} --rc-pad-top: {{ section.settings.padding_top }}px; --rc-pad-bottom: {{ section.settings.padding_bottom }}px;"
   >
     <div class="rc-feat__inner">
       {%- if section.settings.heading != blank -%}
@@ -276,7 +276,7 @@
       "type": "color",
       "id": "accent",
       "label": "Colore d'accento",
-      "default": "#FF5A1F"
+      "info": "Lascia vuoto per usare l'accento del tema (Impostazioni tema → Ricreo · Stile)."
     },
     {
       "type": "range",

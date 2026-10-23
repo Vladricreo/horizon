@@ -2118,6 +2118,21 @@
     ]
   },
   {
+    "name": "Ricreo · Stile",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Colore d'accento usato da tutte le sezioni e i blocchi Ricreo (hero, categorie, punti chiave, bundle, upsell). Ogni sezione può comunque sovrascriverlo."
+      },
+      {
+        "type": "color",
+        "id": "rc_accent",
+        "label": "Colore d'accento",
+        "default": "#FF5A1F"
+      }
+    ]
+  },
+  {
     "name": "Ricreo · Upsell carrello",
     "settings": [
       {

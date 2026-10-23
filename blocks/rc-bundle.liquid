@@ -93,7 +93,7 @@
     data-product-id="{{ product.id }}"
     data-money-format="{{ shop.money_format | strip_html | escape }}"
     data-currency="{{ cart.currency.iso_code }}"
-    style="--rc-accent: {{ block.settings.accent }};"
+    style="{% if block.settings.accent != blank %}--rc-accent: {{ block.settings.accent }};{% endif %}"
     {{ block.shopify_attributes }}
   >
     <script type="application/json" data-rc-main-variants>
@@ -169,7 +169,6 @@
 
 {% stylesheet %}
   .rc-bundle {
-    --rc-accent: #ff5a1f;
     container-type: inline-size;
     display: grid;
     gap: 14px;
@@ -525,7 +524,7 @@
       "type": "color",
       "id": "accent",
       "label": "Colore d'accento",
-      "default": "#FF5A1F"
+      "info": "Lascia vuoto per usare l'accento del tema (Impostazioni tema → Ricreo · Stile)."
     }
   ],
   "presets": [

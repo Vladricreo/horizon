@@ -15,6 +15,16 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 | Upsell nel carrello + barra spedizione gratuita | `snippets/rc-cart-upsell.liquid`, `snippets/rc-upsell-card.liquid`, `sections/rc-cart-upsell.liquid` | Drawer e pagina carrello |
 | Logica aggiunta al carrello / bundle | `assets/rc-upsell.js` | — |
 | Icone | `snippets/rc-icon.liquid` | — |
+| Token globali (`--rc-accent`, `--rc-accent-2`, `--rc-accent-ink`, `--rc-accent-tint`) | `snippets/rc-theme-tokens.liquid` | Tutto il sito |
+
+## Stile globale
+
+- **Accento**: Impostazioni tema → *Ricreo · Stile*. Lo usano tutte le sezioni e i blocchi `rc-*`;
+  il campo "Colore d'accento" di una singola sezione/blocco, se compilato, lo sovrascrive solo lì.
+- **Palette** (Impostazioni tema → Colori): sfondo `#FAFAF7`, testo `#14161B`, `color1` `#22252B`
+  (sfondo footer), `color2` `#FFF1EB` (tinta accento: badge saldi), `color3` `#E4E2DC` (bordi, badge esaurito).
+- **Font**: titoli e sottotitoli Space Grotesk, testo Inter 16px.
+- **Raggi**: card 16, immagini prodotto 12, input 12, popover 16, bottoni 14.
 
 ## Come si configurano i dati
 
@@ -41,8 +51,12 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
    ```liquid
    {% render 'rc-cart-upsell', context: 'drawer' %}
    ```
-2. `config/settings_schema.json` — gruppo *Ricreo · Upsell carrello* aggiunto in fondo all'array.
-3. `templates/index.json`, `templates/product.json`, `templates/cart.json` — configurazione del negozio
+2. `config/settings_schema.json` — gruppi *Ricreo · Stile* e *Ricreo · Upsell carrello* aggiunti in fondo all'array.
+3. `layout/theme.liquid` — una riga subito dopo `{%- render 'color-palette' -%}`:
+   ```liquid
+   {%- render 'rc-theme-tokens' -%}
+   ```
+4. `templates/index.json`, `templates/product.json`, `templates/cart.json` — configurazione del negozio
    (sezioni e blocchi Ricreo). Sono dati, non codice: in caso di conflitto tieni la nostra versione.
 
 ## Aggiornare Horizon
@@ -54,9 +68,10 @@ git merge upstream/main
 ```
 
 - I template JSON e `settings_data.json` restano i nostri grazie a `.gitattributes`.
-- Se `cart-drawer.liquid` va in conflitto: prendi la versione di Horizon e reinserisci la riga sopra.
-- Se `settings_schema.json` va in conflitto: prendi la versione di Horizon e riaggiungi in fondo il
-  gruppo `Ricreo · Upsell carrello` (è tutto in un unico oggetto JSON).
+- Se `cart-drawer.liquid` o `layout/theme.liquid` vanno in conflitto: prendi la versione di Horizon e
+  reinserisci la riga indicata sopra.
+- Se `settings_schema.json` va in conflitto: prendi la versione di Horizon e riaggiungi in fondo i
+  gruppi `Ricreo · Stile` e `Ricreo · Upsell carrello` (ognuno è un unico oggetto JSON).
 - Se un aggiornamento cambia la struttura dei template prodotto/carrello, riaggiungi i blocchi
   dall'editor del tema: si trovano nella categoria **Ricreo**.
 

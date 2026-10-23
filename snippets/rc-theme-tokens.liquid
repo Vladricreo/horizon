@@ -1,0 +1,25 @@
+{%- comment -%}
+  Ricreo · token globali (Impostazioni tema → Ricreo · Stile).
+  Le sezioni e i blocchi rc-* leggono --rc-accent da qui, salvo override locale.
+  Renderizzato in layout/theme.liquid subito dopo 'color-palette'.
+{%- endcomment -%}
+
+{%- liquid
+  assign rc_accent = settings.rc_accent
+  if rc_accent == blank
+    assign rc_accent = '#FF5A1F'
+  endif
+-%}
+
+<style>
+  :root {
+    --rc-accent: {{ rc_accent }};
+    --rc-accent-2: {{ rc_accent | color_modify: 'hue', 30 | color_lighten: 8 }};
+    --rc-accent-ink: {{ rc_accent | color_darken: 18 }};
+    --rc-accent-tint: {{ rc_accent | color_mix: '#ffffff', 10 }};
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--rc-accent) 24%, transparent);
+  }
+</style>
