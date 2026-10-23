@@ -7,8 +7,9 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 
 | Funzione | File | Dove si usa |
 | --- | --- | --- |
-| Hero con ricerca su tutto il catalogo (nome, modello, codice ricambio), chip "Più cercati", link ai ricambi auto, griglia di icone (solo desktop) | `sections/rc-hero-search.liquid` | Homepage |
-| Griglia categorie a icone | `sections/rc-category-grid.liquid` | Homepage |
+| Hero con ricerca su tutto il catalogo (nome, modello, codice ricambio), chip "Più cercati" e link opzionali, foto di 3 prodotti veri (solo desktop) | `sections/rc-hero-search.liquid` | Homepage |
+| "Per cosa ti serve?": tessere marca/modello con foto, visibili solo se esistono prodotti con quel nome nel titolo | `sections/rc-brand-grid.liquid` | Homepage |
+| Griglia categorie a icone, nasconde le collezioni vuote | `sections/rc-category-grid.liquid` | Homepage |
 | Cerca per veicolo (marca/modello) che ricorda l'auto | `sections/rc-vehicle-finder.liquid`, `assets/rc-garage.js` | Collezioni auto e microcar |
 | Punti di forza / Come funziona (3 stili) | `sections/rc-features.liquid` | Homepage, ovunque |
 | Punti chiave con icone automatiche | `blocks/rc-feature-list.liquid`, `blocks/_rc-feature.liquid` | Pagina prodotto |
@@ -33,6 +34,19 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 - **Mobile prima di tutto**: sotto i 750px la hero mette la ricerca in alto e i chip su una riga
   scorrevole, le categorie sono tessere compatte a 2 colonne, i punti di forza una riga di chip,
   i passaggi righe icona + testo.
+
+## Homepage: mostra solo quello che c'è
+
+La homepage parte da quello che il cliente possiede (marca o modello), non da una categoria, e non porta
+mai a pagine vuote:
+
+- **Marchi e modelli**: ogni blocco ha un nome e delle "parole nel titolo prodotto"
+  (es. `citroën ami, citroen ami, per ami`). La tessera compare solo se almeno un prodotto del catalogo
+  (primi 250) le contiene; la foto è quella del primo prodotto trovato. Per un marchio nuovo basta un
+  blocco: comparirà da solo col primo prodotto caricato. Se la ricerca del nome non trova tutto
+  (es. titoli che dicono solo "Rocks"), imposta il Link a una ricerca più corta.
+- **Categorie**: le collezioni senza prodotti sono nascoste; la sezione compare da 2 categorie con prodotti.
+- **Hero**: le 3 foto sono i primi prodotti del catalogo (o della collezione scelta), in ordine di collezione.
 
 ## Categorie e collezioni
 

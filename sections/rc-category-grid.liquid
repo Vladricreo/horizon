@@ -1,8 +1,22 @@
 {%- comment -%}
   Ricreo · Griglia categorie a icone (layout bento).
   Ogni blocco è una categoria con icona, conteggio prodotti e colore d'accento.
+  Con "Nascondi categorie vuote" una collezione senza prodotti non compare, e la sezione resta nascosta
+  finché le categorie con prodotti sono meno di "Mostra la sezione da": la griglia cresce col catalogo.
 {%- endcomment -%}
 
+{%- liquid
+  assign visible = 0
+  for block in section.blocks
+    assign collection = block.settings.collection
+    if section.settings.hide_empty and collection != blank and collection.products_count == 0
+      continue
+    endif
+    assign visible = visible | plus: 1
+  endfor
+-%}
+
+{%- if visible >= section.settings.min_visible -%}
 <div class="section section--page-width rc-cats-section">
   <div
     class="rc-cats"
@@ -27,10 +41,13 @@
       </header>
     {%- endif -%}
 
-    <ul class="rc-cats__grid rc-cats__grid--{{ section.blocks.size | at_most: 8 }}" role="list">
+    <ul class="rc-cats__grid rc-cats__grid--{{ visible | at_most: 8 }}" role="list">
       {%- for block in section.blocks -%}
         {%- liquid
           assign collection = block.settings.collection
+          if section.settings.hide_empty and collection != blank and collection.products_count == 0
+            continue
+          endif
           assign url = block.settings.link
           if collection != blank
             assign url = collection.url
@@ -63,6 +80,7 @@
     </ul>
   </div>
 </div>
+{%- endif -%}
 
 {% stylesheet %}
   .rc-cats {
@@ -127,6 +145,11 @@
     .rc-cats__grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
       grid-auto-rows: minmax(170px, auto);
+    }
+
+    .rc-cats__grid--1,
+    .rc-cats__grid--2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .rc-cats__grid--3 {
@@ -418,6 +441,23 @@
       "type": "url",
       "id": "link_url",
       "label": "Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_empty",
+      "label": "Nascondi categorie vuote",
+      "info": "Vale per le categorie collegate a una collezione.",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "min_visible",
+      "label": "Mostra la sezione da",
+      "info": "Numero minimo di categorie visibili perché la sezione compaia.",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2
     },
     {
       "type": "color",

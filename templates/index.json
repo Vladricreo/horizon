@@ -14,18 +14,17 @@
       "settings": {
         "style": "light",
         "eyebrow": "",
-        "heading": "Il pezzo che non trovi? <em>Lo facciamo noi.</em>",
-        "subheading": "Ricambi e accessori su misura per casa, auto, camper, giardino e scrivania.",
-        "placeholder": "Nome, modello o codice ricambio",
+        "heading": "Ricambi e accessori <em>che non trovi altrove.</em>",
+        "subheading": "Li progettiamo e produciamo noi. Su ogni scheda trovi i modelli con cui funzionano.",
+        "placeholder": "Il tuo modello o il pezzo che cerchi",
         "button_label": "Cerca",
         "popular_label": "Più cercati",
-        "popular_searches": "Sodastream, Ganci cappelliera, Dometic, Citroën Ami, Trappola Popillia, Stream Deck, IKEA",
-        "auto_link_label": "Ricambi auto? Cerca per marca e modello",
-        "auto_link_url": "/collections/auto",
-        "show_art": true,
-        "art_icons": "home, car, bug, monitor, van, scooter, ruler, drop",
+        "popular_searches": "",
+        "auto_link_label": "",
+        "auto_link_url": "",
         "padding_top": 72,
-        "padding_bottom": 72
+        "padding_bottom": 72,
+        "show_photos": true
       }
     },
     "rc_usp": {
@@ -34,25 +33,25 @@
         "f1": {
           "type": "feature",
           "settings": {
-            "icon": "wrench",
-            "title": "Progettati da noi",
-            "text": "Ogni pezzo nasce nel nostro laboratorio"
+            "icon": "star",
+            "title": "Oltre 45.000 ordini spediti",
+            "text": "In più di 40 paesi, anche su Amazon"
           }
         },
         "f2": {
           "type": "feature",
           "settings": {
-            "icon": "shield",
-            "title": "Compatibilità chiara",
-            "text": "Modelli e codici indicati su ogni prodotto"
+            "icon": "wrench",
+            "title": "Progettati da noi",
+            "text": "Ogni pezzo nasce nel nostro laboratorio"
           }
         },
         "f3": {
           "type": "feature",
           "settings": {
-            "icon": "truck",
-            "title": "Spedizione tracciata",
-            "text": "Segui il pacco fino a casa"
+            "icon": "shield",
+            "title": "Compatibilità chiara",
+            "text": "Modelli e codici indicati su ogni prodotto"
           }
         },
         "f4": {
@@ -77,6 +76,184 @@
         "padding_bottom": 24
       }
     },
+    "rc_brands": {
+      "type": "rc-brand-grid",
+      "blocks": {
+        "b1": {
+          "type": "brand",
+          "settings": {
+            "title": "Citroën Ami",
+            "match": "citroën ami, citroen ami, per ami",
+            "link": "/search?q=Ami&type=product&options%5Bprefix%5D=last"
+          }
+        },
+        "b2": {
+          "type": "brand",
+          "settings": {
+            "title": "Opel Rocks-e",
+            "match": "rocks",
+            "link": "/search?q=Rocks&type=product&options%5Bprefix%5D=last"
+          }
+        },
+        "b3": {
+          "type": "brand",
+          "settings": {
+            "title": "Fiat Topolino",
+            "match": "topolino",
+            "link": "/search?q=Topolino&type=product&options%5Bprefix%5D=last"
+          }
+        },
+        "b4": {
+          "type": "brand",
+          "settings": {
+            "title": "Fiat",
+            "match": "fiat 500, fiat panda, fiat punto, grande punto, fiat tipo, fiat doblò, fiat ducato, fiat stilo, fiat bravo"
+          }
+        },
+        "b5": {
+          "type": "brand",
+          "settings": {
+            "title": "Abarth",
+            "match": "abarth"
+          }
+        },
+        "b6": {
+          "type": "brand",
+          "settings": {
+            "title": "Alfa Romeo",
+            "match": "alfa romeo"
+          }
+        },
+        "b7": {
+          "type": "brand",
+          "settings": {
+            "title": "Mercedes-Benz",
+            "match": "mercedes"
+          }
+        },
+        "b8": {
+          "type": "brand",
+          "settings": {
+            "title": "Volkswagen",
+            "match": "volkswagen"
+          }
+        },
+        "b9": {
+          "type": "brand",
+          "settings": {
+            "title": "BMW",
+            "match": "bmw"
+          }
+        },
+        "b10": {
+          "type": "brand",
+          "settings": {
+            "title": "Moto Honda",
+            "match": "honda"
+          }
+        },
+        "b11": {
+          "type": "brand",
+          "settings": {
+            "title": "Sodastream",
+            "match": "sodastream"
+          }
+        },
+        "b12": {
+          "type": "brand",
+          "settings": {
+            "title": "Lavazza",
+            "match": "lavazza"
+          }
+        },
+        "b13": {
+          "type": "brand",
+          "settings": {
+            "title": "De'Longhi",
+            "match": "de'longhi, delonghi, de longhi"
+          }
+        },
+        "b14": {
+          "type": "brand",
+          "settings": {
+            "title": "IKEA",
+            "match": "ikea"
+          }
+        },
+        "b15": {
+          "type": "brand",
+          "settings": {
+            "title": "Velux",
+            "match": "velux"
+          }
+        },
+        "b16": {
+          "type": "brand",
+          "settings": {
+            "title": "Dometic",
+            "match": "dometic"
+          }
+        },
+        "b17": {
+          "type": "brand",
+          "settings": {
+            "title": "PlayStation",
+            "match": "playstation, ps5, ps4"
+          }
+        },
+        "b18": {
+          "type": "brand",
+          "settings": {
+            "title": "Stream Deck",
+            "match": "stream deck"
+          }
+        },
+        "b19": {
+          "type": "brand",
+          "settings": {
+            "title": "Padel e tennis",
+            "match": "padel"
+          }
+        },
+        "b20": {
+          "type": "brand",
+          "settings": {
+            "title": "Trappole Popillia",
+            "match": "popillia"
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5",
+        "b6",
+        "b7",
+        "b8",
+        "b9",
+        "b10",
+        "b11",
+        "b12",
+        "b13",
+        "b14",
+        "b15",
+        "b16",
+        "b17",
+        "b18",
+        "b19",
+        "b20"
+      ],
+      "settings": {
+        "eyebrow": "Per marca o modello",
+        "heading": "Per cosa ti serve?",
+        "subheading": "Scegli quello che hai: vedi solo i pezzi fatti per quel modello.",
+        "min_visible": 1,
+        "padding_top": 56,
+        "padding_bottom": 24
+      }
+    },
     "rc_categories": {
       "type": "rc-category-grid",
       "blocks": {
@@ -84,80 +261,80 @@
           "type": "category",
           "settings": {
             "title": "Casa & cucina",
-            "subtitle": "Sodastream, macchine caffè, IKEA, Velux, citofoni",
+            "subtitle": "",
             "icon": "home",
             "tint": 160,
-            "link": "/collections/casa-cucina"
+            "collection": "casa-cucina"
           }
         },
         "c2": {
           "type": "category",
           "settings": {
             "title": "Auto",
-            "subtitle": "Clima, cappelliera, interni, loghi, supporti",
+            "subtitle": "",
             "icon": "car",
             "tint": 15,
-            "link": "/collections/auto"
+            "collection": "auto"
           }
         },
         "c3": {
           "type": "category",
           "settings": {
             "title": "Microcar",
-            "subtitle": "Citroën Ami, Opel Rocks-e, Fiat Topolino",
+            "subtitle": "",
             "icon": "bolt",
             "tint": 30,
-            "link": "/collections/microcar"
+            "collection": "microcar"
           }
         },
         "c4": {
           "type": "category",
           "settings": {
             "title": "Camper & nautica",
-            "subtitle": "Frigo Dometic, oblò, finestre, barca",
+            "subtitle": "",
             "icon": "van",
             "tint": 200,
-            "link": "/collections/camper-nautica"
+            "collection": "camper-nautica"
           }
         },
         "c5": {
           "type": "category",
           "settings": {
             "title": "Moto",
-            "subtitle": "Supporti navigatore, tappi telaio, scorricatena",
+            "subtitle": "",
             "icon": "scooter",
             "tint": 265,
-            "link": "/collections/moto"
+            "collection": "moto"
           }
         },
         "c6": {
           "type": "category",
           "settings": {
             "title": "Giardino & trappole",
-            "subtitle": "Trappole insetti, mobili da giardino, robot",
+            "subtitle": "",
             "icon": "bug",
             "tint": 100,
-            "link": "/collections/giardino-trappole"
+            "collection": "giardino-trappole"
           }
         },
         "c7": {
           "type": "category",
           "settings": {
             "title": "Tech & scrivania",
-            "subtitle": "Stream Deck, console, Mac mini, cuffie",
+            "subtitle": "",
             "icon": "monitor",
             "tint": 230,
-            "link": "/collections/tech-scrivania"
+            "collection": "tech-scrivania"
           }
         },
         "c8": {
           "type": "category",
           "settings": {
             "title": "Fai da te & design",
-            "subtitle": "Utensili, plotter, termostati, oggetti di design",
+            "subtitle": "",
             "icon": "ruler",
             "tint": 330,
-            "link": "/collections/fai-da-te-design"
+            "collection": "fai-da-te-design"
           }
         }
       },
@@ -173,7 +350,9 @@
       ],
       "settings": {
         "eyebrow": "Categorie",
-        "heading": "Cosa stai cercando?"
+        "heading": "Sfoglia per categoria",
+        "hide_empty": true,
+        "min_visible": 2
       }
     },
     "product_list_fa6P9H": {
@@ -417,8 +596,9 @@
   "order": [
     "rc_hero_search",
     "rc_usp",
-    "rc_categories",
+    "rc_brands",
     "product_list_fa6P9H",
+    "rc_categories",
     "rc_steps"
   ]
 }

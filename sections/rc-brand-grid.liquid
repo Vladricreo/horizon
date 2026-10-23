@@ -1,0 +1,354 @@
+{%- comment -%}
+  Ricreo · Marchi e modelli.
+  Il cliente parte da quello che possiede (Citroën Ami, Sodastream Jet, Lavazza A Modo Mio…), non da una
+  categoria. Ogni blocco è un marchio o un modello: compare solo se nel catalogo c'è almeno un prodotto
+  con una delle sue parole chiave nel titolo, e usa la foto del primo prodotto trovato.
+  Così la sezione cresce da sola man mano che si caricano prodotti, senza tessere che portano al vuoto.
+{%- endcomment -%}
+
+{%- liquid
+  assign source = section.settings.collection | default: collections.all
+  assign shown = 0
+-%}
+
+{%- capture tiles -%}
+  {%- paginate source.products by 250 -%}
+    {%- for block in section.blocks -%}
+      {%- liquid
+        if block.settings.title == blank
+          continue
+        endif
+
+        assign match = block.settings.match | default: block.settings.title
+        assign terms = match | downcase | split: ','
+        assign count = 0
+        assign first_product = nil
+
+        for product in source.products
+          assign product_title = product.title | downcase
+          for term in terms
+            assign term = term | strip
+            if term != blank and product_title contains term
+              assign count = count | plus: 1
+              if first_product == nil
+                assign first_product = product
+              endif
+              break
+            endif
+          endfor
+        endfor
+
+        if count == 0
+          continue
+        endif
+
+        assign shown = shown | plus: 1
+        assign url = block.settings.link
+        if url == blank
+          assign query = block.settings.title | url_encode
+          assign url = routes.search_url | append: '?q=' | append: query | append: '&type=product&options[prefix]=last'
+        endif
+        assign image = block.settings.image | default: first_product.featured_image
+      -%}
+      <li class="rc-brands__item" {{ block.shopify_attributes }}>
+        <a class="rc-brand" href="{{ url }}">
+          <span class="rc-brand__media">
+            {%- if image != blank -%}
+              {{
+                image
+                | image_url: width: 400
+                | image_tag:
+                  loading: 'lazy',
+                  class: 'rc-brand__img',
+                  sizes: '(min-width: 990px) 180px, 40vw',
+                  alt: ''
+              }}
+            {%- else -%}
+              {% render 'rc-icon', name: 'wrench', size: 32 %}
+            {%- endif -%}
+          </span>
+          <span class="rc-brand__body">
+            <span class="rc-brand__name">{{ block.settings.title }}</span>
+            <span class="rc-brand__count">
+              {%- if count == 1 -%}1 prodotto{%- else -%}{{ count }} prodotti{%- endif -%}
+            </span>
+          </span>
+        </a>
+      </li>
+    {%- endfor -%}
+  {%- endpaginate -%}
+{%- endcapture -%}
+
+{%- if shown >= section.settings.min_visible -%}
+  <div class="section section--page-width rc-brands-section">
+    <div
+      class="rc-brands"
+      style="--rc-pad-top: {{ section.settings.padding_top }}px; --rc-pad-bottom: {{ section.settings.padding_bottom }}px;"
+    >
+      {%- if section.settings.heading != blank -%}
+        <header class="rc-brands__header">
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="rc-brands__kicker">{{ section.settings.eyebrow }}</p>
+          {%- endif -%}
+          <h2 class="rc-brands__title">{{ section.settings.heading }}</h2>
+          {%- if section.settings.subheading != blank -%}
+            <p class="rc-brands__sub">{{ section.settings.subheading }}</p>
+          {%- endif -%}
+        </header>
+      {%- endif -%}
+
+      <ul class="rc-brands__list" role="list">
+        {{ tiles }}
+      </ul>
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .rc-brands {
+    padding-block: var(--rc-pad-top) var(--rc-pad-bottom);
+  }
+
+  .rc-brands__header {
+    margin-block-end: 24px;
+  }
+
+  .rc-brands__kicker {
+    margin: 0 0 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rc-accent, currentColor);
+  }
+
+  .rc-brands__title {
+    margin: 0;
+    font-size: clamp(1.7rem, 3vw, 2.5rem);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  .rc-brands__sub {
+    margin: 8px 0 0;
+    color: rgb(var(--color-foreground-rgb) / 0.68);
+  }
+
+  .rc-brands__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rc-brand {
+    display: grid;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    border-radius: 16px;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    text-decoration: none;
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .rc-brand:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--rc-accent) 45%, transparent);
+    box-shadow: 0 18px 32px -22px color-mix(in srgb, var(--rc-accent) 70%, transparent);
+  }
+
+  .rc-brand__media {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: rgb(var(--color-foreground-rgb) / 0.03);
+    color: rgb(var(--color-foreground-rgb) / 0.35);
+  }
+
+  .rc-brand__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .rc-brand__body {
+    display: grid;
+    gap: 2px;
+    padding: 12px 14px 14px;
+  }
+
+  .rc-brand__name {
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .rc-brand__count {
+    font-size: 0.84rem;
+    opacity: 0.65;
+  }
+
+  /* Phones: one swipeable row so the section never pushes the rest far down. */
+  @media screen and (max-width: 749px) {
+    .rc-brands {
+      padding-block: min(var(--rc-pad-top), 32px) min(var(--rc-pad-bottom), 24px);
+    }
+
+    .rc-brands__header {
+      margin-block-end: 16px;
+    }
+
+    .rc-brands__list {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      margin-inline: calc(var(--page-margin, 16px) * -1);
+      padding-inline: var(--page-margin, 16px);
+      padding-block-end: 4px;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .rc-brands__list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .rc-brands__item {
+      flex: 0 0 42%;
+      scroll-snap-align: start;
+    }
+
+    .rc-brand__body {
+      padding: 10px 12px 12px;
+    }
+
+    .rc-brand__name {
+      font-size: 0.92rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rc-brand {
+      transition: none;
+    }
+
+    .rc-brand:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ricreo · Marchi e modelli",
+  "tag": "section",
+  "class": "rc-brands-shopify-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Etichetta",
+      "default": "Per marca o modello"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titolo",
+      "default": "Per cosa ti serve?"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Sottotitolo",
+      "default": "Scegli quello che hai: vedi solo i pezzi fatti per quel modello."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Cerca i prodotti in",
+      "info": "Vuoto = tutto il catalogo (primi 250 prodotti)."
+    },
+    {
+      "type": "range",
+      "id": "min_visible",
+      "label": "Mostra la sezione da",
+      "info": "Numero minimo di tessere con prodotti perché la sezione compaia.",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Spaziatura superiore",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Spaziatura inferiore",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    }
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "Marca o modello",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Nome",
+          "info": "Es. Citroën Ami, Sodastream, Lavazza A Modo Mio."
+        },
+        {
+          "type": "text",
+          "id": "match",
+          "label": "Parole nel titolo prodotto",
+          "info": "Separate da virgola, es. \"citroën ami, citroen ami\". Vuoto = il nome. La tessera compare solo se almeno un prodotto le contiene."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "info": "Vuoto = ricerca del nome nel negozio."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Immagine",
+          "info": "Vuoto = foto del primo prodotto trovato."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ricreo · Marchi e modelli",
+      "category": "Ricreo",
+      "blocks": [
+        { "type": "brand", "settings": { "title": "Citroën Ami", "match": "citroën ami, citroen ami" } },
+        { "type": "brand", "settings": { "title": "Sodastream" } },
+        { "type": "brand", "settings": { "title": "Lavazza" } },
+        { "type": "brand", "settings": { "title": "IKEA" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
