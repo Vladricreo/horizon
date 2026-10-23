@@ -204,7 +204,7 @@
           "settings": {
             "title": "Ricambi",
             "icon": "wrench",
-            "tint": 18,
+            "tint": 15,
             "subtitle": "Freni, filtri, sospensioni e molto altro",
             "link": "shopify://collections/all"
           }
@@ -354,12 +354,12 @@
               "type": "_product-list-text",
               "name": "t:names.collection_title",
               "settings": {
-                "text": "<h3>{{ closest.collection.title }}</h3>",
+                "text": "<h3>I più scelti dai clienti</h3>",
                 "width": "fit-content",
                 "max_width": "normal",
                 "alignment": "left",
-                "type_preset": "h4",
-                "font": "var(--font-body--family)",
+                "type_preset": "h3",
+                "font": "var(--font-heading--family)",
                 "font_size": "",
                 "line_height": "normal",
                 "letter_spacing": "normal",
@@ -379,7 +379,7 @@
               "type": "_product-list-button",
               "name": "t:names.product_list_button",
               "settings": {
-                "label": "View all",
+                "label": "Vedi tutti →",
                 "open_in_new_tab": false,
                 "style_class": "button-unstyled",
                 "width": "fit-content",
@@ -472,12 +472,21 @@
                 "padding-inline-end": 0
               },
               "blocks": {}
+            },
+            "rc_compat": {
+              "type": "custom-liquid",
+              "name": "Ricreo · Compatibilità",
+              "settings": {
+                "custom_liquid": "<rc-compat data-context=\"card\" data-tags=\"{{ closest.product.tags | join: '|' | escape }}\" hidden></rc-compat>"
+              },
+              "blocks": {}
             }
           },
           "block_order": [
             "product_card_gallery_677WP3",
             "product_title_YXxMTj",
-            "price_JQzVV4"
+            "price_JQzVV4",
+            "rc_compat"
           ]
         }
       },
@@ -497,8 +506,8 @@
         "section_width": "page-width",
         "horizontal_alignment": "flex-start",
         "gap": 28,
-        "padding-block-start": 48,
-        "padding-block-end": 48
+        "padding-block-start": 64,
+        "padding-block-end": 64
       }
     }
   },
