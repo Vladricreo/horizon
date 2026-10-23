@@ -42,6 +42,15 @@
     animation: rc-cart-bump 0.5s cubic-bezier(0.3, 0.7, 0.4, 1.4);
   }
 
+  /* Long marketplace-style product titles: two lines on cards keep the grid even. */
+  product-card [ref='productTitleLink'] p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+
   /* Vehicle compatibility badge (rc-garage.js fills it in). */
   rc-compat {
     display: flex;

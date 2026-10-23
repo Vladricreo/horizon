@@ -17,7 +17,7 @@
         "announcement_BxgCk9": {
           "type": "_announcement",
           "settings": {
-            "text": "Welcome to our store",
+            "text": "Spedizione gratuita sopra i 49 € · Reso facile in 30 giorni",
             "link": "",
             "font": "var(--font-subheading--family)",
             "font_size": "0.75rem",
@@ -104,7 +104,7 @@
       "type": "rc-garage-bar",
       "settings": {
         "show_empty": true,
-        "empty_text": "Scegli la tua auto e vedi solo i ricambi compatibili",
+        "empty_text": "Ricambi giusti per la tua auto",
         "finder_url": ""
       }
     }

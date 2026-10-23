@@ -154,7 +154,9 @@
   }
 
   .rc-cat {
-    --rc-tint: hsl(var(--rc-cat-hue, 18) 90% 55%);
+    /* Muted at rest; categories only light up fully when hovered. */
+    --rc-tint: hsl(var(--rc-cat-hue, 15) 72% 52%);
+    --rc-tint-ink: hsl(var(--rc-cat-hue, 15) 70% 34%);
     min-width: 0;
   }
 
@@ -169,7 +171,7 @@
     border-radius: 22px;
     border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
     background:
-      radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--rc-tint) 22%, transparent), transparent 60%),
+      radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--rc-tint) 10%, transparent), transparent 60%),
       rgb(var(--color-foreground-rgb) / 0.03);
     color: var(--color-foreground);
     text-decoration: none;
@@ -210,13 +212,17 @@
     width: 62px;
     height: 62px;
     border-radius: 18px;
+    background: color-mix(in srgb, var(--rc-tint) 14%, var(--color-background));
+    color: var(--rc-tint-ink);
+    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1.4), background-color 0.3s, color 0.3s,
+      box-shadow 0.3s;
+  }
+
+  .rc-cat__link:hover .rc-cat__icon,
+  .rc-cat__link:focus-visible .rc-cat__icon {
     background: var(--rc-tint);
     color: #fff;
     box-shadow: 0 12px 24px -12px var(--rc-tint);
-    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1.4);
-  }
-
-  .rc-cat__link:hover .rc-cat__icon {
     transform: rotate(-8deg) scale(1.08);
   }
 
@@ -228,11 +234,14 @@
     height: 180px;
     border-radius: 50%;
     border: 1px dashed color-mix(in srgb, var(--rc-tint) 40%, transparent);
+    opacity: 0;
+    transition: opacity 0.4s;
     animation: rc-ring-spin 12s linear infinite paused;
   }
 
   .rc-cat__link:hover .rc-cat__ring,
   .rc-cat__link:focus-visible .rc-cat__ring {
+    opacity: 1;
     animation-play-state: running;
   }
 
@@ -247,7 +256,7 @@
     inset-inline-end: -14px;
     inset-block-start: 6px;
     color: var(--rc-tint);
-    opacity: 0.12;
+    opacity: 0.06;
     transform: rotate(-12deg);
     transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.4s;
     pointer-events: none;
@@ -265,7 +274,7 @@
   }
 
   .rc-cat__link:hover .rc-cat__mark {
-    opacity: 0.2;
+    opacity: 0.14;
     transform: rotate(0deg) scale(1.06);
   }
 

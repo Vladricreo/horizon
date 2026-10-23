@@ -1334,6 +1334,32 @@
     .rc-hotspot__pulse {
       animation-duration: 2.8s;
     }
+
+    /* Mobile: keep the finder and the car close together. */
+    .rc-hero {
+      padding-block: min(var(--rc-pad-top), 40px) min(var(--rc-pad-bottom), 40px);
+    }
+
+    .rc-popular {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      margin-inline: calc(var(--page-margin, 16px) * -1);
+      padding-inline: var(--page-margin, 16px);
+      scrollbar-width: none;
+    }
+
+    .rc-popular::-webkit-scrollbar {
+      display: none;
+    }
+
+    .rc-popular > * {
+      flex: none;
+    }
+
+    /* The features bar right below repeats these on small screens. */
+    .rc-trust {
+      display: none;
+    }
   }
 
   /* Zone card */
