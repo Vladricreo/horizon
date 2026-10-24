@@ -7,7 +7,8 @@
   1. Metafield `custom.abbinabili` (lista prodotti) degli articoli nel carrello
   2. Prodotti complementari di Shopify Search & Discovery
   3. Altri prodotti delle collezioni di ogni articolo, dalla più specifica (prima quelli col tag del veicolo
-     salvato; mai copie con lo stesso titolo né la stessa `custom.sottocategoria`)
+     salvato; mai copie con lo stesso titolo né la stessa `custom.sottocategoria`; se l'articolo ha tag
+     veicolo, solo prodotti compatibili, "universale" o senza tag)
   4. Collezione di riserva (prima i prodotti col tag del veicolo salvato, poi gli altri)
   Esclude sempre i prodotti già nel carrello e quelli non disponibili.
 
@@ -91,14 +92,21 @@
 
     {%- comment -%}
       Same collections as each cart item, most specific first: new products fill in on their own.
-      Complements only: copies (same title) and the item's own subcategory are skipped.
+      Complements only: copies (same title) and the item's own subcategory are skipped. A tagged item
+      (vehicle compatibility) only gets products sharing a tag, "universale" or untagged ones.
     {%- endcomment -%}
     {%- if count < limit -%}
       {%- for pass in (1..2) -%}
         {%- if pass == 1 and vehicle_handle == blank -%}{%- continue -%}{%- endif -%}
         {%- for item in cart.items reversed -%}
           {%- if count >= limit -%}{%- break -%}{%- endif -%}
-          {%- assign item_sub = item.product.metafields.custom.sottocategoria.value | join: ',' -%}
+          {%- liquid
+            assign item_sub = item.product.metafields.custom.sottocategoria.value | join: ','
+            assign item_tags = ','
+            for tag in item.product.tags
+              assign item_tags = item_tags | append: tag | handleize | append: ','
+            endfor
+          -%}
           {%- assign groups = item.product.collections | sort: 'products_count' -%}
           {%- assign used_groups = 0 -%}
           {%- for group in groups -%}
@@ -138,6 +146,17 @@
                 assign eligible = rec.available
                 if same_kind or cart_ids contains key or picked contains key or picked_titles contains title_key
                   assign eligible = false
+                endif
+                if eligible and matches_vehicle == false and item_tags != ',' and rec.tags.size > 0
+                  assign eligible = false
+                  for tag in rec.tags
+                    assign tag_handle = tag | handleize
+                    assign tag_key = tag_handle | prepend: ',' | append: ','
+                    if tag_handle == 'universale' or item_tags contains tag_key
+                      assign eligible = true
+                      break
+                    endif
+                  endfor
                 endif
               -%}
               {%- if eligible -%}

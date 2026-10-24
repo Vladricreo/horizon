@@ -89,7 +89,8 @@ nella sua impostazione "Mostra solo nelle collezioni" (oggi `auto, microcar`).
   collezioni (dalla più specifica: Microcar prima di Auto; prima quelli con un tag in comune o col tag
   del veicolo salvato): basta che il prodotto nuovo finisca nella collezione giusta. Sono esclusi
   i prodotti con lo stesso titolo e quelli della stessa sottocategoria (metafield `custom.sottocategoria`),
-  così si suggeriscono articoli complementari e non doppioni. Conviene usare
+  così si suggeriscono articoli complementari e non doppioni. Se il prodotto ha tag veicolo, si
+  suggeriscono solo prodotti con un tag in comune, `universale` o senza tag (mai quelli per un'altra auto). Conviene usare
   collezioni *automatiche* (condizione su tag, tipo o categoria prodotto) così l'assegnazione è da sola.
   Le collezioni generiche/promozionali da ignorare sono in Impostazioni tema → *Ricreo · Upsell carrello*.
   Se non c'è nulla si usa la collezione di riserva (stessa impostazione).
