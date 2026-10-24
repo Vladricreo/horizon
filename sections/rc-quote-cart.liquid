@@ -1,24 +1,21 @@
 {% comment %}
-  Percorso Ricreo B2B per un carrello composto soltanto da preventivi di stampa 3D.
+  Percorso Ricreo B2B per un carrello che contiene preventivi di stampa 3D.
   Mantiene il riepilogo e il checkout nativi di Shopify.
 {% endcomment %}
 {% liquid
-  assign quote_only = false
-  if cart.items.size > 0
-    assign quote_only = true
-    for item in cart.items
-      if item.product.handle != '3d-print-quote-service'
-        assign quote_only = false
-        break
-      endif
-    endfor
-  endif
+  assign quote_cart = false
+  for item in cart.items
+    if item.product.handle == '3d-print-quote-service'
+      assign quote_cart = true
+      break
+    endif
+  endfor
   assign b2b_url = 'https://www.ricreo.io'
   assign quote_url = 'https://shop.ricreo.io/pages/preventivo-3d'
   assign back_label = 'Torna ai servizi Ricreo'
   assign eyebrow = 'STAMPA 3D FDM · RIEPILOGO'
   assign heading = 'Il tuo preventivo di stampa 3D'
-  assign lead = 'Controlla i file, i materiali e il numero di copie prima di procedere al pagamento.'
+  assign lead = 'Controlla le voci del riepilogo prima di procedere al pagamento.'
   assign add_label = 'Aggiungi un altro file 3D'
   assign help_label = 'Hai bisogno di assistenza?'
   if request.locale.iso_code == 'en'
@@ -26,12 +23,12 @@
     assign back_label = 'Back to Ricreo services'
     assign eyebrow = 'FDM 3D PRINTING · SUMMARY'
     assign heading = 'Your 3D printing quote'
-    assign lead = 'Check the files, materials and number of copies before proceeding to payment.'
+    assign lead = 'Check the items in your summary before proceeding to payment.'
     assign add_label = 'Add another 3D file'
     assign help_label = 'Need assistance?'
   endif
 %}
-{% if quote_only %}
+{% if quote_cart %}
   <style>
     #header-group, .header-group, .shopify-section-group-footer-group,
     [id*="__footer"], [id*="__utilities"],
