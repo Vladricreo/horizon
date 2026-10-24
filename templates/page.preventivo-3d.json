@@ -110,7 +110,7 @@
       "type": "custom-liquid",
       "name": "t:names.custom_liquid",
       "settings": {
-        "custom_liquid": "<style>\n.header-group, #header-group, .shopify-section-group-header-group, .shopify-section-group-footer-group, [id*=\"__footer\"], [id*=\"__utilities\"] { display:none!important; }\nbody { --header-height:0px; --header-group-height:0px; }\n#MainContent { margin:0!important; padding:0!important; }\n</style>",
+        "custom_liquid": "<style>\n.header-group, #header-group, .shopify-section-group-header-group, .shopify-section-group-footer-group, [id*=\"__footer\"], [id*=\"__utilities\"] { display:none!important; }\nbody { --header-height:0px; --header-group-height:0px; }\n#MainContent { margin:0!important; padding:0!important; }\n.shopify-app-block { width:100%; min-width:0; }\n.print-quote-widget-container, .print-quote-widget-root { width:100%!important; max-width:100%!important; margin:0!important; left:auto!important; right:auto!important; }\n</style>",
         "background_color": "",
         "section_width": "page-width",
         "padding-block-start": 0,
