@@ -446,7 +446,7 @@
     padding-block-start: 4px;
   }
 
-  /* Phones: one swipeable row so the section never pushes the rest far down. */
+  /* Phones: one or two wide tiles stack; compact and photo tiles switch to grids further down. */
   @media screen and (max-width: 749px) {
     .rc-brands {
       padding-block: min(var(--rc-pad-top), 32px) min(var(--rc-pad-bottom), 24px);
@@ -555,19 +555,89 @@
       display: block;
     }
 
-    .rc-brands__list--photo .rc-brand__media {
-      aspect-ratio: auto;
-      height: 180px;
+    /* Photo tiles on phones: everything in view without swiping. Small square photos three to a row with
+       the text underneath (no panel over the picture); the tile with the subtitle is a wide banner on top. */
+    .rc-brands__list--photo {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-inline: 0;
+      padding: 0;
+      overflow: visible;
     }
 
-    /* The tile with the long name and the group photo gets more room in the swipe row. */
-    .rc-brands__list--photo .rc-brands__item--sub {
-      flex-basis: 78%;
+    .rc-brands__list--photo .rc-brand {
+      grid-template-areas: none;
+      grid-template-rows: auto 1fr;
+    }
+
+    .rc-brands__list--photo .rc-brand__media,
+    .rc-brands__list--photo .rc-brand__body {
+      grid-area: auto;
+    }
+
+    .rc-brands__list--photo .rc-brand__media {
+      aspect-ratio: 1;
     }
 
     .rc-brands__list--photo .rc-brand__body {
-      margin: 6px;
-      padding: 8px 10px;
+      align-self: stretch;
+      margin: 0;
+      padding: 8px 8px 10px;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+
+    .rc-brands__list--photo .rc-brand__name {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      overflow: hidden;
+      font-size: 0.8rem;
+      line-height: 1.2;
+    }
+
+    .rc-brands__list--photo .rc-brand__count {
+      font-size: 0.72rem;
+    }
+
+    .rc-brands__list--photo .rc-brand__count .rc-icon {
+      display: none;
+    }
+
+    .rc-brands__list--photo .rc-brands__item--sub {
+      grid-column: 1 / -1;
+    }
+
+    .rc-brands__list--photo .rc-brands__item--sub .rc-brand {
+      grid-template-rows: none;
+      grid-template-columns: 52% 1fr;
+      align-items: stretch;
+    }
+
+    .rc-brands__list--photo .rc-brands__item--sub .rc-brand__media {
+      aspect-ratio: auto;
+      height: 100%;
+      min-height: 116px;
+    }
+
+    .rc-brands__list--photo .rc-brands__item--sub .rc-brand__body {
+      justify-content: center;
+      padding: 10px 12px;
+    }
+
+    .rc-brands__list--photo .rc-brands__item--sub .rc-brand__name {
+      font-size: 0.88rem;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+    }
+
+    .rc-brands__list--photo .rc-brands__item--sub .rc-brand__count {
+      font-size: 0.8rem;
     }
   }
 
