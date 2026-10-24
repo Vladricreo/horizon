@@ -19,7 +19,7 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 | Logica aggiunta al carrello / bundle, barra spedizione animata (`<rc-ship-bar>`) | `assets/rc-upsell.js` | — |
 | Badge "Compatibile con la tua …" (solo conferme, mai inviti) | `blocks/rc-compat.liquid` (pagina prodotto), blocco *Liquid personalizzato* nelle card | Prodotto, collezione, ricerca, consigliati |
 | Icone | `snippets/rc-icon.liquid` | — |
-| Token globali (`--rc-accent`, `--rc-accent-2`, `--rc-accent-ink`, `--rc-accent-tint`), animazione icona carrello, stile badge compatibilità, card prodotto (fondo caldo, prezzo in grassetto, prezzo scontato e badge "In offerta" nel colore d'accento) | `snippets/rc-global.liquid` | Tutto il sito |
+| Token globali (`--rc-accent`, `--rc-accent-2`, `--rc-accent-ink`, `--rc-accent-tint`), animazione icona carrello, stile badge compatibilità, card prodotto (fondo caldo, prezzo in grassetto, prezzo scontato e badge "In offerta" nel colore d'accento), prezzo grande nella pagina prodotto | `snippets/rc-global.liquid` | Tutto il sito |
 
 ## Stile globale
 
@@ -45,7 +45,8 @@ mai a pagine vuote:
 - **Marchi e modelli**: ogni blocco ha un nome e delle "parole nel titolo prodotto"
   (es. `citroën ami, citroen ami, per ami`). La tessera compare solo se almeno un prodotto del catalogo
   (primi 250) le contiene. La foto è quella del veicolo o dell'oggetto che il cliente possiede (da caricare nel
-  blocco), mai di un accessorio; senza foto compare l'icona scelta. Modelli che condividono gli stessi ricambi
+  blocco), mai di un accessorio; finché nessuna tessera ha la foto, le tessere sono compatte (icona scelta accanto
+  al nome) e le colonne si adattano al numero di tessere, così nessuna resta da sola in fondo. Modelli che condividono gli stessi ricambi
   (Ami, Rocks-e, Topolino) stanno in una sola tessera. Per un marchio nuovo basta un
   blocco: comparirà da solo col primo prodotto caricato. Se la ricerca del nome non trova tutto
   (es. titoli che dicono solo "Rocks"), imposta il Link a una ricerca più corta.

@@ -7,11 +7,16 @@
   Un blocco compare solo se nel catalogo c'è almeno un prodotto con una delle sue parole chiave nel titolo,
   così la sezione cresce da sola man mano che si caricano prodotti, senza tessere che portano al vuoto.
   Con una o due tessere la sezione usa schede larghe, per non lasciare un riquadro isolato.
+  Finché nessuna tessera ha la foto, le tessere sono compatte (icona accanto al nome) invece di grandi
+  riquadri vuoti; le colonne si scelgono in base al numero di tessere, così l'ultima fila non resta con
+  una tessera sola.
 {%- endcomment -%}
 
 {%- liquid
   assign source = section.settings.collection | default: collections.all
   assign shown = 0
+  assign with_photo = 0
+  assign with_sub = 0
 -%}
 
 {%- capture tiles -%}
@@ -42,13 +47,22 @@
         endif
 
         assign shown = shown | plus: 1
+        if block.settings.image != blank
+          assign with_photo = with_photo | plus: 1
+        endif
+        if block.settings.subtitle != blank
+          assign with_sub = with_sub | plus: 1
+        endif
         assign url = block.settings.link
         if url == blank
           assign query = block.settings.title | url_encode
           assign url = routes.search_url | append: '?q=' | append: query | append: '&type=product&options[prefix]=last'
         endif
       -%}
-      <li class="rc-brands__item" {{ block.shopify_attributes }}>
+      <li
+        class="rc-brands__item{% if block.settings.subtitle != blank %} rc-brands__item--sub{% endif %}"
+        {{ block.shopify_attributes }}
+      >
         <a class="rc-brand" href="{{ url }}">
           <span class="rc-brand__media{% if block.settings.image == blank %} rc-brand__media--icon{% endif %}">
             {%- if block.settings.image != blank -%}
@@ -102,7 +116,24 @@
         </header>
       {%- endif -%}
 
-      <ul class="rc-brands__list{% if shown < 3 %} rc-brands__list--wide{% endif %}" role="list">
+      {%- liquid
+        case shown
+          when 3, 6, 9
+            assign cols = 3
+          when 5, 10
+            assign cols = 5
+          else
+            assign cols = 4
+        endcase
+
+        # Phones: tiles with a subtitle take a whole row, the others go two by two.
+        assign paired = shown | minus: with_sub | modulo: 2
+      -%}
+      <ul
+        class="rc-brands__list{% if shown < 3 %} rc-brands__list--wide{% elsif with_photo == 0 %} rc-brands__list--compact{% if paired == 1 %} rc-brands__list--odd{% endif %}{% endif %}"
+        style="--rc-cols: {{ cols }};"
+        role="list"
+      >
         {{ tiles }}
       </ul>
     </div>
@@ -283,6 +314,60 @@
     font-size: 1.15rem;
   }
 
+  /* Three or more tiles: as many columns as keep the rows full (6 → 3 + 3, 8 → 4 + 4). */
+  @media screen and (min-width: 990px) {
+    .rc-brands__list:not(.rc-brands__list--wide) {
+      grid-template-columns: repeat(var(--rc-cols, 4), minmax(0, 1fr));
+    }
+  }
+
+  /* No photos yet: compact tiles, the icon beside the name, instead of big empty frames. */
+  .rc-brands__list--compact .rc-brand {
+    grid-template-rows: none;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 18px;
+    background:
+      radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--rc-accent) 10%, transparent), transparent 60%),
+      var(--color-background);
+  }
+
+  .rc-brands__list--compact .rc-brand__media {
+    aspect-ratio: auto;
+    overflow: visible;
+    background: none;
+  }
+
+  .rc-brands__list--compact .rc-brand__badge {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--rc-accent) 12%, var(--color-background));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rc-accent) 18%, transparent);
+  }
+
+  .rc-brands__list--compact .rc-brand__badge .rc-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .rc-brands__list--compact .rc-brand__hint {
+    display: none;
+  }
+
+  .rc-brands__list--compact .rc-brand__body {
+    padding: 0;
+  }
+
+  .rc-brands__list--compact .rc-brand__name {
+    font-size: 1.05rem;
+  }
+
+  .rc-brands__list--compact .rc-brand__count {
+    padding-block-start: 4px;
+  }
+
   /* Phones: one swipeable row so the section never pushes the rest far down. */
   @media screen and (max-width: 749px) {
     .rc-brands {
@@ -351,6 +436,56 @@
     .rc-brand__badge .rc-icon {
       width: 28px;
       height: 28px;
+    }
+
+    /* Compact tiles are short enough for a two-column grid: everything in view, no swiping. */
+    .rc-brands__list--compact {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-inline: 0;
+      padding: 0;
+      overflow: visible;
+    }
+
+    .rc-brands__list--compact .rc-brands__item--sub,
+    .rc-brands__list--odd .rc-brands__item:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .rc-brands__list--compact .rc-brand {
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .rc-brands__list--compact .rc-brand__badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+    }
+
+    .rc-brands__list--compact .rc-brand__badge .rc-icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    .rc-brands__list--compact .rc-brand__name {
+      font-size: 0.92rem;
+    }
+
+    .rc-brands__list--compact .rc-brands__item--sub .rc-brand__sub {
+      display: block;
+    }
+  }
+
+  /* Tablets: two columns of compact tiles; a lone last tile spans the row. */
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .rc-brands__list--compact {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .rc-brands__list--compact .rc-brands__item:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
     }
   }
 

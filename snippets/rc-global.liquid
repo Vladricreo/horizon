@@ -94,6 +94,24 @@
     font-weight: 400;
   }
 
+  /* Product page: the price is the second thing people look for after the name, so it reads big. */
+  product-price:not(product-card product-price) .price {
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  product-price:not(product-card product-price):has(.compare-at-price) .price {
+    color: var(--rc-accent-ink, var(--rc-accent));
+  }
+
+  product-price:not(product-card product-price) .compare-at-price {
+    margin-inline-start: 6px;
+    font-size: 1.05rem;
+    opacity: 0.6;
+  }
+
   product-card .product-badges__badge.color-custom-badge-sale {
     padding-inline: 10px;
     border-radius: 999px;
