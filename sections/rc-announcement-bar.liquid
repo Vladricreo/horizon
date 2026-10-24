@@ -1,0 +1,250 @@
+{%- comment -%}
+  Ricreo · Barra annunci scorrevole.
+  Sostituisce la barra annunci di Horizon (che cambia messaggio a scatti) con un nastro che scorre in continuo,
+  sul colore d'accento, così la spedizione gratuita si nota subito. I messaggi vengono ripetuti abbastanza
+  volte da coprire anche gli schermi larghi; la seconda copia esiste solo per chiudere il giro senza salti.
+  Si ferma al passaggio del mouse o al tocco; con "riduci movimento" resta ferma con un solo giro centrato.
+{%- endcomment -%}
+
+{%- liquid
+  assign messages = section.blocks | where: 'type', 'message'
+  assign repeats = 8 | divided_by: messages.size | at_least: 1
+  assign duration = messages.size | times: repeats | times: section.settings.speed
+-%}
+
+{%- if messages.size > 0 -%}
+  {%- capture items -%}
+    {%- for i in (1..repeats) -%}
+      {%- for block in messages -%}
+        {%- if block.settings.text == blank -%}{%- continue -%}{%- endif -%}
+        <li
+          class="rc-ann__item{% if i > 1 %} rc-ann__item--repeat{% endif %}"
+          {% if i == 1 %}{{ block.shopify_attributes }}{% endif %}
+        >
+          {%- if block.settings.link != blank -%}<a class="rc-ann__link" href="{{ block.settings.link }}">{%- endif -%}
+          {%- if block.settings.icon != 'none' -%}
+            {% render 'rc-icon', name: block.settings.icon, size: 18 %}
+          {%- endif -%}
+          <span>{{ block.settings.text }}</span>
+          {%- if block.settings.link != blank -%}</a>{%- endif -%}
+        </li>
+      {%- endfor -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+
+  <div
+    class="rc-ann rc-ann--{{ section.settings.background }}"
+    style="--rc-ann-duration: {{ duration }}s; --rc-pad-block: {{ section.settings.padding }}px;"
+    role="region"
+    aria-label="Annunci"
+  >
+    <div class="rc-ann__track">
+      <ul class="rc-ann__list" role="list">{{ items }}</ul>
+      <ul class="rc-ann__list rc-ann__list--clone" role="list" aria-hidden="true" inert>
+        {{- items -}}
+      </ul>
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .rc-ann {
+    overflow: hidden;
+    padding-block: var(--rc-pad-block, 10px);
+    font-family: var(--font-subheading--family);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .rc-ann--accent {
+    background: var(--rc-accent-ink, var(--rc-accent));
+    color: #fff;
+  }
+
+  .rc-ann--dark {
+    background: #14161b;
+    color: #fff;
+  }
+
+  .rc-ann--dark .rc-icon {
+    color: var(--rc-accent);
+  }
+
+  .rc-ann__track {
+    display: flex;
+    width: max-content;
+    animation: rc-ann-scroll var(--rc-ann-duration, 40s) linear infinite;
+  }
+
+  /* Hold still while the customer reads or taps it. */
+  .rc-ann:hover .rc-ann__track,
+  .rc-ann:active .rc-ann__track,
+  .rc-ann:focus-within .rc-ann__track {
+    animation-play-state: paused;
+  }
+
+  .rc-ann__list {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rc-ann__item {
+    display: flex;
+    align-items: center;
+  }
+
+  /* A small dot between messages keeps the repeats from reading as one long sentence. */
+  .rc-ann__item::after {
+    content: '';
+    flex: none;
+    width: 5px;
+    height: 5px;
+    margin-inline: 28px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.45;
+  }
+
+  .rc-ann__item .rc-icon {
+    flex: none;
+    margin-inline-end: 8px;
+  }
+
+  .rc-ann__item > span,
+  .rc-ann__link {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .rc-ann__link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .rc-ann__link:hover span {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @keyframes rc-ann-scroll {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .rc-ann {
+      font-size: 0.82rem;
+    }
+
+    .rc-ann__item::after {
+      margin-inline: 20px;
+    }
+  }
+
+  /* Reduced motion: each message once, still and centred. */
+  @media (prefers-reduced-motion: reduce) {
+    .rc-ann__track {
+      width: auto;
+      justify-content: center;
+      animation: none;
+    }
+
+    .rc-ann__list--clone,
+    .rc-ann__item--repeat {
+      display: none;
+    }
+
+    .rc-ann__item:last-child::after,
+    .rc-ann__item:has(+ .rc-ann__item--repeat)::after {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ricreo · Barra annunci",
+  "tag": "aside",
+  "class": "rc-ann-section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Sfondo",
+      "options": [
+        { "value": "accent", "label": "Colore d'accento" },
+        { "value": "dark", "label": "Scuro" }
+      ],
+      "default": "accent"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Secondi per messaggio",
+      "info": "Più alto = più lento.",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Spaziatura verticale",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    }
+  ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Messaggio",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Testo",
+          "default": "Spedizione gratuita oltre 49 €"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icona",
+          "options": [
+            { "value": "none", "label": "Nessuna" },
+            { "value": "truck", "label": "Spedizione" },
+            { "value": "gift", "label": "Regalo" },
+            { "value": "tag", "label": "Offerta" },
+            { "value": "star", "label": "Stella" },
+            { "value": "shield", "label": "Garanzia" },
+            { "value": "return", "label": "Reso" },
+            { "value": "headset", "label": "Assistenza" }
+          ],
+          "default": "truck"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ricreo · Barra annunci",
+      "category": "Ricreo",
+      "blocks": [{ "type": "message" }]
+    }
+  ]
+}
+{% endschema %}

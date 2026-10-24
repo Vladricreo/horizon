@@ -18,6 +18,7 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 | Upsell nel carrello + barra spedizione gratuita | `snippets/rc-cart-upsell.liquid`, `snippets/rc-upsell-card.liquid`, `sections/rc-cart-upsell.liquid` | Drawer e pagina carrello |
 | Logica aggiunta al carrello / bundle, barra spedizione animata (`<rc-ship-bar>`) | `assets/rc-upsell.js` | — |
 | Badge "Compatibile con la tua …" (solo conferme, mai inviti) | `blocks/rc-compat.liquid` (pagina prodotto), blocco *Liquid personalizzato* nelle card | Prodotto, collezione, ricerca, consigliati |
+| Barra annunci scorrevole sul colore d'accento (al posto di quella di Horizon), uno o più messaggi con icona | `sections/rc-announcement-bar.liquid` | Testata, tutto il sito |
 | Icone | `snippets/rc-icon.liquid` | — |
 | Token globali (`--rc-accent`, `--rc-accent-2`, `--rc-accent-ink`, `--rc-accent-tint`), animazione icona carrello, stile badge compatibilità, card prodotto (fondo caldo, prezzo in grassetto, prezzo scontato e badge "In offerta" nel colore d'accento), prezzo grande nella pagina prodotto | `snippets/rc-global.liquid` | Tutto il sito |
 
@@ -30,8 +31,9 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 - **Font**: titoli e sottotitoli Space Grotesk, testo Inter 16px.
 - **Raggi**: card 16, immagini prodotto 12, input 12, popover 16, bottoni 14.
 - **Movimento**: gli effetti partono da un'azione del cliente (hover, aggiunta al carrello, soglia
-  spedizione raggiunta). Uniche animazioni continue, solo per far stare il testo su mobile: gli esempi a
-  rotazione nel campo di ricerca e il nastro dei punti di forza (si ferma al tocco). Tutti i file `rc-*`
+  spedizione raggiunta). Uniche animazioni continue: la barra annunci in cima (si ferma al passaggio del
+  mouse o al tocco) e, solo per far stare il testo su mobile, gli esempi a rotazione nel campo di ricerca e il
+  nastro dei punti di forza (si ferma al tocco). Tutti i file `rc-*`
   rispettano `prefers-reduced-motion`: con "riduci movimento" tutto resta fermo.
 - **Mobile prima di tutto**: sotto i 750px la hero mette la ricerca in alto e i chip su una riga
   scorrevole, le categorie sono tessere compatte a 2 colonne, i punti di forza un nastro di chip che scorre da solo,

@@ -11,36 +11,25 @@
   "type": "header",
   "name": "t:names.header",
   "sections": {
-    "header_announcements_9jGBFp": {
-      "type": "header-announcements",
+    "rc_announcement": {
+      "type": "rc-announcement-bar",
       "blocks": {
-        "announcement_BxgCk9": {
-          "type": "_announcement",
+        "msg_shipping": {
+          "type": "message",
           "settings": {
             "text": "Spedizione gratuita oltre 49 €",
             "link": "",
-            "font": "var(--font-subheading--family)",
-            "font_size": "0.75rem",
-            "weight": "",
-            "letter_spacing": "normal",
-            "case": "none",
-            "text_color": ""
-          },
-          "blocks": {}
+            "icon": "truck"
+          }
         }
       },
       "block_order": [
-        "announcement_BxgCk9"
+        "msg_shipping"
       ],
-      "name": "t:names.announcement_bar",
       "settings": {
+        "background": "accent",
         "speed": 5,
-        "section_width": "page-width",
-        "background_color": "",
-        "divider_width": 1,
-        "divider_color": "{{ settings.color_palette.color3 }}",
-        "padding-block-start": 15,
-        "padding-block-end": 15
+        "padding": 10
       }
     },
     "header_section": {
@@ -128,7 +117,7 @@
     }
   },
   "order": [
-    "header_announcements_9jGBFp",
+    "rc_announcement",
     "header_section"
   ]
 }
