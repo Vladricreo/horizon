@@ -52,13 +52,54 @@
   }
 
   /* Product photos are mostly wide shots on white: show them whole inside the square card instead of
-     cropping (Horizon's card gallery sets object-fit: cover inline, hence !important). */
+     cropping (Horizon's card gallery sets object-fit: cover inline, hence !important). The card gets a
+     soft warm tint and multiply drops the photo's white box, so every piece sits on the same "studio" floor. */
+  product-card .card-gallery {
+    overflow: hidden;
+    border-radius: 16px;
+  }
+
   product-card .card-gallery .product-media-container {
-    background-color: #fff;
+    background-color: color-mix(in srgb, var(--color-foreground) 4%, var(--color-background));
   }
 
   product-card .card-gallery .product-media-container img {
     object-fit: contain !important;
+    padding: 6%;
+    mix-blend-mode: multiply;
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  product-card:hover .card-gallery .product-media-container img {
+    transform: scale(1.04);
+  }
+
+  product-card [ref='productTitleLink'] p {
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  /* Prices: readable and bold; a discounted price takes the accent, the old one steps back. */
+  product-card product-price {
+    --font-h6--size: 1rem;
+    --font-h6--weight: 700;
+  }
+
+  product-card product-price:has(.compare-at-price) .price {
+    color: var(--rc-accent-ink, var(--rc-accent));
+  }
+
+  product-card product-price .compare-at-price {
+    font-size: 0.85em;
+    font-weight: 400;
+  }
+
+  product-card .product-badges__badge.color-custom-badge-sale {
+    padding-inline: 10px;
+    border-radius: 999px;
+    background: var(--rc-accent-ink, var(--rc-accent));
+    color: #fff;
+    font-weight: 700;
   }
 
   /* Vehicle compatibility badge (rc-garage.js fills it in). */
@@ -97,6 +138,14 @@
   @media (prefers-reduced-motion: reduce) {
     .header-actions__cart-icon:has(.cart-bubble--animating) svg {
       animation: none;
+    }
+
+    product-card .card-gallery .product-media-container img {
+      transition: none;
+    }
+
+    product-card:hover .card-gallery .product-media-container img {
+      transform: none;
     }
   }
 </style>

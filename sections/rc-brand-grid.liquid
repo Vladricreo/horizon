@@ -62,7 +62,10 @@
                   alt: ''
               }}
             {%- else -%}
-              {% render 'rc-icon', name: block.settings.icon, size: 44 %}
+              <span class="rc-brand__badge">{% render 'rc-icon', name: block.settings.icon, size: 34 %}</span>
+              {%- if request.design_mode -%}
+                <span class="rc-brand__hint">Carica la foto · 1200 × 900 px</span>
+              {%- endif -%}
             {%- endif -%}
           </span>
           <span class="rc-brand__body">
@@ -138,7 +141,7 @@
 
   .rc-brands__list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
     gap: 14px;
     margin: 0;
     padding: 0;
@@ -147,6 +150,7 @@
 
   .rc-brand {
     display: grid;
+    grid-template-rows: auto 1fr;
     height: 100%;
     overflow: hidden;
     border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
@@ -178,21 +182,48 @@
     object-fit: cover;
   }
 
+  /* No photo yet: the icon sits in a white disc on a soft dotted tint, like a placeholder on purpose. */
   .rc-brand__media--icon {
-    background: color-mix(in srgb, var(--rc-accent) 9%, var(--color-background));
+    position: relative;
+    background:
+      radial-gradient(circle at 50% 50%, rgb(255 255 255 / 0.85), transparent 58%),
+      radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--rc-accent) 20%, transparent) 1px, transparent 0) 0 0 / 16px 16px,
+      linear-gradient(160deg, color-mix(in srgb, var(--rc-accent) 8%, #fff), color-mix(in srgb, var(--rc-accent) 18%, #fff));
     color: var(--rc-accent-ink, var(--rc-accent));
   }
 
-  .rc-brand__media--icon .rc-icon {
+  .rc-brand__badge {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--color-background);
+    box-shadow: 0 12px 26px -14px color-mix(in srgb, var(--rc-accent) 80%, transparent);
     transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1.4);
   }
 
-  .rc-brand:hover .rc-brand__media--icon .rc-icon {
-    transform: scale(1.1) rotate(-4deg);
+  .rc-brand:hover .rc-brand__badge {
+    transform: scale(1.08) rotate(-4deg);
   }
 
+  /* Theme editor only: where the photo goes and what size. */
+  .rc-brand__hint {
+    position: absolute;
+    inset: auto 8px 8px;
+    padding: 4px 8px;
+    border: 1px dashed currentColor;
+    border-radius: 8px;
+    background: rgb(255 255 255 / 0.8);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  /* Text starts right under the picture; the product count sits at the bottom, level across the row. */
   .rc-brand__body {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 2px;
     padding: 12px 14px 14px;
   }
@@ -212,7 +243,8 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    margin-block-start: 4px;
+    margin-block-start: auto;
+    padding-block-start: 6px;
     font-size: 0.84rem;
     font-weight: 600;
     color: var(--rc-accent-ink, var(--rc-accent));
@@ -232,6 +264,7 @@
   }
 
   .rc-brands__list--wide .rc-brand {
+    grid-template-rows: none;
     grid-template-columns: 40% 1fr;
     align-items: center;
   }
@@ -304,16 +337,33 @@
     .rc-brand__name {
       font-size: 0.92rem;
     }
+
+    /* Narrow tiles: a long subtitle would make the whole row tall. */
+    .rc-brands__list:not(.rc-brands__list--wide) .rc-brand__sub {
+      display: none;
+    }
+
+    .rc-brand__badge {
+      width: 56px;
+      height: 56px;
+    }
+
+    .rc-brand__badge .rc-icon {
+      width: 28px;
+      height: 28px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .rc-brand,
-    .rc-brand .rc-icon {
+    .rc-brand .rc-icon,
+    .rc-brand__badge {
       transition: none;
     }
 
     .rc-brand:hover,
-    .rc-brand:hover .rc-icon {
+    .rc-brand:hover .rc-icon,
+    .rc-brand:hover .rc-brand__badge {
       transform: none;
     }
   }

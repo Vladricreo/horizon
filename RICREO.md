@@ -7,7 +7,7 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 
 | Funzione | File | Dove si usa |
 | --- | --- | --- |
-| Hero con ricerca su tutto il catalogo (nome, modello, codice ricambio), chip "Più cercati" e link opzionali, foto di 3 prodotti veri (solo desktop) | `sections/rc-hero-search.liquid` | Homepage |
+| Hero con ricerca su tutto il catalogo (nome, modello, codice ricambio), chip "Più cercati" e link opzionali, vetrina prodotti (solo desktop) con foto ambientata facoltativa | `sections/rc-hero-search.liquid`, `snippets/rc-product-chip.liquid` | Homepage |
 | "Per cosa ti serve?": tessere marca/modello con foto, visibili solo se esistono prodotti con quel nome nel titolo | `sections/rc-brand-grid.liquid` | Homepage |
 | Griglia categorie a icone, nasconde le collezioni vuote | `sections/rc-category-grid.liquid` | Homepage |
 | Cerca per veicolo (marca/modello) che ricorda l'auto | `sections/rc-vehicle-finder.liquid`, `assets/rc-garage.js` | Collezioni auto e microcar |
@@ -19,7 +19,7 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 | Logica aggiunta al carrello / bundle, barra spedizione animata (`<rc-ship-bar>`) | `assets/rc-upsell.js` | — |
 | Badge "Compatibile con la tua …" (solo conferme, mai inviti) | `blocks/rc-compat.liquid` (pagina prodotto), blocco *Liquid personalizzato* nelle card | Prodotto, collezione, ricerca, consigliati |
 | Icone | `snippets/rc-icon.liquid` | — |
-| Token globali (`--rc-accent`, `--rc-accent-2`, `--rc-accent-ink`, `--rc-accent-tint`), animazione icona carrello, stile badge compatibilità | `snippets/rc-global.liquid` | Tutto il sito |
+| Token globali (`--rc-accent`, `--rc-accent-2`, `--rc-accent-ink`, `--rc-accent-tint`), animazione icona carrello, stile badge compatibilità, card prodotto (fondo caldo, prezzo in grassetto, prezzo scontato e badge "In offerta" nel colore d'accento) | `snippets/rc-global.liquid` | Tutto il sito |
 
 ## Stile globale
 
@@ -50,7 +50,20 @@ mai a pagine vuote:
   blocco: comparirà da solo col primo prodotto caricato. Se la ricerca del nome non trova tutto
   (es. titoli che dicono solo "Rocks"), imposta il Link a una ricerca più corta.
 - **Categorie**: le collezioni senza prodotti sono nascoste; la sezione compare da 2 categorie con prodotti.
-- **Hero**: le 3 foto sono i primi prodotti del catalogo (o della collezione scelta), in ordine di collezione.
+- **Hero**: la vetrina usa i primi prodotti del catalogo (o della collezione scelta), in ordine di collezione:
+  il primo in grande su sfondo caldo con nome e prezzo, gli altri due in card flottanti. Il nome mostrato è la
+  parte del titolo prima di " per "; i modelli compatibili vanno sotto in grigio. Caricando la *Foto ambientata*
+  (un prodotto montato o in uso, almeno 1200 × 1200 px) la foto prende il posto del prodotto in vetrina.
+
+## Foto da caricare
+
+- **Hero → Foto ambientata** (facoltativa): un prodotto montato sul veicolo o in uso, quadrata o verticale,
+  almeno 1200 × 1200 px, soggetto al centro (le card coprono il bordo sinistro e l'angolo in alto a destra).
+- **Marchi e modelli → Foto del veicolo o dell'oggetto**, una per tessera: il veicolo/oggetto del cliente,
+  orizzontale 4:3, almeno 1200 × 900 px, soggetto al centro con un po' di margine (viene ritagliata).
+  Finché manca, nell'editor del tema la tessera mostra "Carica la foto · 1200 × 900 px"; i clienti vedono l'icona.
+- **Foto prodotto**: su sfondo bianco, prodotto intero. Le card le mostrano senza ritaglio su un fondo caldo
+  uniforme (il bianco sparisce con `mix-blend-mode: multiply`), quindi niente ombre grigie o sfondi colorati.
 
 ## Categorie e collezioni
 

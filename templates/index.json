@@ -234,7 +234,16 @@
           "settings": {
             "title": "Trappole Popillia",
             "match": "popillia",
+            "link": "/search?q=popillia&type=product",
             "icon": "bug"
+          }
+        },
+        "b21": {
+          "type": "brand",
+          "settings": {
+            "title": "Yamaha",
+            "match": "yamaha",
+            "icon": "scooter"
           }
         }
       },
@@ -247,6 +256,7 @@
         "b8",
         "b9",
         "b10",
+        "b21",
         "b11",
         "b12",
         "b13",
