@@ -87,7 +87,9 @@ nella sua impostazione "Mostra solo nelle collezioni" (oggi `auto, microcar`).
   di tipo *Lista di riferimenti prodotto*. In alternativa vengono letti i *prodotti complementari*
   dell'app Shopify **Search & Discovery**. Poi, in automatico, gli altri prodotti delle stesse
   collezioni (dalla più specifica: Microcar prima di Auto; prima quelli con un tag in comune o col tag
-  del veicolo salvato): basta che il prodotto nuovo finisca nella collezione giusta. Conviene usare
+  del veicolo salvato): basta che il prodotto nuovo finisca nella collezione giusta. Sono esclusi
+  i prodotti con lo stesso titolo e quelli della stessa sottocategoria (metafield `custom.sottocategoria`),
+  così si suggeriscono articoli complementari e non doppioni. Conviene usare
   collezioni *automatiche* (condizione su tag, tipo o categoria prodotto) così l'assegnazione è da sola.
   Le collezioni generiche/promozionali da ignorare sono in Impostazioni tema → *Ricreo · Upsell carrello*.
   Se non c'è nulla si usa la collezione di riserva (stessa impostazione).

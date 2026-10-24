@@ -6,7 +6,8 @@
   Ordine dei suggerimenti:
   1. Metafield `custom.abbinabili` (lista prodotti) degli articoli nel carrello
   2. Prodotti complementari di Shopify Search & Discovery
-  3. Altri prodotti della collezione più specifica di ogni articolo (prima quelli col tag del veicolo salvato)
+  3. Altri prodotti delle collezioni di ogni articolo, dalla più specifica (prima quelli col tag del veicolo
+     salvato; mai copie con lo stesso titolo né la stessa `custom.sottocategoria`)
   4. Collezione di riserva (prima i prodotti col tag del veicolo salvato, poi gli altri)
   Esclude sempre i prodotti già nel carrello e quelli non disponibili.
 
@@ -85,60 +86,68 @@
       {%- endfor -%}
     {%- endfor -%}
 
-    {%- comment -%} Same collection as each cart item, most specific first: new products fill in on their own. {%- endcomment -%}
+    {%- comment -%}
+      Same collections as each cart item, most specific first: new products fill in on their own.
+      Complements only: copies (same title) and the item's own subcategory are skipped.
+    {%- endcomment -%}
     {%- if count < limit -%}
       {%- for pass in (1..2) -%}
         {%- if pass == 1 and vehicle_handle == blank -%}{%- continue -%}{%- endif -%}
         {%- for item in cart.items reversed -%}
           {%- if count >= limit -%}{%- break -%}{%- endif -%}
-          {%- liquid
-            assign group = nil
-            assign groups = item.product.collections | sort: 'products_count'
-            for candidate in groups
-              assign group_key = ',' | append: candidate.handle | append: ','
-              if candidate.products_count > 1
-                unless skip_groups contains group_key
-                  assign group = candidate
-                  break
-                endunless
-              endif
-            endfor
-          -%}
-          {%- for rec in group.products limit: 24 -%}
-            {%- if count >= limit -%}{%- break -%}{%- endif -%}
-            {%- liquid
-              assign key = ',' | append: rec.id | append: ','
-              assign matches_vehicle = false
-              if vehicle_handle != blank
-                for tag in rec.tags
-                  assign tag_handle = tag | handleize
-                  if tag_handle.size > 3
-                    if tag_handle contains vehicle_handle or vehicle_handle contains tag_handle
-                      assign matches_vehicle = true
-                      break
-                    endif
-                  endif
-                endfor
-              endif
-            -%}
-            {%- if pass == 1 and matches_vehicle == false -%}{%- continue -%}{%- endif -%}
-            {%- liquid
-              assign eligible = rec.available
-              if cart_ids contains key or picked contains key
-                assign eligible = false
-              endif
-            -%}
-            {%- if eligible -%}
+          {%- assign item_sub = item.product.metafields.custom.sottocategoria.value | join: ',' -%}
+          {%- assign groups = item.product.collections | sort: 'products_count' -%}
+          {%- assign used_groups = 0 -%}
+          {%- for group in groups -%}
+            {%- if count >= limit or used_groups >= 4 -%}{%- break -%}{%- endif -%}
+            {%- assign group_key = ',' | append: group.handle | append: ',' -%}
+            {%- if group.products_count < 2 or skip_groups contains group_key -%}{%- continue -%}{%- endif -%}
+            {%- assign used_groups = used_groups | plus: 1 -%}
+            {%- for rec in group.products limit: 24 -%}
+              {%- if count >= limit -%}{%- break -%}{%- endif -%}
               {%- liquid
-                assign reason = item.product.title
-                if matches_vehicle
-                  assign reason = vehicle
+                assign key = ',' | append: rec.id | append: ','
+                assign same_kind = false
+                if rec.title == item.product.title
+                  assign same_kind = true
+                elsif item_sub != blank
+                  assign rec_sub = rec.metafields.custom.sottocategoria.value | join: ','
+                  if rec_sub == item_sub
+                    assign same_kind = true
+                  endif
+                endif
+                assign matches_vehicle = false
+                if vehicle_handle != blank
+                  for tag in rec.tags
+                    assign tag_handle = tag | handleize
+                    if tag_handle.size > 3
+                      if tag_handle contains vehicle_handle or vehicle_handle contains tag_handle
+                        assign matches_vehicle = true
+                        break
+                      endif
+                    endif
+                  endfor
                 endif
               -%}
-              {%- render 'rc-upsell-card', product: rec, reason: reason, reason_is_vehicle: matches_vehicle -%}
-              {%- assign picked = picked | append: rec.id | append: ',' -%}
-              {%- assign count = count | plus: 1 -%}
-            {%- endif -%}
+              {%- if pass == 1 and matches_vehicle == false -%}{%- continue -%}{%- endif -%}
+              {%- liquid
+                assign eligible = rec.available
+                if same_kind or cart_ids contains key or picked contains key
+                  assign eligible = false
+                endif
+              -%}
+              {%- if eligible -%}
+                {%- liquid
+                  assign reason = item.product.title
+                  if matches_vehicle
+                    assign reason = vehicle
+                  endif
+                -%}
+                {%- render 'rc-upsell-card', product: rec, reason: reason, reason_is_vehicle: matches_vehicle -%}
+                {%- assign picked = picked | append: rec.id | append: ',' -%}
+                {%- assign count = count | plus: 1 -%}
+              {%- endif -%}
+            {%- endfor -%}
           {%- endfor -%}
         {%- endfor -%}
       {%- endfor -%}

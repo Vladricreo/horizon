@@ -5,7 +5,8 @@
 
   Fonti, in ordine: metafield `custom.abbinabili` del prodotto → complementari Search & Discovery
   → abbinabili degli articoli nel carrello → altri prodotti delle sue collezioni (dalla più piccola,
-  prima quelli con un tag in comune) → prodotti scelti nel blocco → collezione di riserva.
+  prima quelli con un tag in comune; mai copie con lo stesso titolo né la stessa `custom.sottocategoria`)
+  → prodotti scelti nel blocco → collezione di riserva.
 {%- enddoc -%}
 
 {%- liquid
@@ -27,6 +28,7 @@
   for tag in product.tags
     assign own_tags = own_tags | append: tag | handleize | append: ','
   endfor
+  assign own_sub = product.metafields.custom.sottocategoria.value | join: ','
   assign skip_groups = ','
   assign skip_list = settings.rc_related_skip | split: ','
   for skip_handle in skip_list
@@ -80,24 +82,33 @@
         {%- endfor -%}
       {%- endfor -%}
     {%- elsif source == 4 -%}
-      {%- comment -%} Same collections as the product, most specific first: new products fill in on their own. {%- endcomment -%}
+      {%- comment -%}
+        Same collections as the product, most specific first: new products fill in on their own.
+        Complements only: copies (same title) and the same subcategory are skipped, shared tags come first.
+      {%- endcomment -%}
       {%- if block.settings.auto_group -%}
         {%- assign groups = product.collections | sort: 'products_count' -%}
-        {%- assign used_groups = 0 -%}
-        {%- for group in groups -%}
-          {%- if count >= limit or used_groups >= 2 -%}{%- break -%}{%- endif -%}
-          {%- assign group_key = ',' | append: group.handle | append: ',' -%}
-          {%- if group.products_count < 2 or skip_groups contains group_key -%}{%- continue -%}{%- endif -%}
-          {%- assign used_groups = used_groups | plus: 1 -%}
-          {%- for pass in (1..2) -%}
-            {%- if pass == 1 and own_tags == ',' -%}{%- continue -%}{%- endif -%}
+        {%- for pass in (1..2) -%}
+          {%- if pass == 1 and own_tags == ',' -%}{%- continue -%}{%- endif -%}
+          {%- assign used_groups = 0 -%}
+          {%- for group in groups -%}
+            {%- if count >= limit or used_groups >= 4 -%}{%- break -%}{%- endif -%}
+            {%- assign group_key = ',' | append: group.handle | append: ',' -%}
+            {%- if group.products_count < 2 or skip_groups contains group_key -%}{%- continue -%}{%- endif -%}
+            {%- assign used_groups = used_groups | plus: 1 -%}
             {%- for rec in group.products limit: 24 -%}
               {%- if count >= limit -%}{%- break -%}{%- endif -%}
               {%- liquid
                 assign key = ',' | append: rec.id | append: ','
                 assign eligible = rec.available
-                if exclude contains key or picked contains key
+                if exclude contains key or picked contains key or rec.title == product.title
                   assign eligible = false
+                endif
+                if eligible and own_sub != blank
+                  assign rec_sub = rec.metafields.custom.sottocategoria.value | join: ','
+                  if rec_sub == own_sub
+                    assign eligible = false
+                  endif
                 endif
                 if eligible and pass == 1
                   assign eligible = false
@@ -576,7 +587,7 @@
       "type": "checkbox",
       "id": "auto_group",
       "label": "Suggerisci prodotti delle stesse collezioni",
-      "info": "Dopo gli abbinabili manuali usa le collezioni del prodotto, dalla più specifica (es. Microcar prima di Auto), con priorità ai prodotti con un tag in comune (es. volkswagen-golf-7). Collezioni da ignorare: Impostazioni tema → Ricreo · Upsell carrello.",
+      "info": "Dopo gli abbinabili manuali usa le collezioni del prodotto, dalla più specifica, con priorità ai prodotti con un tag in comune (es. volkswagen-golf-7). Esclude le copie con lo stesso titolo e i prodotti della stessa sottocategoria (metafield custom.sottocategoria). Collezioni da ignorare: Impostazioni tema → Ricreo · Upsell carrello.",
       "default": true
     },
     {
