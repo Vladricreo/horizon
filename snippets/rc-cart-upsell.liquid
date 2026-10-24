@@ -50,7 +50,8 @@
   assign skip_groups = ','
   assign skip_list = settings.rc_related_skip | split: ','
   for skip_handle in skip_list
-    assign skip_groups = skip_groups | append: skip_handle | strip | handleize | append: ','
+    assign skip_key = skip_handle | strip | handleize
+    assign skip_groups = skip_groups | append: skip_key | append: ','
   endfor
 
   assign threshold = settings.rc_free_shipping_threshold | default: 0
@@ -104,7 +105,8 @@
             assign item_sub = item.product.metafields.custom.sottocategoria.value | join: ','
             assign item_tags = ','
             for tag in item.product.tags
-              assign item_tags = item_tags | append: tag | handleize | append: ','
+              assign tag_handle = tag | handleize
+              assign item_tags = item_tags | append: tag_handle | append: ','
             endfor
           -%}
           {%- assign groups = item.product.collections | sort: 'products_count' -%}

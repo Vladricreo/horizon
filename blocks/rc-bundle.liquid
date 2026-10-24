@@ -28,13 +28,15 @@
 
   assign own_tags = ','
   for tag in product.tags
-    assign own_tags = own_tags | append: tag | handleize | append: ','
+    assign tag_handle = tag | handleize
+    assign own_tags = own_tags | append: tag_handle | append: ','
   endfor
   assign own_sub = product.metafields.custom.sottocategoria.value | join: ','
   assign skip_groups = ','
   assign skip_list = settings.rc_related_skip | split: ','
   for skip_handle in skip_list
-    assign skip_groups = skip_groups | append: skip_handle | strip | handleize | append: ','
+    assign skip_key = skip_handle | strip | handleize
+    assign skip_groups = skip_groups | append: skip_key | append: ','
   endfor
 -%}
 
