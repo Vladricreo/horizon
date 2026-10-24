@@ -18,6 +18,7 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 | Upsell nel carrello + barra spedizione gratuita | `snippets/rc-cart-upsell.liquid`, `snippets/rc-upsell-card.liquid`, `sections/rc-cart-upsell.liquid` | Drawer e pagina carrello |
 | Logica aggiunta al carrello / bundle, barra spedizione animata (`<rc-ship-bar>`) | `assets/rc-upsell.js` | — |
 | Badge "Compatibile con la tua …" (solo conferme, mai inviti) | `blocks/rc-compat.liquid` (pagina prodotto), blocco *Liquid personalizzato* nelle card | Prodotto, collezione, ricerca, consigliati |
+| Footer: card aiuto (WhatsApp, email) e newsletter, logo su badge chiaro, menu, categorie con prodotti, metodi di pagamento, social solo se compilati. La barra in fondo (copyright, informative, cookie) resta quella di Horizon | `sections/rc-footer.liquid` | Footer, tutto il sito |
 | Barra annunci scorrevole sul colore d'accento (al posto di quella di Horizon), uno o più messaggi con icona | `sections/rc-announcement-bar.liquid` | Testata, tutto il sito |
 | Icone | `snippets/rc-icon.liquid` | — |
 | Token globali (`--rc-accent`, `--rc-accent-2`, `--rc-accent-ink`, `--rc-accent-tint`), animazione icona carrello, stile badge compatibilità, card prodotto (fondo caldo, prezzo in grassetto, prezzo scontato e badge "In offerta" nel colore d'accento), prezzo grande nella pagina prodotto | `snippets/rc-global.liquid` | Tutto il sito |

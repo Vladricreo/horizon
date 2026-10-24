@@ -1,0 +1,798 @@
+{%- comment -%}
+  Ricreo · Footer.
+  Prende il posto del blocco principale del footer di Horizon; la barra in fondo (copyright, informative,
+  preferenze cookie) resta la sezione "utilities" di Horizon.
+  In alto due card: aiuto diretto (WhatsApp ed email) e newsletter. Sotto: il marchio (logo su un badge chiaro,
+  perché il logo blu non si legge sul blu notte), i menu, le categorie con prodotti e i metodi di pagamento
+  attivi nel negozio. I link social compaiono solo se compilati.
+  Lo sfondo sta sul contenitore esterno: Horizon rende trasparenti gli elementi .section.
+{%- endcomment -%}
+
+{%- liquid
+  assign whatsapp = section.settings.whatsapp | remove: ' ' | remove: '+'
+  assign email = section.settings.email | strip
+  assign help_menu = linklists[section.settings.help_menu]
+  assign shop_menu = linklists[section.settings.shop_menu]
+
+  assign socials = ''
+  if section.settings.instagram != blank
+    assign socials = socials | append: 'instagram,'
+  endif
+  if section.settings.facebook != blank
+    assign socials = socials | append: 'facebook,'
+  endif
+  if section.settings.tiktok != blank
+    assign socials = socials | append: 'tiktok,'
+  endif
+  if section.settings.youtube != blank
+    assign socials = socials | append: 'youtube,'
+  endif
+  assign socials = socials | split: ','
+-%}
+
+<div
+  class="rc-foot"
+  style="--rc-foot-bg: {{ section.settings.background }}; --rc-pad-top: {{ section.settings.padding_top }}px; --rc-pad-bottom: {{ section.settings.padding_bottom }}px;"
+>
+  <div class="section section--page-width">
+  <div class="rc-foot__inner">
+    <div class="rc-foot__cards">
+      {%- if section.settings.help_heading != blank -%}
+        <div class="rc-foot__card rc-foot__card--help">
+          <span class="rc-foot__card-icon">{% render 'rc-icon', name: 'headset', size: 24 %}</span>
+          <div class="rc-foot__card-copy">
+            <h2 class="rc-foot__card-title">{{ section.settings.help_heading }}</h2>
+            {%- if section.settings.help_text != blank -%}
+              <p class="rc-foot__card-text">{{ section.settings.help_text }}</p>
+            {%- endif -%}
+          </div>
+          <div class="rc-foot__actions">
+            {%- if whatsapp != blank -%}
+              <a class="rc-foot__btn rc-foot__btn--solid" href="https://wa.me/{{ whatsapp }}" target="_blank" rel="noopener">
+                {% render 'rc-icon', name: 'chat', size: 18 %}
+                <span>WhatsApp</span>
+              </a>
+            {%- endif -%}
+            {%- if email != blank -%}
+              <a class="rc-foot__btn" href="mailto:{{ email }}">
+                {% render 'rc-icon', name: 'mail', size: 18 %}
+                <span>{{ email }}</span>
+              </a>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.newsletter_heading != blank -%}
+        <div class="rc-foot__card rc-foot__card--news">
+          <span class="rc-foot__card-icon">{% render 'rc-icon', name: 'gift', size: 24 %}</span>
+          <div class="rc-foot__card-copy">
+            <h2 class="rc-foot__card-title">{{ section.settings.newsletter_heading }}</h2>
+            {%- if section.settings.newsletter_text != blank -%}
+              <p class="rc-foot__card-text">{{ section.settings.newsletter_text }}</p>
+            {%- endif -%}
+          </div>
+          {%- form 'customer', class: 'rc-foot__form', id: 'RcFooterNewsletter' -%}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            {%- if form.posted_successfully? -%}
+              <p class="rc-foot__form-note rc-foot__form-note--ok" role="status">
+                {% render 'rc-icon', name: 'check', size: 18 %}
+                Iscrizione confermata, grazie!
+              </p>
+            {%- else -%}
+              <label class="visually-hidden" for="RcFooterEmail">Indirizzo email</label>
+              <input
+                class="rc-foot__input"
+                id="RcFooterEmail"
+                type="email"
+                name="contact[email]"
+                placeholder="La tua email"
+                autocomplete="email"
+                autocapitalize="off"
+                spellcheck="false"
+                required
+                {% if form.errors %}aria-invalid="true" aria-describedby="RcFooterEmailError"{% endif %}
+              >
+              <button class="rc-foot__submit" type="submit">
+                Iscriviti
+                {% render 'rc-icon', name: 'arrow-right', size: 16 %}
+              </button>
+              {%- if form.errors -%}
+                <p class="rc-foot__form-note" id="RcFooterEmailError" role="alert">
+                  {{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}
+                </p>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endform -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="rc-foot__main">
+      <div class="rc-foot__brand">
+        <a class="rc-foot__logo" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
+          {%- if settings.logo != blank -%}
+            {{ settings.logo | image_url: height: 96 | image_tag: height: 40, alt: shop.name, loading: 'lazy' }}
+          {%- else -%}
+            <span class="rc-foot__wordmark">{{ shop.name }}</span>
+          {%- endif -%}
+        </a>
+        {%- if section.settings.tagline != blank -%}
+          <p class="rc-foot__tagline">{{ section.settings.tagline }}</p>
+        {%- endif -%}
+        {%- if section.settings.proof != blank -%}
+          <p class="rc-foot__proof">
+            {% render 'rc-icon', name: 'star', size: 16 %}
+            <span>{{ section.settings.proof }}</span>
+          </p>
+        {%- endif -%}
+        {%- if socials.size > 0 -%}
+          <ul class="rc-foot__social" role="list">
+            {%- for name in socials -%}
+              <li>
+                <a href="{{ section.settings[name] }}" target="_blank" rel="noopener" aria-label="{{ name | capitalize }}">
+                  <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    {%- render 'icon', icon: name -%}
+                  </svg>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+
+      <nav class="rc-foot__nav" aria-label="Footer">
+        {%- if shop_menu.links.size > 0 -%}
+          <div class="rc-foot__col">
+            <h2 class="rc-foot__heading">{{ section.settings.shop_heading }}</h2>
+            <ul class="rc-foot__links" role="list">
+              {%- for link in shop_menu.links -%}
+                <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+
+        {%- capture category_links -%}
+          {%- for collection in section.settings.categories -%}
+            {%- if collection.products_count > 0 -%}
+              <li><a href="{{ collection.url }}">{{ collection.title }}</a></li>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+        {%- if category_links != blank -%}
+          <div class="rc-foot__col rc-foot__col--wide">
+            <h2 class="rc-foot__heading">{{ section.settings.categories_heading }}</h2>
+            <ul class="rc-foot__links rc-foot__links--two" role="list">{{ category_links }}</ul>
+          </div>
+        {%- endif -%}
+
+        <div class="rc-foot__col">
+          <h2 class="rc-foot__heading">{{ section.settings.help_menu_heading }}</h2>
+          <ul class="rc-foot__links" role="list">
+            {%- for link in help_menu.links -%}
+              <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+            {%- endfor -%}
+            {%- if section.settings.show_policies -%}
+              {%- if shop.shipping_policy != blank -%}
+                <li><a href="{{ shop.shipping_policy.url }}">Spedizioni</a></li>
+              {%- endif -%}
+              {%- if shop.refund_policy != blank -%}
+                <li><a href="{{ shop.refund_policy.url }}">Resi e rimborsi</a></li>
+              {%- endif -%}
+            {%- endif -%}
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    {%- if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 -%}
+      <div class="rc-foot__pay">
+        <span class="rc-foot__pay-label">
+          {% render 'rc-icon', name: 'lock', size: 16 %}
+          Pagamenti sicuri
+        </span>
+        <ul class="rc-foot__pay-list" role="list">
+          {%- for type in shop.enabled_payment_types -%}
+            <li>{{ type | payment_type_svg_tag: class: 'rc-foot__pay-icon' }}</li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+  </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .rc-foot {
+    --rc-foot-text: rgb(255 255 255 / 0.92);
+    --rc-foot-muted: rgb(255 255 255 / 0.66);
+    --rc-foot-line: rgb(255 255 255 / 0.12);
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--rc-pad-top) var(--rc-pad-bottom);
+    background:
+      radial-gradient(50% 70% at 100% 0%, color-mix(in srgb, var(--rc-accent) 18%, transparent), transparent 70%),
+      radial-gradient(45% 60% at 0% 0%, color-mix(in srgb, var(--rc-brand, #004a8c) 55%, transparent), transparent 70%),
+      var(--rc-foot-bg);
+    color: var(--rc-foot-text);
+  }
+
+  .rc-foot a {
+    color: inherit;
+  }
+
+  .rc-foot__inner {
+    display: grid;
+    gap: 40px;
+  }
+
+  /* Cards */
+  .rc-foot__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: 16px;
+  }
+
+  .rc-foot__card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 14px 16px;
+    padding: 22px 24px;
+    border: 1px solid var(--rc-foot-line);
+    border-radius: 20px;
+    background: rgb(255 255 255 / 0.06);
+  }
+
+  .rc-foot__card-icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--rc-accent);
+    color: #fff;
+  }
+
+  .rc-foot__card--news .rc-foot__card-icon {
+    background: #fff;
+    color: var(--rc-brand, #004a8c);
+  }
+
+  .rc-foot__card-title {
+    margin: 0;
+    font-size: 1.25rem;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+
+  .rc-foot__card-text {
+    margin: 4px 0 0;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--rc-foot-muted);
+  }
+
+  .rc-foot__actions,
+  .rc-foot__form {
+    grid-column: 1 / -1;
+  }
+
+  .rc-foot__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .rc-foot__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid rgb(255 255 255 / 0.3);
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+  }
+
+  .rc-foot__btn:hover {
+    border-color: #fff;
+    background: rgb(255 255 255 / 0.08);
+  }
+
+  .rc-foot .rc-foot__btn--solid {
+    border-color: #fff;
+    background: #fff;
+    color: var(--rc-foot-bg);
+  }
+
+  .rc-foot__btn--solid:hover {
+    background: rgb(255 255 255 / 0.88);
+  }
+
+  /* Newsletter: the field and the button share one rounded bar. */
+  .rc-foot__form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+  }
+
+  /* Two classes: Horizon styles every input:not([type=checkbox], [type=radio]) with the light input colors. */
+  .rc-foot .rc-foot__input {
+    flex: 1 1 200px;
+    min-width: 0;
+    min-height: 46px;
+    padding: 0 18px;
+    border: 1px solid rgb(255 255 255 / 0.3);
+    border-radius: 999px;
+    background: rgb(0 0 0 / 0.18);
+    color: #fff;
+    font: inherit;
+    font-size: 0.95rem;
+  }
+
+  .rc-foot__input::placeholder {
+    color: rgb(255 255 255 / 0.6);
+  }
+
+  .rc-foot__input:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+
+  .rc-foot__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 46px;
+    padding: 0 22px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--rc-accent-ink, var(--rc-accent));
+    color: #fff;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .rc-foot__submit:hover {
+    background: var(--rc-accent);
+  }
+
+  .rc-foot__submit .rc-icon {
+    transition: transform 0.2s;
+  }
+
+  .rc-foot__submit:hover .rc-icon {
+    transform: translateX(3px);
+  }
+
+  .rc-foot__form-note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-basis: 100%;
+    margin: 0;
+    font-size: 0.85rem;
+    color: #ffd2c2;
+  }
+
+  .rc-foot__form-note--ok {
+    color: #b7f0cc;
+  }
+
+  /* Brand + navigation */
+  .rc-foot__main {
+    display: grid;
+    grid-template-columns: minmax(240px, 1fr) 2.4fr;
+    gap: 48px;
+    padding-block-start: 36px;
+    border-block-start: 1px solid var(--rc-foot-line);
+  }
+
+  .rc-foot__logo {
+    display: inline-flex;
+    padding: 10px 16px;
+    border-radius: 14px;
+    background: #fff;
+  }
+
+  .rc-foot__logo img {
+    display: block;
+    width: auto;
+    height: 40px;
+  }
+
+  .rc-foot__wordmark {
+    font-weight: 700;
+    color: var(--rc-brand, #004a8c);
+  }
+
+  .rc-foot__tagline {
+    max-width: 34ch;
+    margin: 16px 0 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--rc-foot-muted);
+  }
+
+  .rc-foot__proof {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 0 0;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.08);
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .rc-foot__proof .rc-icon {
+    color: #ffc247;
+  }
+
+  .rc-foot__social {
+    display: flex;
+    gap: 8px;
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rc-foot__social a {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--rc-foot-line);
+    border-radius: 50%;
+    transition: background-color 0.2s;
+  }
+
+  .rc-foot__social a:hover {
+    background: rgb(255 255 255 / 0.1);
+  }
+
+  .rc-foot__social svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .rc-foot__nav {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr 1fr;
+    gap: 32px;
+  }
+
+  .rc-foot__heading {
+    margin: 0 0 14px;
+    font-family: var(--font-body--family);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rc-accent-2, var(--rc-accent));
+  }
+
+  .rc-foot__links {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rc-foot__links--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+
+  .rc-foot__links a {
+    display: inline-block;
+    font-size: 0.95rem;
+    color: var(--rc-foot-text);
+    text-decoration: none;
+    transition: color 0.2s, transform 0.2s;
+  }
+
+  .rc-foot__links a:hover {
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* Payment methods */
+  .rc-foot__pay {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 24px;
+    padding-block-start: 24px;
+    border-block-start: 1px solid var(--rc-foot-line);
+  }
+
+  .rc-foot__pay-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--rc-foot-muted);
+  }
+
+  .rc-foot__pay-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rc-foot__pay-icon {
+    display: block;
+    width: 44px;
+    height: 28px;
+  }
+
+  @media screen and (max-width: 989px) {
+    .rc-foot__main {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .rc-foot {
+      padding-block: min(var(--rc-pad-top), 40px) min(var(--rc-pad-bottom), 24px);
+    }
+
+    .rc-foot__inner {
+      gap: 28px;
+    }
+
+    .rc-foot__card {
+      padding: 18px;
+      border-radius: 18px;
+    }
+
+    .rc-foot__card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+    }
+
+    .rc-foot__card-title {
+      font-size: 1.1rem;
+    }
+
+    .rc-foot__btn {
+      flex: 1 1 auto;
+      justify-content: center;
+    }
+
+    .rc-foot__submit {
+      flex: 1 1 100%;
+    }
+
+    .rc-foot__main {
+      padding-block-start: 28px;
+    }
+
+    .rc-foot__nav {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 28px 20px;
+    }
+
+    .rc-foot__col--wide {
+      grid-column: 1 / -1;
+      order: 3;
+    }
+
+    .rc-foot__pay {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rc-foot__btn,
+    .rc-foot__submit,
+    .rc-foot__submit .rc-icon {
+      transition: none;
+    }
+
+    .rc-foot__submit:hover .rc-icon {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ricreo · Footer",
+  "tag": "footer",
+  "class": "rc-foot-section",
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Aiuto"
+    },
+    {
+      "type": "text",
+      "id": "help_heading",
+      "label": "Titolo",
+      "default": "Non trovi il pezzo giusto?"
+    },
+    {
+      "type": "text",
+      "id": "help_text",
+      "label": "Testo",
+      "default": "Scrivici marca e modello: ti diciamo noi cosa va bene."
+    },
+    {
+      "type": "text",
+      "id": "whatsapp",
+      "label": "Numero WhatsApp",
+      "info": "Con il prefisso internazionale, es. 39 351 608 0778. Vuoto = niente bottone."
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email"
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Titolo",
+      "default": "Offerte e novità Ricreo"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_text",
+      "label": "Testo",
+      "default": "Sconti riservati e nuovi ricambi compatibili. Niente spam."
+    },
+    {
+      "type": "header",
+      "content": "Marchio"
+    },
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Descrizione",
+      "default": "Ricambi e accessori che non trovi altrove. Li progettiamo e produciamo noi."
+    },
+    {
+      "type": "text",
+      "id": "proof",
+      "label": "Fiducia",
+      "default": "Oltre 45.000 ordini spediti"
+    },
+    {
+      "type": "url",
+      "id": "instagram",
+      "label": "Instagram"
+    },
+    {
+      "type": "url",
+      "id": "facebook",
+      "label": "Facebook"
+    },
+    {
+      "type": "url",
+      "id": "tiktok",
+      "label": "TikTok"
+    },
+    {
+      "type": "url",
+      "id": "youtube",
+      "label": "YouTube"
+    },
+    {
+      "type": "header",
+      "content": "Menu"
+    },
+    {
+      "type": "text",
+      "id": "shop_heading",
+      "label": "Titolo primo menu",
+      "default": "Negozio"
+    },
+    {
+      "type": "link_list",
+      "id": "shop_menu",
+      "label": "Primo menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "text",
+      "id": "categories_heading",
+      "label": "Titolo categorie",
+      "default": "Categorie"
+    },
+    {
+      "type": "collection_list",
+      "id": "categories",
+      "label": "Categorie",
+      "info": "Si vedono solo quelle con prodotti."
+    },
+    {
+      "type": "text",
+      "id": "help_menu_heading",
+      "label": "Titolo secondo menu",
+      "default": "Aiuto"
+    },
+    {
+      "type": "link_list",
+      "id": "help_menu",
+      "label": "Secondo menu",
+      "default": "footer"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_policies",
+      "label": "Aggiungi Spedizioni e Resi al secondo menu",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Stile"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "Mostra i metodi di pagamento",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "Sfondo",
+      "default": "#0B2A4A"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Spaziatura superiore",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Spaziatura inferiore",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ricreo · Footer",
+      "category": "Ricreo"
+    }
+  ]
+}
+{% endschema %}

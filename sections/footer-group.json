@@ -11,274 +11,37 @@
   "type": "footer",
   "name": "t:names.footer",
   "sections": {
-    "footer": {
-      "type": "footer",
-      "blocks": {
-        "group_wErUQf": {
-          "type": "group",
-          "settings": {
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "flex-start",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 12,
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "custom_height": 100,
-            "background_media": "none",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_radius": 0,
-            "link": "",
-            "open_in_new_tab": false,
-            "placeholder": "",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "text_pF6rVi": {
-              "type": "text",
-              "name": "t:names.heading",
-              "settings": {
-                "text": "<h2>Offerte e novità Ricreo</h2>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "h3",
-                "font": "var(--font-body--family)",
-                "font_size": "",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "text_HafH7P": {
-              "type": "text",
-              "name": "t:names.text",
-              "settings": {
-                "text": "<p>Sconti riservati, nuovi ricambi compatibili e consigli di manutenzione. Niente spam.</p>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "email-signup_HafH7P": {
-              "type": "email-signup",
-              "name": "t:names.email_signup",
-              "settings": {
-                "width": "fill",
-                "custom_width": 100,
-                "heading": "",
-                "heading_preset": "h3",
-                "border_style": "all",
-                "input_style": "custom",
-                "border_width": 1,
-                "border_radius": 100,
-                "input_background_color": "{{ settings.color_palette.color1 }}",
-                "input_border_color": "",
-                "input_type_preset": "paragraph",
-                "style_class": "button-secondary",
-                "custom_button_background": "{{ settings.color_palette.foreground }}",
-                "custom_button_text": "{{ settings.color_palette.background }}",
-                "custom_button_border": "{{ settings.color_palette.background }}",
-                "display_type": "text",
-                "label": "Iscriviti",
-                "integrated_button": false,
-                "button_type_preset": "paragraph",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "text_pF6rVi",
-            "text_HafH7P",
-            "email-signup_HafH7P"
-          ]
-        },
-        "menu_footer": {
-          "type": "menu",
-          "settings": {
-            "menu": "footer",
-            "heading": "Aiuto",
-            "menu_spacing": 12,
-            "show_as_accordion": false,
-            "accordion_icon": "plus",
-            "accordion_dividers": false,
-            "heading_preset": "paragraph",
-            "link_preset": "paragraph",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          }
-        },
-        "menu_main": {
-          "type": "menu",
-          "settings": {
-            "menu": "main-menu",
-            "heading": "Negozio",
-            "menu_spacing": 12,
-            "show_as_accordion": false,
-            "accordion_icon": "plus",
-            "accordion_dividers": false,
-            "heading_preset": "paragraph",
-            "link_preset": "paragraph",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          }
-        },
-        "group_contact": {
-          "type": "group",
-          "settings": {
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "flex-start",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "flex-start",
-            "vertical_alignment_flex_direction_column": "flex-start",
-            "gap": 12,
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "custom_height": 100,
-            "background_media": "none",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_radius": 0,
-            "link": "",
-            "open_in_new_tab": false,
-            "placeholder": "",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "text_contact_heading": {
-              "type": "text",
-              "name": "t:names.heading",
-              "settings": {
-                "text": "<p><strong>Contatti</strong></p>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "paragraph",
-                "font": "var(--font-body--family)",
-                "font_size": "",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "text_contact_body": {
-              "type": "text",
-              "name": "t:names.text",
-              "settings": {
-                "text": "<p>Ti aiutiamo a trovare il pezzo giusto per il tuo modello.</p><p><a href=\"https://wa.me/393516080778\" title=\"WhatsApp\">WhatsApp +39 351 608 0778</a><br/><a href=\"mailto:info@ricreo.io\" title=\"Email\">info@ricreo.io</a></p>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "text_contact_heading",
-            "text_contact_body"
-          ]
-        }
-      },
-      "block_order": [
-        "group_wErUQf",
-        "menu_main",
-        "menu_footer",
-        "group_contact"
-      ],
-      "name": "t:names.footer",
+    "rc_footer": {
+      "type": "rc-footer",
       "settings": {
-        "section_width": "page-width",
-        "gap": 40,
-        "background_color": "{{ settings.color_palette.color1 }}",
-        "padding-block-start": 36,
-        "padding-block-end": 36
+        "help_heading": "Non trovi il pezzo giusto?",
+        "help_text": "Scrivici marca e modello: ti diciamo noi cosa va bene.",
+        "whatsapp": "39 351 608 0778",
+        "email": "info@ricreo.io",
+        "newsletter_heading": "Offerte e novità Ricreo",
+        "newsletter_text": "Sconti riservati e nuovi ricambi compatibili. Niente spam.",
+        "tagline": "Ricambi e accessori che non trovi altrove. Li progettiamo e produciamo noi.",
+        "proof": "Oltre 45.000 ordini spediti",
+        "shop_heading": "Negozio",
+        "shop_menu": "main-menu",
+        "categories_heading": "Categorie",
+        "categories": [
+          "casa-cucina",
+          "auto",
+          "microcar",
+          "camper-nautica",
+          "moto",
+          "giardino-trappole",
+          "tech-scrivania",
+          "fai-da-te-design"
+        ],
+        "help_menu_heading": "Aiuto",
+        "help_menu": "footer",
+        "show_policies": true,
+        "show_payment_icons": true,
+        "background": "{{ settings.color_palette.color1 }}",
+        "padding_top": 56,
+        "padding_bottom": 32
       }
     },
     "utilities": {
@@ -287,7 +50,7 @@
         "copyright": {
           "type": "footer-copyright",
           "settings": {
-            "show_powered_by": true,
+            "show_powered_by": false,
             "font_size": "0.75rem",
             "case": "none"
           }
@@ -298,35 +61,24 @@
             "font_size": "0.75rem",
             "case": "none"
           }
-        },
-        "social_icons": {
-          "type": "social-links",
-          "settings": {
-            "facebook_url": "https://www.facebook.com",
-            "instagram_url": "https://www.instagram.com",
-            "youtube_url": "https://www.youtube.com",
-            "tiktok_url": "https://www.tiktok.com",
-            "twitter_url": "https://www.twitter.com"
-          }
         }
       },
       "block_order": [
         "copyright",
-        "policy_list",
-        "social_icons"
+        "policy_list"
       ],
       "settings": {
         "section_width": "page-width",
         "gap": 24,
         "background_color": "{{ settings.color_palette.color1 }}",
         "divider_thickness": 1,
-        "padding-block-start": 12,
-        "padding-block-end": 16
+        "padding-block-start": 18,
+        "padding-block-end": 22
       }
     }
   },
   "order": [
-    "footer",
+    "rc_footer",
     "utilities"
   ]
 }
