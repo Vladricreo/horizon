@@ -67,13 +67,20 @@
         <a class="rc-brand" href="{{ url }}">
           <span class="rc-brand__media{% if block.settings.image == blank %} rc-brand__media--icon{% endif %}">
             {%- if block.settings.image != blank -%}
+              {%- liquid
+                # Desktop: a fifth of the page, two fifths for the double-width tile; phones: the swipe row.
+                assign img_sizes = '(min-width: 990px) 25vw, 45vw'
+                if block.settings.subtitle != blank
+                  assign img_sizes = '(min-width: 990px) 45vw, 80vw'
+                endif
+              -%}
               {{
                 block.settings.image
-                | image_url: width: 640
+                | image_url: width: 1200
                 | image_tag:
                   loading: 'lazy',
                   class: 'rc-brand__img',
-                  sizes: '(min-width: 990px) 320px, 60vw',
+                  sizes: img_sizes,
                   alt: ''
               }}
             {%- else -%}
@@ -140,7 +147,7 @@
         assign paired = shown | minus: with_sub | modulo: 2
       -%}
       <ul
-        class="rc-brands__list{% if shown < 3 %} rc-brands__list--wide{% elsif with_photo == 0 %} rc-brands__list--compact{% if paired == 1 %} rc-brands__list--odd{% endif %}{% endif %}"
+        class="rc-brands__list{% if shown < 3 %} rc-brands__list--wide{% elsif with_photo == 0 %} rc-brands__list--compact{% if paired == 1 %} rc-brands__list--odd{% endif %}{% else %} rc-brands__list--photo{% endif %}"
         style="--rc-cols: {{ cols }}; --rc-cols-md: {{ cols_md }};"
         role="list"
       >
@@ -334,12 +341,56 @@
       grid-column: span 2;
     }
 
-    /* Photo tiles: a fixed, modest picture height, so five in a row stay small and the double-width
-       tile shows its wider photo instead of growing twice as tall. */
-    .rc-brands__list:not(.rc-brands__list--wide):not(.rc-brands__list--compact) .rc-brand__media {
+    /* Photo tiles: a fixed picture height, so five in a row stay small and the double-width tile shows
+       its wider photo instead of growing twice as tall. */
+    .rc-brands__list--photo .rc-brand__media {
       aspect-ratio: auto;
-      height: clamp(130px, 11vw, 170px);
+      height: clamp(210px, 17vw, 260px);
     }
+  }
+
+  /* Photo tiles: the photo fills the tile and the text sits on a frosted, see-through panel at the
+     bottom, so the vehicle stays visible behind it. */
+  .rc-brands__list--photo .rc-brand {
+    grid-template-rows: none;
+    grid-template-areas: 'tile';
+    isolation: isolate;
+  }
+
+  .rc-brands__list--photo .rc-brand__media,
+  .rc-brands__list--photo .rc-brand__body {
+    grid-area: tile;
+  }
+
+  @media screen and (max-width: 989px) {
+    .rc-brands__list--photo .rc-brand__media {
+      aspect-ratio: 1;
+    }
+  }
+
+  .rc-brands__list--photo .rc-brand__img {
+    object-position: 50% 30%;
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .rc-brands__list--photo .rc-brand:hover .rc-brand__img {
+    transform: scale(1.04);
+  }
+
+  .rc-brands__list--photo .rc-brand__body {
+    z-index: 1;
+    align-self: end;
+    margin: 8px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgb(var(--color-background-rgb) / 0.7);
+    box-shadow: 0 6px 18px -12px rgb(0 0 0 / 0.35);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
+    backdrop-filter: blur(12px) saturate(1.4);
+  }
+
+  .rc-brands__list--photo .rc-brand__count {
+    padding-block-start: 2px;
   }
 
   @media screen and (min-width: 1200px) {
@@ -503,6 +554,21 @@
     .rc-brands__list--compact .rc-brands__item--sub .rc-brand__sub {
       display: block;
     }
+
+    .rc-brands__list--photo .rc-brand__media {
+      aspect-ratio: auto;
+      height: 180px;
+    }
+
+    /* The tile with the long name and the group photo gets more room in the swipe row. */
+    .rc-brands__list--photo .rc-brands__item--sub {
+      flex-basis: 78%;
+    }
+
+    .rc-brands__list--photo .rc-brand__body {
+      margin: 6px;
+      padding: 8px 10px;
+    }
   }
 
   /* Tablets: two columns of compact tiles, laid out like on phones. */
@@ -520,13 +586,15 @@
   @media (prefers-reduced-motion: reduce) {
     .rc-brand,
     .rc-brand .rc-icon,
-    .rc-brand__badge {
+    .rc-brand__badge,
+    .rc-brand__img {
       transition: none;
     }
 
     .rc-brand:hover,
     .rc-brand:hover .rc-icon,
-    .rc-brand:hover .rc-brand__badge {
+    .rc-brand:hover .rc-brand__badge,
+    .rc-brands__list--photo .rc-brand:hover .rc-brand__img {
       transform: none;
     }
   }

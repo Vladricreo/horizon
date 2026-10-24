@@ -51,7 +51,8 @@ mai a pagine vuote:
   (es. `citroën ami, citroen ami, per ami`). La tessera compare solo se almeno un prodotto del catalogo
   (primi 250) le contiene. La foto è quella del veicolo o dell'oggetto che il cliente possiede (da caricare nel
   blocco), mai di un accessorio; finché nessuna tessera ha la foto, le tessere sono compatte (icona scelta accanto
-  al nome) e le colonne si adattano al numero di tessere, così nessuna resta da sola in fondo. Modelli che condividono gli stessi ricambi
+  al nome) e le colonne si adattano al numero di tessere, così nessuna resta da sola in fondo. Con le foto, la
+  foto riempie la tessera e nome e numero di prodotti stanno su un pannello semitrasparente sfocato in basso. Modelli che condividono gli stessi ricambi
   (Ami, Rocks-e, Topolino) stanno in una sola tessera. Per un marchio nuovo basta un
   blocco: comparirà da solo col primo prodotto caricato. Se la ricerca del nome non trova tutto
   (es. titoli che dicono solo "Rocks"), imposta il Link a una ricerca più corta.
