@@ -117,7 +117,13 @@
       {%- endif -%}
 
       {%- liquid
-        case shown
+        # Compact tiles with a subtitle are two columns wide, so they count as two places.
+        assign slots = shown
+        if with_photo == 0
+          assign slots = shown | plus: with_sub
+        endif
+
+        case slots
           when 3, 6, 9
             assign cols = 3
           when 5, 10
@@ -126,12 +132,18 @@
             assign cols = 4
         endcase
 
-        # Phones: tiles with a subtitle take a whole row, the others go two by two.
+        # Five compact tiles in a row only fit from 1200px; below that four.
+        assign cols_md = cols
+        if cols > 4
+          assign cols_md = 4
+        endif
+
+        # Phones and tablets: tiles with a subtitle take a whole row, the others go two by two.
         assign paired = shown | minus: with_sub | modulo: 2
       -%}
       <ul
         class="rc-brands__list{% if shown < 3 %} rc-brands__list--wide{% elsif with_photo == 0 %} rc-brands__list--compact{% if paired == 1 %} rc-brands__list--odd{% endif %}{% endif %}"
-        style="--rc-cols: {{ cols }};"
+        style="--rc-cols: {{ cols }}; --rc-cols-md: {{ cols_md }};"
         role="list"
       >
         {{ tiles }}
@@ -317,6 +329,16 @@
   /* Three or more tiles: as many columns as keep the rows full (6 → 3 + 3, 8 → 4 + 4). */
   @media screen and (min-width: 990px) {
     .rc-brands__list:not(.rc-brands__list--wide) {
+      grid-template-columns: repeat(var(--rc-cols-md, 4), minmax(0, 1fr));
+    }
+
+    .rc-brands__list--compact .rc-brands__item--sub {
+      grid-column: span 2;
+    }
+  }
+
+  @media screen and (min-width: 1200px) {
+    .rc-brands__list:not(.rc-brands__list--wide) {
       grid-template-columns: repeat(var(--rc-cols, 4), minmax(0, 1fr));
     }
   }
@@ -478,13 +500,14 @@
     }
   }
 
-  /* Tablets: two columns of compact tiles; a lone last tile spans the row. */
+  /* Tablets: two columns of compact tiles, laid out like on phones. */
   @media screen and (min-width: 750px) and (max-width: 989px) {
     .rc-brands__list--compact {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .rc-brands__list--compact .rc-brands__item:last-child:nth-child(odd) {
+    .rc-brands__list--compact .rc-brands__item--sub,
+    .rc-brands__list--odd .rc-brands__item:last-child {
       grid-column: 1 / -1;
     }
   }
