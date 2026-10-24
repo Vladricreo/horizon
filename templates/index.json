@@ -17,21 +17,31 @@
         "heading": "Ricambi e accessori <em>che non trovi altrove.</em>",
         "subheading": "Li progettiamo e produciamo noi. Su ogni scheda trovi i modelli con cui funzionano.",
         "placeholder": "Il tuo modello o il pezzo che cerchi",
+        "rotating_prefix": "Cerca",
+        "rotating_terms": "Citroën Ami, Fiat Topolino, specchietto, tendina parasole, codice ricambio",
         "button_label": "Cerca",
         "popular_label": "Più cercati",
         "popular_searches": "",
         "auto_link_label": "",
         "auto_link_url": "",
-        "padding_top": 72,
-        "padding_bottom": 72,
         "show_photos": true,
-        "rotating_prefix": "Cerca",
-        "rotating_terms": "Citroën Ami, Fiat Topolino, specchietto, tendina parasole, codice ricambio"
+        "photo_collection": "",
+        "stage_label": "Il più scelto",
+        "padding_top": 72,
+        "padding_bottom": 72
       }
     },
     "rc_usp": {
       "type": "rc-features",
       "blocks": {
+        "f0": {
+          "type": "feature",
+          "settings": {
+            "icon": "truck",
+            "title": "Spedizione gratuita oltre 49 €",
+            "text": "Tracciata, fino a casa tua"
+          }
+        },
         "f1": {
           "type": "feature",
           "settings": {
@@ -63,14 +73,6 @@
             "title": "Assistenza diretta",
             "text": "Ti aiutiamo a trovare il pezzo giusto"
           }
-        },
-        "f0": {
-          "type": "feature",
-          "settings": {
-            "icon": "truck",
-            "title": "Spedizione gratuita oltre 49 €",
-            "text": "Tracciata, fino a casa tua"
-          }
         }
       },
       "block_order": [
@@ -82,10 +84,13 @@
       ],
       "settings": {
         "style": "bar",
+        "auto_scroll": true,
         "background": "subtle",
+        "eyebrow": "",
+        "heading": "",
+        "accent": "",
         "padding_top": 24,
-        "padding_bottom": 24,
-        "auto_scroll": true
+        "padding_bottom": 24
       }
     },
     "rc_brands": {
@@ -98,6 +103,7 @@
             "subtitle": "È la stessa microcar con tre marchi: ogni ricambio va bene per tutti e tre.",
             "match": "citroën ami, citroen ami, per ami, rocks, topolino",
             "link": "/collections/microcar",
+            "image": "shopify://shop_images/exec-002a4e59-bc71-409d-9906-b96df75f5927.png",
             "icon": "bolt"
           }
         },
@@ -105,7 +111,10 @@
           "type": "brand",
           "settings": {
             "title": "Fiat",
+            "subtitle": "",
             "match": "fiat 500, fiat panda, fiat punto, grande punto, fiat tipo, fiat doblò, fiat ducato, fiat stilo, fiat bravo",
+            "link": "",
+            "image": "shopify://shop_images/exec-a05115c6-ebe2-4f89-b5ba-2335c5f3036b.png",
             "icon": "car"
           }
         },
@@ -113,7 +122,10 @@
           "type": "brand",
           "settings": {
             "title": "Abarth",
+            "subtitle": "",
             "match": "abarth",
+            "link": "",
+            "image": "shopify://shop_images/exec-d603c30b-c76e-453f-ac9d-92fe56317ddf.png",
             "icon": "car"
           }
         },
@@ -121,7 +133,10 @@
           "type": "brand",
           "settings": {
             "title": "Alfa Romeo",
+            "subtitle": "",
             "match": "alfa romeo",
+            "link": "",
+            "image": "shopify://shop_images/exec-b9dccc50-d1a2-4250-b86d-c85f5c1312f5.png",
             "icon": "car"
           }
         },
@@ -129,7 +144,9 @@
           "type": "brand",
           "settings": {
             "title": "Mercedes-Benz",
+            "subtitle": "",
             "match": "mercedes",
+            "link": "",
             "icon": "car"
           }
         },
@@ -137,7 +154,9 @@
           "type": "brand",
           "settings": {
             "title": "Volkswagen",
+            "subtitle": "",
             "match": "volkswagen",
+            "link": "",
             "icon": "car"
           }
         },
@@ -145,7 +164,10 @@
           "type": "brand",
           "settings": {
             "title": "BMW",
+            "subtitle": "",
             "match": "bmw",
+            "link": "",
+            "image": "shopify://shop_images/exec-e3e41341-b890-45a0-97d7-8a21e15e02fc.png",
             "icon": "car"
           }
         },
@@ -153,7 +175,20 @@
           "type": "brand",
           "settings": {
             "title": "Moto Honda",
+            "subtitle": "",
             "match": "honda",
+            "link": "",
+            "icon": "scooter"
+          }
+        },
+        "b21": {
+          "type": "brand",
+          "settings": {
+            "title": "Yamaha",
+            "subtitle": "",
+            "match": "yamaha",
+            "link": "",
+            "image": "shopify://shop_images/exec-1452fa70-0337-43af-a835-4ac1f0fc9e1b.png",
             "icon": "scooter"
           }
         },
@@ -161,7 +196,9 @@
           "type": "brand",
           "settings": {
             "title": "Sodastream",
+            "subtitle": "",
             "match": "sodastream",
+            "link": "",
             "icon": "drop"
           }
         },
@@ -169,7 +206,9 @@
           "type": "brand",
           "settings": {
             "title": "Lavazza",
+            "subtitle": "",
             "match": "lavazza",
+            "link": "",
             "icon": "home"
           }
         },
@@ -177,7 +216,10 @@
           "type": "brand",
           "settings": {
             "title": "De'Longhi",
+            "subtitle": "",
             "match": "de'longhi, delonghi, de longhi",
+            "link": "",
+            "image": "shopify://shop_images/exec-059582d4-6a8e-4b27-a917-57ec01f4a6ee.png",
             "icon": "home"
           }
         },
@@ -185,7 +227,9 @@
           "type": "brand",
           "settings": {
             "title": "IKEA",
+            "subtitle": "",
             "match": "ikea",
+            "link": "",
             "icon": "home"
           }
         },
@@ -193,7 +237,9 @@
           "type": "brand",
           "settings": {
             "title": "Velux",
+            "subtitle": "",
             "match": "velux",
+            "link": "",
             "icon": "home"
           }
         },
@@ -201,7 +247,9 @@
           "type": "brand",
           "settings": {
             "title": "Dometic",
+            "subtitle": "",
             "match": "dometic",
+            "link": "",
             "icon": "van"
           }
         },
@@ -209,7 +257,9 @@
           "type": "brand",
           "settings": {
             "title": "PlayStation",
+            "subtitle": "",
             "match": "playstation, ps5, ps4",
+            "link": "",
             "icon": "monitor"
           }
         },
@@ -217,7 +267,10 @@
           "type": "brand",
           "settings": {
             "title": "Stream Deck",
+            "subtitle": "",
             "match": "stream deck",
+            "link": "",
+            "image": "shopify://shop_images/exec-4397ea79-0642-46f6-bcbf-bc1ebbf39e79.png",
             "icon": "monitor"
           }
         },
@@ -225,7 +278,9 @@
           "type": "brand",
           "settings": {
             "title": "Padel e tennis",
+            "subtitle": "",
             "match": "padel",
+            "link": "",
             "icon": "star"
           }
         },
@@ -233,17 +288,11 @@
           "type": "brand",
           "settings": {
             "title": "Trappole Popillia",
+            "subtitle": "",
             "match": "popillia",
             "link": "/search?q=popillia&type=product",
+            "image": "shopify://shop_images/exec-14065cab-d19d-4610-8d79-97cc7492fa08.png",
             "icon": "bug"
-          }
-        },
-        "b21": {
-          "type": "brand",
-          "settings": {
-            "title": "Yamaha",
-            "match": "yamaha",
-            "icon": "scooter"
           }
         }
       },
@@ -272,110 +321,10 @@
         "eyebrow": "Per marca o modello",
         "heading": "Per cosa ti serve?",
         "subheading": "Scegli quello che hai: vedi solo i pezzi fatti per quel modello.",
+        "collection": "",
         "min_visible": 1,
         "padding_top": 56,
         "padding_bottom": 24
-      }
-    },
-    "rc_categories": {
-      "type": "rc-category-grid",
-      "blocks": {
-        "c1": {
-          "type": "category",
-          "settings": {
-            "title": "Casa & cucina",
-            "subtitle": "",
-            "icon": "home",
-            "tint": 160,
-            "collection": "casa-cucina"
-          }
-        },
-        "c2": {
-          "type": "category",
-          "settings": {
-            "title": "Auto",
-            "subtitle": "",
-            "icon": "car",
-            "tint": 15,
-            "collection": "auto"
-          }
-        },
-        "c3": {
-          "type": "category",
-          "settings": {
-            "title": "Microcar",
-            "subtitle": "",
-            "icon": "bolt",
-            "tint": 30,
-            "collection": "microcar"
-          }
-        },
-        "c4": {
-          "type": "category",
-          "settings": {
-            "title": "Camper & nautica",
-            "subtitle": "",
-            "icon": "van",
-            "tint": 200,
-            "collection": "camper-nautica"
-          }
-        },
-        "c5": {
-          "type": "category",
-          "settings": {
-            "title": "Moto",
-            "subtitle": "",
-            "icon": "scooter",
-            "tint": 265,
-            "collection": "moto"
-          }
-        },
-        "c6": {
-          "type": "category",
-          "settings": {
-            "title": "Giardino & trappole",
-            "subtitle": "",
-            "icon": "bug",
-            "tint": 100,
-            "collection": "giardino-trappole"
-          }
-        },
-        "c7": {
-          "type": "category",
-          "settings": {
-            "title": "Tech & scrivania",
-            "subtitle": "",
-            "icon": "monitor",
-            "tint": 230,
-            "collection": "tech-scrivania"
-          }
-        },
-        "c8": {
-          "type": "category",
-          "settings": {
-            "title": "Fai da te & design",
-            "subtitle": "",
-            "icon": "ruler",
-            "tint": 330,
-            "collection": "fai-da-te-design"
-          }
-        }
-      },
-      "block_order": [
-        "c1",
-        "c2",
-        "c3",
-        "c4",
-        "c5",
-        "c6",
-        "c7",
-        "c8"
-      ],
-      "settings": {
-        "eyebrow": "Categorie",
-        "heading": "Sfoglia per categoria",
-        "hide_empty": true,
-        "min_visible": 2
       }
     },
     "product_list_fa6P9H": {
@@ -401,11 +350,13 @@
             "height": "fit",
             "custom_height": 100,
             "background_media": "none",
+            "background_color": "",
             "video_position": "cover",
             "background_image_position": "cover",
             "border": "none",
             "border_width": 1,
             "border_opacity": 100,
+            "border_color": "",
             "border_radius": 0,
             "padding-block-start": 0,
             "padding-block-end": 0,
@@ -428,6 +379,7 @@
                 "letter_spacing": "normal",
                 "case": "none",
                 "wrap": "pretty",
+                "text_color": "",
                 "background": false,
                 "background_color": "#00000026",
                 "corner_radius": 0,
@@ -445,6 +397,10 @@
                 "label": "Vedi tutti →",
                 "open_in_new_tab": false,
                 "style_class": "button-unstyled",
+                "custom_button_background": "{{ settings.color_palette.foreground }}",
+                "custom_button_text": "{{ settings.color_palette.background }}",
+                "custom_button_border": "{{ settings.color_palette.background }}",
+                "link_text_color": "",
                 "width": "fit-content",
                 "custom_width": 100,
                 "width_mobile": "fit-content",
@@ -464,9 +420,11 @@
           "static": true,
           "settings": {
             "product_card_gap": 4,
+            "background_color": "",
             "border": "none",
             "border_width": 1,
             "border_opacity": 100,
+            "border_color": "",
             "border_radius": 0,
             "padding-block-start": 0,
             "padding-block-end": 0,
@@ -482,6 +440,7 @@
                 "border": "none",
                 "border_width": 1,
                 "border_opacity": 100,
+                "border_color": "",
                 "border_radius": 0,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
@@ -504,6 +463,7 @@
                 "letter_spacing": "normal",
                 "case": "none",
                 "wrap": "pretty",
+                "text_color": "",
                 "background": false,
                 "background_color": "#00000026",
                 "corner_radius": 0,
@@ -529,6 +489,7 @@
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
+                "text_color": "",
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
@@ -569,8 +530,123 @@
         "section_width": "page-width",
         "horizontal_alignment": "flex-start",
         "gap": 28,
+        "background_color": "",
         "padding-block-start": 64,
         "padding-block-end": 64
+      }
+    },
+    "rc_categories": {
+      "type": "rc-category-grid",
+      "blocks": {
+        "c1": {
+          "type": "category",
+          "settings": {
+            "collection": "casa-cucina",
+            "link": "",
+            "title": "Casa & cucina",
+            "subtitle": "",
+            "icon": "home",
+            "tint": 160
+          }
+        },
+        "c2": {
+          "type": "category",
+          "settings": {
+            "collection": "auto",
+            "link": "",
+            "title": "Auto",
+            "subtitle": "",
+            "icon": "car",
+            "tint": 15
+          }
+        },
+        "c3": {
+          "type": "category",
+          "settings": {
+            "collection": "microcar",
+            "link": "",
+            "title": "Microcar",
+            "subtitle": "",
+            "icon": "bolt",
+            "tint": 30
+          }
+        },
+        "c4": {
+          "type": "category",
+          "settings": {
+            "collection": "camper-nautica",
+            "link": "",
+            "title": "Camper & nautica",
+            "subtitle": "",
+            "icon": "van",
+            "tint": 200
+          }
+        },
+        "c5": {
+          "type": "category",
+          "settings": {
+            "collection": "moto",
+            "link": "",
+            "title": "Moto",
+            "subtitle": "",
+            "icon": "scooter",
+            "tint": 265
+          }
+        },
+        "c6": {
+          "type": "category",
+          "settings": {
+            "collection": "giardino-trappole",
+            "link": "",
+            "title": "Giardino & trappole",
+            "subtitle": "",
+            "icon": "bug",
+            "tint": 100
+          }
+        },
+        "c7": {
+          "type": "category",
+          "settings": {
+            "collection": "tech-scrivania",
+            "link": "",
+            "title": "Tech & scrivania",
+            "subtitle": "",
+            "icon": "monitor",
+            "tint": 230
+          }
+        },
+        "c8": {
+          "type": "category",
+          "settings": {
+            "collection": "fai-da-te-design",
+            "link": "",
+            "title": "Fai da te & design",
+            "subtitle": "",
+            "icon": "ruler",
+            "tint": 330
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c6",
+        "c7",
+        "c8"
+      ],
+      "settings": {
+        "eyebrow": "Categorie",
+        "heading": "Sfoglia per categoria",
+        "link_label": "Tutte le categorie",
+        "link_url": "",
+        "hide_empty": true,
+        "min_visible": 2,
+        "accent": "",
+        "padding_top": 64,
+        "padding_bottom": 32
       }
     },
     "rc_steps": {
@@ -608,9 +684,11 @@
       ],
       "settings": {
         "style": "steps",
+        "auto_scroll": true,
         "background": "none",
         "eyebrow": "Come funziona",
         "heading": "Il ricambio giusto in 3 passi",
+        "accent": "",
         "padding_top": 72,
         "padding_bottom": 72
       }
