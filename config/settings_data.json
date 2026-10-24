@@ -54,6 +54,9 @@
     "badge_sale_text_color": "#C2410C",
     "badge_sold_out_background_color": "{{ settings.color_palette.color3 }}",
     "badge_text_transform": "none",
+    "palette_primary_button_background": "#004A8C",
+    "palette_primary_button_text": "#FFFFFF",
+    "palette_primary_button_border": "#004A8C",
     "primary_button_border_width": 0,
     "button_border_radius_primary": 14,
     "secondary_button_border_width": 1,
@@ -82,10 +85,17 @@
     "variant_button_width": "equal-width-buttons",
     "rc_accent": "#FA4A0A",
     "rc_brand": "#004A8C",
-    "palette_primary_button_background": "#004A8C",
-    "palette_primary_button_text": "#FFFFFF",
-    "palette_primary_button_border": "#004A8C",
     "content_for_index": [],
+    "blocks": {
+      "1802567733900429860": {
+        "type": "shopify://apps/3d-print-quote-calculator/blocks/app-embed/019c41b8-6177-73fa-b670-d6a72a1b651b",
+        "disabled": false,
+        "settings": {
+          "preload_scripts": true,
+          "enable_analytics": true
+        }
+      }
+    },
     "color_palette": {
       "background": "#F6F8FB",
       "foreground": "#0E1726",

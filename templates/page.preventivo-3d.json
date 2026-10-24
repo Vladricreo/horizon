@@ -27,6 +27,7 @@
             "letter_spacing": "normal",
             "case": "none",
             "wrap": "pretty",
+            "text_color": "",
             "background": false,
             "background_color": "#00000026",
             "corner_radius": 0,
@@ -39,7 +40,9 @@
         },
         "page-content": {
           "type": "page-content",
-          "settings": {},
+          "settings": {
+            "text_color": ""
+          },
           "blocks": {}
         }
       },
@@ -50,12 +53,61 @@
       "settings": {
         "content_direction": "column",
         "gap": 32,
+        "background_color": "",
         "padding-block-start": 40,
         "padding-block-end": 80
+      }
+    },
+    "17928033736519fa90": {
+      "type": "_blocks",
+      "blocks": {
+        "3d_print_quote_calculator_quote_block_bYfgBw": {
+          "type": "shopify://apps/3d-print-quote-calculator/blocks/quote-block/019c41b8-6177-73fa-b670-d6a72a1b651b",
+          "settings": {
+            "title": "Preventivo stampa 3D",
+            "subtitle": "Carica il tuo file 3D e configura il preventivo.",
+            "max_file_size": 50,
+            "show_dimensions": true,
+            "show_weight": true,
+            "accent_color": "#2563eb"
+          }
+        }
+      },
+      "block_order": [
+        "3d_print_quote_calculator_quote_block_bYfgBw"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "background_color": "",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 0,
+        "padding-block-end": 0
       }
     }
   },
   "order": [
-    "main"
+    "main",
+    "17928033736519fa90"
   ]
 }
