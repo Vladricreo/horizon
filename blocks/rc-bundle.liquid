@@ -22,6 +22,7 @@
     assign exclude = exclude | append: item.product_id | append: ','
   endfor
   assign picked = ','
+  assign picked_titles = ','
   assign count = 0
 
   assign own_tags = ','
@@ -69,14 +70,16 @@
           {%- if count >= limit -%}{%- break -%}{%- endif -%}
           {%- liquid
             assign key = ',' | append: rec.id | append: ','
+            assign title_key = rec.title | handleize | prepend: ',' | append: ','
             assign eligible = rec.available
-            if exclude contains key or picked contains key
+            if exclude contains key or picked contains key or picked_titles contains title_key
               assign eligible = false
             endif
           -%}
           {%- if eligible -%}
             {%- render 'rc-bundle-row', product: rec, reason: 'cart', reason_title: item.product.title, index: count -%}
             {%- assign picked = picked | append: rec.id | append: ',' -%}
+            {%- assign picked_titles = picked_titles | append: title_key -%}
             {%- assign count = count | plus: 1 -%}
           {%- endif -%}
         {%- endfor -%}
@@ -100,8 +103,9 @@
               {%- if count >= limit -%}{%- break -%}{%- endif -%}
               {%- liquid
                 assign key = ',' | append: rec.id | append: ','
+                assign title_key = rec.title | handleize | prepend: ',' | append: ','
                 assign eligible = rec.available
-                if exclude contains key or picked contains key or rec.title == product.title
+                if exclude contains key or picked contains key or picked_titles contains title_key or rec.title == product.title
                   assign eligible = false
                 endif
                 if eligible and own_sub != blank
@@ -124,6 +128,7 @@
               {%- if eligible -%}
                 {%- render 'rc-bundle-row', product: rec, reason: reason, index: count -%}
                 {%- assign picked = picked | append: rec.id | append: ',' -%}
+                {%- assign picked_titles = picked_titles | append: title_key -%}
                 {%- assign count = count | plus: 1 -%}
               {%- endif -%}
             {%- endfor -%}
@@ -135,14 +140,16 @@
         {%- if count >= limit -%}{%- break -%}{%- endif -%}
         {%- liquid
           assign key = ',' | append: rec.id | append: ','
+          assign title_key = rec.title | handleize | prepend: ',' | append: ','
           assign eligible = rec.available
-          if exclude contains key or picked contains key
+          if exclude contains key or picked contains key or picked_titles contains title_key
             assign eligible = false
           endif
         -%}
         {%- if eligible -%}
           {%- render 'rc-bundle-row', product: rec, reason: reason, index: count -%}
           {%- assign picked = picked | append: rec.id | append: ',' -%}
+          {%- assign picked_titles = picked_titles | append: title_key -%}
           {%- assign count = count | plus: 1 -%}
         {%- endif -%}
       {%- endfor -%}

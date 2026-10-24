@@ -43,6 +43,7 @@
     assign cart_ids = cart_ids | append: item.product_id | append: ','
   endfor
   assign picked = ','
+  assign picked_titles = ','
   assign count = 0
 
   assign skip_groups = ','
@@ -72,14 +73,16 @@
           {%- if count >= limit -%}{%- break -%}{%- endif -%}
           {%- liquid
             assign key = ',' | append: rec.id | append: ','
+            assign title_key = rec.title | handleize | prepend: ',' | append: ','
             assign eligible = rec.available
-            if cart_ids contains key or picked contains key
+            if cart_ids contains key or picked contains key or picked_titles contains title_key
               assign eligible = false
             endif
           -%}
           {%- if eligible -%}
             {%- render 'rc-upsell-card', product: rec, reason: item.product.title -%}
             {%- assign picked = picked | append: rec.id | append: ',' -%}
+            {%- assign picked_titles = picked_titles | append: title_key -%}
             {%- assign count = count | plus: 1 -%}
           {%- endif -%}
         {%- endfor -%}
@@ -107,6 +110,7 @@
               {%- if count >= limit -%}{%- break -%}{%- endif -%}
               {%- liquid
                 assign key = ',' | append: rec.id | append: ','
+                assign title_key = rec.title | handleize | prepend: ',' | append: ','
                 assign same_kind = false
                 if rec.title == item.product.title
                   assign same_kind = true
@@ -132,7 +136,7 @@
               {%- if pass == 1 and matches_vehicle == false -%}{%- continue -%}{%- endif -%}
               {%- liquid
                 assign eligible = rec.available
-                if same_kind or cart_ids contains key or picked contains key
+                if same_kind or cart_ids contains key or picked contains key or picked_titles contains title_key
                   assign eligible = false
                 endif
               -%}
@@ -145,6 +149,7 @@
                 -%}
                 {%- render 'rc-upsell-card', product: rec, reason: reason, reason_is_vehicle: matches_vehicle -%}
                 {%- assign picked = picked | append: rec.id | append: ',' -%}
+                {%- assign picked_titles = picked_titles | append: title_key -%}
                 {%- assign count = count | plus: 1 -%}
               {%- endif -%}
             {%- endfor -%}
@@ -160,6 +165,7 @@
           {%- if count >= limit -%}{%- break -%}{%- endif -%}
           {%- liquid
             assign key = ',' | append: rec.id | append: ','
+            assign title_key = rec.title | handleize | prepend: ',' | append: ','
             assign matches_vehicle = false
             if vehicle_handle != blank
               for tag in rec.tags
@@ -176,7 +182,7 @@
           {%- if pass == 1 and matches_vehicle == false -%}{%- continue -%}{%- endif -%}
           {%- liquid
             assign eligible = rec.available
-            if cart_ids contains key or picked contains key
+            if cart_ids contains key or picked contains key or picked_titles contains title_key
               assign eligible = false
             endif
           -%}
@@ -189,6 +195,7 @@
             -%}
             {%- render 'rc-upsell-card', product: rec, reason: reason, reason_is_vehicle: matches_vehicle -%}
             {%- assign picked = picked | append: rec.id | append: ',' -%}
+            {%- assign picked_titles = picked_titles | append: title_key -%}
             {%- assign count = count | plus: 1 -%}
           {%- endif -%}
         {%- endfor -%}
