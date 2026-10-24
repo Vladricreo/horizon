@@ -4,7 +4,8 @@
   con selezione a spunta, totale dinamico e aggiunta in un solo click.
 
   Fonti, in ordine: metafield `custom.abbinabili` del prodotto → complementari Search & Discovery
-  → abbinabili degli articoli nel carrello → prodotti scelti nel blocco → collezione di riserva.
+  → abbinabili degli articoli nel carrello → altri prodotti delle sue collezioni (dalla più piccola,
+  prima quelli con un tag in comune) → prodotti scelti nel blocco → collezione di riserva.
 {%- enddoc -%}
 
 {%- liquid
@@ -21,10 +22,20 @@
   endfor
   assign picked = ','
   assign count = 0
+
+  assign own_tags = ','
+  for tag in product.tags
+    assign own_tags = own_tags | append: tag | handleize | append: ','
+  endfor
+  assign skip_groups = ','
+  assign skip_list = settings.rc_related_skip | split: ','
+  for skip_handle in skip_list
+    assign skip_groups = skip_groups | append: skip_handle | strip | handleize | append: ','
+  endfor
 -%}
 
 {%- capture rows -%}
-  {%- for source in (1..5) -%}
+  {%- for source in (1..6) -%}
     {%- if count >= limit -%}{%- break -%}{%- endif -%}
     {%- liquid
       case source
@@ -38,9 +49,12 @@
           assign recs = blank
           assign reason = 'cart'
         when 4
-          assign recs = block.settings.products
+          assign recs = blank
           assign reason = 'match'
         when 5
+          assign recs = block.settings.products
+          assign reason = 'match'
+        when 6
           assign recs = block.settings.collection.products
           assign reason = 'popular'
       endcase
@@ -65,6 +79,46 @@
           {%- endif -%}
         {%- endfor -%}
       {%- endfor -%}
+    {%- elsif source == 4 -%}
+      {%- comment -%} Same collections as the product, most specific first: new products fill in on their own. {%- endcomment -%}
+      {%- if block.settings.auto_group -%}
+        {%- assign groups = product.collections | sort: 'products_count' -%}
+        {%- assign used_groups = 0 -%}
+        {%- for group in groups -%}
+          {%- if count >= limit or used_groups >= 2 -%}{%- break -%}{%- endif -%}
+          {%- assign group_key = ',' | append: group.handle | append: ',' -%}
+          {%- if group.products_count < 2 or skip_groups contains group_key -%}{%- continue -%}{%- endif -%}
+          {%- assign used_groups = used_groups | plus: 1 -%}
+          {%- for pass in (1..2) -%}
+            {%- if pass == 1 and own_tags == ',' -%}{%- continue -%}{%- endif -%}
+            {%- for rec in group.products limit: 24 -%}
+              {%- if count >= limit -%}{%- break -%}{%- endif -%}
+              {%- liquid
+                assign key = ',' | append: rec.id | append: ','
+                assign eligible = rec.available
+                if exclude contains key or picked contains key
+                  assign eligible = false
+                endif
+                if eligible and pass == 1
+                  assign eligible = false
+                  for tag in rec.tags
+                    assign tag_key = tag | handleize | prepend: ',' | append: ','
+                    if own_tags contains tag_key
+                      assign eligible = true
+                      break
+                    endif
+                  endfor
+                endif
+              -%}
+              {%- if eligible -%}
+                {%- render 'rc-bundle-row', product: rec, reason: reason, index: count -%}
+                {%- assign picked = picked | append: rec.id | append: ',' -%}
+                {%- assign count = count | plus: 1 -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endfor -%}
+        {%- endfor -%}
+      {%- endif -%}
     {%- else -%}
       {%- for rec in recs limit: 24 -%}
         {%- if count >= limit -%}{%- break -%}{%- endif -%}
@@ -161,8 +215,9 @@
   <div class="rc-bundle rc-bundle--empty" {{ block.shopify_attributes }}>
     <p class="rc-bundle__title">{% render 'rc-icon', name: 'gift', size: 18 %} {{ block.settings.heading }}</p>
     <p class="rc-bundle__sub">
-      Nessun articolo abbinabile trovato. Compila il metafield "custom.abbinabili", usa i prodotti complementari di
-      Search &amp; Discovery oppure scegli prodotti o una collezione di riserva nelle impostazioni del blocco.
+      Nessun articolo abbinabile trovato. Aggiungi il prodotto a una collezione con altri articoli, compila il
+      metafield "custom.abbinabili", usa i prodotti complementari di Search &amp; Discovery oppure scegli prodotti
+      o una collezione di riserva nelle impostazioni del blocco.
     </p>
   </div>
 {%- endif -%}
@@ -515,11 +570,22 @@
     },
     {
       "type": "header",
+      "content": "Automatico"
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_group",
+      "label": "Suggerisci prodotti delle stesse collezioni",
+      "info": "Dopo gli abbinabili manuali usa le collezioni del prodotto, dalla più specifica (es. Microcar prima di Auto), con priorità ai prodotti con un tag in comune (es. volkswagen-golf-7). Collezioni da ignorare: Impostazioni tema → Ricreo · Upsell carrello.",
+      "default": true
+    },
+    {
+      "type": "header",
       "content": "Riserva"
     },
     {
       "type": "paragraph",
-      "content": "Usati solo se il prodotto e il carrello non hanno articoli abbinabili (metafield custom.abbinabili o complementari di Search & Discovery)."
+      "content": "Usati solo se mancano articoli abbinabili (metafield custom.abbinabili, complementari di Search & Discovery, stesse collezioni)."
     },
     {
       "type": "product_list",

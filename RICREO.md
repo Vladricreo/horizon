@@ -85,8 +85,12 @@ nella sua impostazione "Mostra solo nelle collezioni" (oggi `auto, microcar`).
 
 - **Articoli abbinabili** (upsell e bundle): crea il metafield prodotto `custom.abbinabili`
   di tipo *Lista di riferimenti prodotto*. In alternativa vengono letti i *prodotti complementari*
-  dell'app Shopify **Search & Discovery**. Se non c'è nulla si usa la collezione di riserva
-  (Impostazioni tema → *Ricreo · Upsell carrello*).
+  dell'app Shopify **Search & Discovery**. Poi, in automatico, gli altri prodotti delle stesse
+  collezioni (dalla più specifica: Microcar prima di Auto; prima quelli con un tag in comune o col tag
+  del veicolo salvato): basta che il prodotto nuovo finisca nella collezione giusta. Conviene usare
+  collezioni *automatiche* (condizione su tag, tipo o categoria prodotto) così l'assegnazione è da sola.
+  Le collezioni generiche/promozionali da ignorare sono in Impostazioni tema → *Ricreo · Upsell carrello*.
+  Se non c'è nulla si usa la collezione di riserva (stessa impostazione).
 - **Punti chiave con icone**: metafield `custom.punti_chiave` (*Lista di testo a riga singola*)
   oppure il primo elenco puntato della descrizione prodotto (che il blocco *Ricreo · Descrizione* poi non ripete).
   - `Titolo: dettaglio` → titolo in grassetto + dettaglio.

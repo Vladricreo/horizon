@@ -2144,7 +2144,14 @@
     "settings": [
       {
         "type": "paragraph",
-        "content": "Suggerimenti nel carrello basati sugli articoli aggiunti: prima il metafield custom.abbinabili, poi i prodotti complementari di Search & Discovery, infine la collezione di riserva (con priorità ai prodotti col tag del veicolo salvato)."
+        "content": "Suggerimenti nel carrello basati sugli articoli aggiunti: prima il metafield custom.abbinabili, poi i prodotti complementari di Search & Discovery, poi gli altri prodotti della stessa collezione, infine la collezione di riserva (con priorità ai prodotti col tag del veicolo salvato)."
+      },
+      {
+        "type": "text",
+        "id": "rc_related_skip",
+        "label": "Collezioni da non usare per i suggerimenti",
+        "info": "Handle separati da virgola. Valgono anche per \"Spesso acquistati insieme\": escludi le collezioni generiche o promozionali (homepage, offerte, novità…).",
+        "default": "frontpage, all, home, novita, offerte, saldi, bestseller, piu-venduti"
       },
       {
         "type": "checkbox",
