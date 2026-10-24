@@ -250,11 +250,17 @@
     "rc_cart_upsell": {
       "type": "rc-cart-upsell",
       "settings": {}
+    },
+    "rc_quote_cart": {
+      "type": "rc-quote-cart",
+      "settings": {}
     }
   },
   "order": [
+    "rc_quote_cart",
     "cart-section",
     "rc_cart_upsell",
     "product_list_NNFgcy"
   ]
 }
+

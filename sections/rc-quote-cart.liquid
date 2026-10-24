@@ -1,0 +1,122 @@
+{% comment %}
+  Percorso Ricreo B2B per un carrello composto soltanto da preventivi di stampa 3D.
+  Mantiene il riepilogo e il checkout nativi di Shopify.
+{% endcomment %}
+{% liquid
+  assign quote_only = false
+  if cart.items.size > 0
+    assign quote_only = true
+    for item in cart.items
+      if item.product.handle != '3d-print-quote-service'
+        assign quote_only = false
+        break
+      endif
+    endfor
+  endif
+  assign b2b_url = 'https://www.ricreo.io'
+  assign quote_url = 'https://shop.ricreo.io/pages/preventivo-3d'
+  assign back_label = 'Torna ai servizi Ricreo'
+  assign eyebrow = 'STAMPA 3D FDM · RIEPILOGO'
+  assign heading = 'Il tuo preventivo di stampa 3D'
+  assign lead = 'Controlla i file, i materiali e il numero di copie prima di procedere al pagamento.'
+  assign add_label = 'Aggiungi un altro file 3D'
+  assign help_label = 'Hai bisogno di assistenza?'
+  if request.locale.iso_code == 'en'
+    assign b2b_url = 'https://www.ricreo.io/en-it'
+    assign back_label = 'Back to Ricreo services'
+    assign eyebrow = 'FDM 3D PRINTING · SUMMARY'
+    assign heading = 'Your 3D printing quote'
+    assign lead = 'Check the files, materials and number of copies before proceeding to payment.'
+    assign add_label = 'Add another 3D file'
+    assign help_label = 'Need assistance?'
+  endif
+%}
+{% if quote_only %}
+  <style>
+    #header-group, .header-group, .shopify-section-group-footer-group,
+    [id*="__footer"], [id*="__utilities"],
+    #MainContent > .shopify-section:not([id$="__cart-section"]):not([id$="__rc_quote_cart"]),
+    .cart-page__title, .cart-items__media, .cart-items__unit-price-wrapper, .cart-items__bundle {
+      display: none !important;
+    }
+    body {
+      --header-height: 0px; --header-group-height: 0px;
+      --color-primary-button-background: #ff5b1a;
+      --color-primary-button-text: #ffffff;
+      --color-primary-button-border: #ff5b1a;
+      --color-primary-button-hover-background: #dc4210;
+      --style-border-radius-buttons-primary: 0px;
+      background: #f5f5f2; color: #10151b;
+    }
+    .rc-qc { max-width: 1200px; margin: auto; padding: 0 24px; }
+    .rc-qc__nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; border-bottom: 1px solid #d9ddd9; padding: 26px 0; }
+    .rc-qc__brand { font: 900 30px/1 Arial, sans-serif; letter-spacing: -.06em; text-decoration: none; color: #10151b; }
+    .rc-qc__brand span { color: #ff5b1a; }
+    .rc-qc__back { color: #10151b; text-underline-offset: 5px; font-size: 14px; }
+    .rc-qc__intro { padding: 48px 0 24px; }
+    .rc-qc__eyebrow { color: #bf3b08; font: 600 12px/1.5 monospace; letter-spacing: .12em; margin: 0 0 12px; }
+    .rc-qc h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.08; letter-spacing: -.04em; margin: 0 0 16px; }
+    .rc-qc__lead { max-width: 680px; color: #505960; line-height: 1.6; margin: 0; }
+    .rc-qc__links { display: flex; flex-wrap: wrap; gap: 12px 24px; padding-top: 20px; font-size: 14px; }
+    .rc-qc__links a { color: #a33309; text-underline-offset: 5px; }
+    [id$="__cart-section"] > .section-background { background: #f5f5f2 !important; }
+    #MainContent, [id$="__cart-section"], [id$="__cart-section"] > .section { background: #f5f5f2 !important; }
+    .cart-page { padding-bottom: 48px !important; max-width: 1200px; width: 100%; justify-self: center; margin-inline: auto; }
+    .cart-summary { display: block !important; height: auto !important; }
+    .cart-summary__inner { grid-row: auto !important; position: static !important; }
+    .cart-page__items { margin-top: 0 !important; padding: 24px; background: #fff; border: 1px solid #d9ddd9; }
+    .cart-page__summary { background: #fff; border: 1px solid #d9ddd9; }
+    .cart-summary, .cart-summary__inner { background: #fff !important; }
+    .cart-summary--extend .cart-summary__inner { width: 100%; padding: 24px; top: 0; }
+    .cart-items__table-row {
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      grid-template-areas: "details price" "quantity quantity" "error error" !important;
+    }
+    .cart-items__quantity { grid-area: quantity !important; }
+    .cart-items__price { grid-area: price !important; }
+    .cart-items__title { font-size: 20px; font-weight: 700; }
+    .cart-items__properties { margin-top: 12px; }
+    #checkout {
+      background: #ff5b1a !important; color: #fff !important; border: 1px solid #ff5b1a;
+      border-radius: 0; box-shadow: none; font-weight: 700; min-height: 52px;
+    }
+    #checkout:hover { background: #dc4210 !important; }
+    @media (min-width: 750px) {
+      .section--page-width .cart-page:has(.cart-summary--extend) {
+        grid-column: 2 !important;
+        grid-template-columns: minmax(0, 1fr) minmax(280px, 380px) !important;
+        column-gap: 24px;
+        grid-template-rows: auto !important;
+        align-items: start;
+      }
+      .cart-page__items { grid-column: 1; grid-row: 1; }
+      .cart-page__summary { grid-column: 2; grid-row: 1 !important; display: block !important; height: auto !important; }
+    }
+    @media (max-width: 749px) {
+      .rc-qc { padding: 0 20px; }
+      .rc-qc__intro { padding-top: 32px; }
+      .cart-page__summary { margin-top: 20px; }
+      .cart-page__items { padding: 20px; }
+    }
+  </style>
+  <div class="rc-qc">
+    <nav class="rc-qc__nav" aria-label="Ricreo B2B">
+      <a class="rc-qc__brand" href="{{ b2b_url }}">RICREO<span>.</span></a>
+      <a class="rc-qc__back" href="{{ b2b_url }}/preventivo">{{ back_label }}</a>
+    </nav>
+    <div class="rc-qc__intro">
+      <p class="rc-qc__eyebrow">{{ eyebrow }}</p>
+      <h1>{{ heading }}</h1>
+      <p class="rc-qc__lead">{{ lead }}</p>
+      <div class="rc-qc__links">
+        <a href="{{ quote_url }}">{{ add_label }}</a>
+        <a href="mailto:info@ricreo.io">{{ help_label }}</a>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+{"name":"Ricreo · Preventivi","tag":"section","disabled_on":{"groups":["header","footer"]},"settings":[]}
+{% endschema %}
+

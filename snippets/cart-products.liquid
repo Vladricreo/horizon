@@ -174,7 +174,7 @@
                       endif
                     %}
                     <a
-                      href="{{ item.url }}"
+                      href="{% if item.product.handle == '3d-print-quote-service' %}https://shop.ricreo.io/pages/preventivo-3d{% else %}{{ item.url }}{% endif %}"
                       class="cart-items__media-container"
                       style="--ratio:{{ ratio }};"
                     >
@@ -198,13 +198,17 @@
                     -%}
                     <div class="cart-items__title-row">
                       <a
-                        href="{{ item.url }}"
+                        href="{% if item.product.handle == '3d-print-quote-service' %}https://shop.ricreo.io/pages/preventivo-3d{% else %}{{ item.url }}{% endif %}"
                         class="cart-items__title"
                         {% if item.parent_relationship.parent != null %}
                           aria-label="{{ 'accessibility.nested_product' | t: product_title: item.product.title, parent_title: item.parent_relationship.parent.title | escape }}"
                         {% endif %}
                       >
-                        {{- item.product.title -}}
+                        {%- if item.product.handle == '3d-print-quote-service' -%}
+                          {{- item.properties['File Name'] | default: 'Stampa 3D su misura' | escape -}}
+                        {%- else -%}
+                          {{- item.product.title | escape -}}
+                        {%- endif -%}
                       </a>
                       {%- render 'cart-disclosure-tooltip',
                         product: item.product,
@@ -1014,3 +1018,4 @@
     }
   }
 {% endstylesheet %}
+
