@@ -1,7 +1,7 @@
 {%- comment -%}
   Ricreo · stile e script globali.
   - Token (Impostazioni tema → Ricreo · Stile): le sezioni e i blocchi rc-* leggono --rc-accent
-    da qui, salvo override locale.
+    (arancio del logo) e --rc-brand (blu del logo) da qui, salvo override locale.
   - Micro-animazione dell'icona carrello, badge di compatibilità <rc-compat> e rc-garage.js
     (il badge vive anche dentro le card prodotto di Horizon).
   Renderizzato in layout/theme.liquid subito dopo 'color-palette'.
@@ -12,12 +12,17 @@
 {%- liquid
   assign rc_accent = settings.rc_accent
   if rc_accent == blank
-    assign rc_accent = '#FF5A1F'
+    assign rc_accent = '#FA4A0A'
+  endif
+  assign rc_brand = settings.rc_brand
+  if rc_brand == blank
+    assign rc_brand = '#004A8C'
   endif
 -%}
 
 <style>
   :root {
+    --rc-brand: {{ rc_brand }};
     --rc-accent: {{ rc_accent }};
     --rc-accent-2: {{ rc_accent | color_modify: 'hue', 30 | color_lighten: 8 }};
     --rc-accent-ink: {{ rc_accent | color_darken: 18 }};

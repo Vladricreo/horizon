@@ -9,7 +9,8 @@
   Con una o due tessere la sezione usa schede larghe, per non lasciare un riquadro isolato.
   Finché nessuna tessera ha la foto, le tessere sono compatte (icona accanto al nome) invece di grandi
   riquadri vuoti; le colonne si scelgono in base al numero di tessere, così l'ultima fila non resta con
-  una tessera sola.
+  una tessera sola. Su desktop la tessera con il sottotitolo è larga due colonne e le foto hanno un'altezza
+  fissa contenuta.
 {%- endcomment -%}
 
 {%- liquid
@@ -117,11 +118,8 @@
       {%- endif -%}
 
       {%- liquid
-        # Compact tiles with a subtitle are two columns wide, so they count as two places.
-        assign slots = shown
-        if with_photo == 0
-          assign slots = shown | plus: with_sub
-        endif
+        # Tiles with a subtitle are two columns wide on desktop, so they count as two places.
+        assign slots = shown | plus: with_sub
 
         case slots
           when 3, 6, 9
@@ -332,8 +330,15 @@
       grid-template-columns: repeat(var(--rc-cols-md, 4), minmax(0, 1fr));
     }
 
-    .rc-brands__list--compact .rc-brands__item--sub {
+    .rc-brands__list:not(.rc-brands__list--wide) .rc-brands__item--sub {
       grid-column: span 2;
+    }
+
+    /* Photo tiles: a fixed, modest picture height, so five in a row stay small and the double-width
+       tile shows its wider photo instead of growing twice as tall. */
+    .rc-brands__list:not(.rc-brands__list--wide):not(.rc-brands__list--compact) .rc-brand__media {
+      aspect-ratio: auto;
+      height: clamp(130px, 11vw, 170px);
     }
   }
 

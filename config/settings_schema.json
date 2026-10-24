@@ -2128,7 +2128,14 @@
         "type": "color",
         "id": "rc_accent",
         "label": "Colore d'accento",
-        "default": "#FF5A1F"
+        "default": "#FA4A0A"
+      },
+      {
+        "type": "color",
+        "id": "rc_brand",
+        "label": "Colore del marchio",
+        "info": "Il blu del logo: sfondo della hero, barra annunci scura, dettagli.",
+        "default": "#004A8C"
       }
     ]
   },
