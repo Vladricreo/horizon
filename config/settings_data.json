@@ -80,14 +80,18 @@
     "variant_button_border_width": 1,
     "variant_button_radius": 14,
     "variant_button_width": "equal-width-buttons",
-    "rc_accent": "#FF5A1F",
+    "rc_accent": "#FA4A0A",
+    "rc_brand": "#004A8C",
+    "palette_primary_button_background": "#004A8C",
+    "palette_primary_button_text": "#FFFFFF",
+    "palette_primary_button_border": "#004A8C",
     "content_for_index": [],
     "color_palette": {
-      "background": "#FAFAF7",
-      "foreground": "#14161B",
-      "color1": "#22252B",
-      "color2": "#FFF1EB",
-      "color3": "#E4E2DC"
+      "background": "#F6F8FB",
+      "foreground": "#0E1726",
+      "color1": "#0B2A4A",
+      "color2": "#FFEDE4",
+      "color3": "#DFE4EC"
     }
   },
   "presets": {

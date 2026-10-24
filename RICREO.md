@@ -26,8 +26,11 @@ Tema basato su [Shopify Horizon](https://github.com/Shopify/horizon). Tutto il c
 
 - **Accento**: Impostazioni tema → *Ricreo · Stile*. Lo usano tutte le sezioni e i blocchi `rc-*`;
   il campo "Colore d'accento" di una singola sezione/blocco, se compilato, lo sovrascrive solo lì.
-- **Palette** (Impostazioni tema → Colori): sfondo `#FAFAF7`, testo `#14161B`, `color1` `#22252B`
-  (sfondo footer), `color2` `#FFF1EB` (tinta accento: badge saldi), `color3` `#E4E2DC` (bordi, badge esaurito).
+- **Palette** presa dal logo (Impostazioni tema → Colori): sfondo `#F6F8FB` (bianco freddo, come i fondi da
+  studio delle foto), testo `#0E1726`, `color1` `#0B2A4A` (footer, blu notte), `color2` `#FFEDE4` (tinta
+  accento: badge saldi), `color3` `#DFE4EC` (bordi, badge esaurito). Bottoni principali nel blu del logo
+  `#004A8C`; arancio del logo `#FA4A0A` come accento (*Ricreo · Stile*), blu come *Colore del marchio*
+  (`--rc-brand`: alone della hero, barra annunci scura).
 - **Font**: titoli e sottotitoli Space Grotesk, testo Inter 16px.
 - **Raggi**: card 16, immagini prodotto 12, input 12, popover 16, bottoni 14.
 - **Movimento**: gli effetti partono da un'azione del cliente (hover, aggiunta al carrello, soglia
