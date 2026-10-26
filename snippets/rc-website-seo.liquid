@@ -1,0 +1,15 @@
+{% doc %}
+  Identifica il negozio come sito distinto dal service aziendale nei risultati di ricerca.
+{% enddoc %}
+{%- if request.page_type == 'index' -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": {{ shop.url | append: '/#website' | json }},
+      "name": {{ shop.name | json }},
+      "alternateName": ["Shop Ricreo", "Ricreo Shop", "shop.ricreo.io"],
+      "url": {{ shop.url | append: '/' | json }}
+    }
+  </script>
+{%- endif -%}
